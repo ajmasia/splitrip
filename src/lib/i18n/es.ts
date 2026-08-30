@@ -52,6 +52,8 @@ export const es = {
   'error.name_required': 'Hace falta un nombre.',
   'error.trip_name_required': 'El viaje necesita un nombre.',
   'error.trip_dates_out_of_order': 'Un viaje no puede terminar antes de empezar.',
+  'error.needs_an_account':
+    'Para abrir un viaje hace falta una cuenta autorizada. Entrar en uno por invitación no.',
   'error.not_allowed': 'No tienes permiso para hacer eso.',
   'error.unexpected': 'Algo ha fallado. Inténtalo otra vez.',
 } as const

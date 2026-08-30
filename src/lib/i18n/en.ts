@@ -50,6 +50,8 @@ export const en: Catalogue = {
   'error.name_required': 'A name is needed.',
   'error.trip_name_required': 'The trip needs a name.',
   'error.trip_dates_out_of_order': 'A trip cannot end before it starts.',
+  'error.needs_an_account':
+    'Opening a trip needs an allowed account. Joining one through an invitation does not.',
   'error.not_allowed': 'You are not allowed to do that.',
   'error.unexpected': 'Something went wrong. Try again.',
 }

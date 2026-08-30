@@ -2,7 +2,9 @@
 
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(15);
+select plan(18);
+
+insert into public.trip_creators (email) values ('ana@splitrip.test'), ('beto@splitrip.test');
 
 insert into auth.users (id, instance_id, aud, role, is_anonymous, created_at, updated_at)
 select id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', true, now(), now()
@@ -10,7 +12,7 @@ from (values ('11111111-1111-1111-1111-111111111111'::uuid),   -- Ana
              ('22222222-2222-2222-2222-222222222222'::uuid)    -- Beto, who organises elsewhere
      ) as u(id);
 
-set local request.jwt.claims = '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}';
+set local request.jwt.claims = '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated","email":"ana@splitrip.test"}';
 set local role authenticated;
 
 select lives_ok(
@@ -77,7 +79,7 @@ select is(
     'and zero where nothing has been spent yet');
 
 reset role;
-set local request.jwt.claims = '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}';
+set local request.jwt.claims = '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated","email":"beto@splitrip.test"}';
 set local role authenticated;
 
 select is_empty(
@@ -92,6 +94,31 @@ select is(
     (select array_agg(name) from public.trip_overview),
     array['Lisbon 2026'],
     'sees theirs and nobody else''s');
+
+-- ------------------------------------------------------ who is allowed to open a trip at all
+reset role;
+set local request.jwt.claims = '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated","is_anonymous":true}';
+set local role authenticated;
+
+select throws_ok(
+    $$select public.create_trip('From a phone', 'Whoever')$$,
+    'SP017', null, 'a device identity opens no trips: joining one is what it is for');
+
+reset role;
+set local request.jwt.claims = '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated","email":"stranger@example.test"}';
+set local role authenticated;
+
+select throws_ok(
+    $$select public.create_trip('Not on the list', 'Whoever')$$,
+    'SP017', null, 'and neither does an account nobody allowed');
+
+reset role;
+set local request.jwt.claims = '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated","email":"  ANA@Splitrip.test  "}';
+set local role authenticated;
+
+select lives_ok(
+    $$select public.create_trip('Shouting the address', 'Ana')$$,
+    'an allowed address is recognised whatever its case and spacing');
 
 select * from finish();
 rollback;

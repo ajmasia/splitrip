@@ -10,14 +10,43 @@
 -- cents, with the leftover going one by one to the first participants ordered by their identifier.
 -- That is what keeps the shares of an expense adding up to the expense, to the cent.
 
+-- Sonia opens the trips, so she has an account. The other four joined through an invitation and
+-- have only the identity their phone was given, which is what the model expects of a traveller.
+--
+-- Signing in locally: sonia@splitrip.test / unViajeALaAlsacia
+insert into public.trip_creators (email, note) values
+    ('sonia@splitrip.test', 'The organiser of the sample trip');
+
+-- The empty token columns are not decoration: the auth server reads them into strings that cannot
+-- be null, and a NULL there fails every sign-in with an error about querying the schema.
+insert into auth.users (
+    id, instance_id, aud, role, email, encrypted_password, email_confirmed_at,
+    raw_app_meta_data, raw_user_meta_data, is_anonymous, created_at, updated_at,
+    confirmation_token, recovery_token, email_change, email_change_token_new
+) values (
+    'a0000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000000',
+    'authenticated', 'authenticated', 'sonia@splitrip.test',
+    extensions.crypt('unViajeALaAlsacia', extensions.gen_salt('bf')), now(),
+    '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, false, now(), now(),
+    '', '', '', ''
+);
+
+insert into auth.identities (
+    id, user_id, provider_id, provider, identity_data, last_sign_in_at, created_at, updated_at
+) values (
+    gen_random_uuid(), 'a0000000-0000-0000-0000-000000000005',
+    'a0000000-0000-0000-0000-000000000005', 'email',
+    '{"sub":"a0000000-0000-0000-0000-000000000005","email":"sonia@splitrip.test","email_verified":true}'::jsonb,
+    now(), now(), now()
+);
+
 -- One anonymous identity per person, as if each had joined from her own phone.
 insert into auth.users (id, instance_id, aud, role, is_anonymous, created_at, updated_at)
 select id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', true, now(), now()
 from (values ('a0000000-0000-0000-0000-000000000001'::uuid),
              ('a0000000-0000-0000-0000-000000000002'::uuid),
              ('a0000000-0000-0000-0000-000000000003'::uuid),
-             ('a0000000-0000-0000-0000-000000000004'::uuid),
-             ('a0000000-0000-0000-0000-000000000005'::uuid)) as u(id);
+             ('a0000000-0000-0000-0000-000000000004'::uuid)) as u(id);
 
 insert into public.trips (id, name, start_date, end_date, created_by) values
     ('aa15ac1a-0000-0000-0000-000000000001', 'Viaje a la Alsacia', '2026-12-18', '2026-12-22',
