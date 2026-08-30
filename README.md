@@ -74,6 +74,27 @@ Copy `.env.example` to `.env.local`. The values it carries are the local stack d
 
 `npm run db:reset` recreates the database from the migrations in `supabase/migrations/`, discarding whatever local data you had.
 
+## Data model
+
+The schema lives as versioned SQL migrations in `supabase/migrations/`, applied identically to the
+local Docker stack and to production. It is being built up alongside the implementation; today it
+covers the three tables that bound a trip:
+
+| Table          | What it holds                                                                             |
+| -------------- | ----------------------------------------------------------------------------------------- |
+| `trips`        | Name, optional dates, base currency, `open`/`closed` state and the frozen closing summary |
+| `participants` | Who takes part in a trip, under what name, with the `admin` or `participant` role         |
+| `invitations`  | The links that let someone join: their token, the role they grant, expiry and revocation  |
+
+Rules that must never be bypassed are database constraints rather than application checks, so no
+route can forget one: a trip only accepts `EUR` and cannot end before it starts, a summary exists
+only on a closed trip, two people on the same trip cannot answer to the same name (ignoring case and
+surrounding whitespace), one device identity joins a trip once, and an invitation token is unique
+and long enough to carry 128 bits of entropy.
+
+Deleting a trip takes its participants and invitations with it. The auth identity behind a
+participant, by contrast, cannot be deleted while they belong to a trip — they carry balances.
+
 ## Available scripts
 
 | Script                 | What it does                                                      |
