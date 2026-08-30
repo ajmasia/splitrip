@@ -223,6 +223,11 @@ Isolation between trips is not the `trip_id` filter the client subscribes with, 
 simply omit: it is Row Level Security, which Realtime evaluates against each subscriber before
 delivering.
 
+The trip's activity feed is written by database triggers rather than by application code, so it is
+impossible to change an expense without leaving a trace, and it travels over the same channel as
+everything else. The author's name is stored as text on the entry — that one has to outlive them,
+since an entry saying who did something is worthless once the person is gone from the list.
+
 A subscription that comes back has been away, and everything that happened in between arrived
 nowhere — so returning re-reads. The events are gone; the state they described is still in the
 database. While it is away the shell says so, which is not the same notice as being offline: a

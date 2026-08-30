@@ -225,6 +225,26 @@ export const es = {
   'payments.voiding': 'Anulando…',
   'payments.void.label': 'Anular el pago de {from} a {to}',
 
+  'trip.activity': 'Ver actividad',
+
+  'activity.heading': 'Actividad',
+  'activity.subtitle':
+    'Todo lo que ha pasado en el viaje, y quién lo hizo. Lo más reciente arriba.',
+  'activity.empty.title': 'Aquí no ha pasado nada todavía',
+  'activity.empty.body': 'En cuanto alguien apunte un gasto o entre en el viaje, aparecerá aquí.',
+  'activity.expense.created': '{actor} apuntó {subject}',
+  'activity.expense.updated': '{actor} corrigió {subject}',
+  'activity.expense.deleted': '{actor} quitó {subject}',
+  'activity.payment.recorded': '{actor} apuntó un pago de {from} a {to}',
+  'activity.payment.voided': '{actor} anuló un pago de {from} a {to}',
+  'activity.payment.recorded.own': '{actor} apuntó su pago a {to}',
+  'activity.payment.voided.own': '{actor} anuló su pago a {to}',
+  'activity.participant.joined': '{subject} entró en el viaje',
+  'activity.participant.left': '{actor} quitó a {subject} del viaje',
+  'activity.participant.left.themselves': '{subject} salió del viaje',
+  'activity.trip.closed': '{actor} cerró el viaje',
+  'activity.trip.reopened': '{actor} volvió a abrir el viaje',
+
   'join.heading': 'Entrar en el viaje',
   'join.body':
     'Te han pasado una invitación. Escribe tu nombre y ya estás dentro: sin cuenta y sin contraseña.',

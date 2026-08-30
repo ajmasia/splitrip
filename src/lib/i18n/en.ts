@@ -222,6 +222,26 @@ export const en: Catalogue = {
   'payments.voiding': 'Voiding…',
   'payments.void.label': 'Void the payment from {from} to {to}',
 
+  'trip.activity': 'View activity',
+
+  'activity.heading': 'Activity',
+  'activity.subtitle': 'Everything that has happened on the trip, and who did it. Newest first.',
+  'activity.empty.title': 'Nothing has happened here yet',
+  'activity.empty.body':
+    'As soon as somebody records an expense or joins the trip, it shows up here.',
+  'activity.expense.created': '{actor} added {subject}',
+  'activity.expense.updated': '{actor} corrected {subject}',
+  'activity.expense.deleted': '{actor} removed {subject}',
+  'activity.payment.recorded': '{actor} recorded a payment from {from} to {to}',
+  'activity.payment.voided': '{actor} voided a payment from {from} to {to}',
+  'activity.payment.recorded.own': '{actor} recorded their payment to {to}',
+  'activity.payment.voided.own': '{actor} voided their payment to {to}',
+  'activity.participant.joined': '{subject} joined the trip',
+  'activity.participant.left': '{actor} removed {subject} from the trip',
+  'activity.participant.left.themselves': '{subject} left the trip',
+  'activity.trip.closed': '{actor} closed the trip',
+  'activity.trip.reopened': '{actor} opened the trip again',
+
   'join.heading': 'Join the trip',
   'join.body':
     'Somebody sent you an invitation. Type your name and you are in: no account, no password.',

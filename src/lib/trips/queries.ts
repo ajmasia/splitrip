@@ -369,3 +369,87 @@ export async function listPayments(
     createdBy: row.created_by,
   }))
 }
+
+export const ACTIVITY_ACTIONS = [
+  'expense.created',
+  'expense.updated',
+  'expense.deleted',
+  'payment.recorded',
+  'payment.voided',
+  'participant.joined',
+  'participant.left',
+  'trip.closed',
+  'trip.reopened',
+] as const
+
+export type ActivityAction = (typeof ACTIVITY_ACTIONS)[number]
+
+export type TripActivity = {
+  id: string
+  action: ActivityAction
+  /** The name as it stood when it happened, so an entry survives its author leaving the trip. */
+  actorName: string
+  occurredAt: string
+  /** What the entry is about: an expense description, a person's name, the trip's name. */
+  subject: string
+  /** Set for the entries that moved money. */
+  amountCents: number | null
+  fromName: string | null
+  toName: string | null
+}
+
+type ActivityRow = {
+  id: string
+  action: ActivityAction
+  actor_name: string | null
+  occurred_at: string
+  details: Record<string, unknown>
+}
+
+const asText = (value: unknown) => (typeof value === 'string' ? value : '')
+
+/**
+ * The trip's trace, most recent first.
+ *
+ * The names of the two sides of a payment are resolved from the participants the screen already
+ * holds; the entry itself stores identifiers. Only the author's name is stored as text, because
+ * that one has to outlive them: an entry saying who did something is worthless once the person is
+ * gone from the list.
+ */
+export async function listActivity(
+  tripId: string,
+  participants: TripParticipant[],
+  limit = 100,
+): Promise<TripActivity[]> {
+  const supabase = await createSupabaseServerClient()
+
+  const { data, error } = await supabase
+    .from('activity')
+    .select('id, action, actor_name, occurred_at, details')
+    .eq('trip_id', tripId)
+    .order('occurred_at', { ascending: false })
+    .limit(limit)
+
+  if (error) throw new Error(error.message)
+
+  const named = new Map(
+    participants.map((participant) => [participant.id, participant.displayName]),
+  )
+  const name = (id: unknown) => named.get(asText(id)) ?? null
+
+  return (data as ActivityRow[]).map((row) => {
+    const details = row.details ?? {}
+    const amount = details.amount_cents
+
+    return {
+      id: row.id,
+      action: row.action,
+      actorName: row.actor_name ?? '',
+      occurredAt: row.occurred_at,
+      subject: asText(details.description) || asText(details.display_name) || asText(details.name),
+      amountCents: typeof amount === 'number' || typeof amount === 'string' ? count(amount) : null,
+      fromName: name(details.from_participant_id),
+      toName: name(details.to_participant_id),
+    }
+  })
+}

@@ -70,6 +70,12 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
             >
               {t('trip.balances')}
             </Link>
+            <Link
+              href={`/trips/${id}/activity`}
+              className="flex min-h-touch w-fit items-center rounded-card border border-rule px-4 text-sm font-semibold"
+            >
+              {t('trip.activity')}
+            </Link>
             {trip.yourRole === 'admin' && trip.status === 'open' ? (
               <Link
                 href={`/trips/${id}/invite`}
