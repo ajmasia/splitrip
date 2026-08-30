@@ -6,6 +6,7 @@ import { AddParticipantForm } from '@/components/add-participant-form'
 import { AppShell } from '@/components/app-shell'
 import { TripRealtime } from '@/components/trip-realtime'
 import { ChangeRoleButton } from '@/components/change-role-button'
+import { InviteParticipantButton } from '@/components/invite-participant-button'
 import { ExpenseList } from '@/components/expense-list'
 import { Pill } from '@/components/pill'
 import { RemoveParticipantButton } from '@/components/remove-participant-button'
@@ -146,6 +147,16 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
                   ) : (
                     <Pill>{t('trips.role.participant')}</Pill>
                   )}
+                  {participant.hasDevice ? null : <Pill tone="quiet">{t('trip.noDevice')}</Pill>}
+                  {organising ? (
+                    <InviteParticipantButton
+                      participantId={participant.id}
+                      tripId={id}
+                      name={participant.displayName}
+                      hasDevice={participant.hasDevice}
+                      locale={locale}
+                    />
+                  ) : null}
                   {organising ? (
                     <ChangeRoleButton
                       participantId={participant.id}

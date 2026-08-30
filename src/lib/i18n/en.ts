@@ -144,6 +144,15 @@ export const en: Catalogue = {
   'trip.addParticipant.done': 'Done',
   'trip.addParticipant.hint':
     'For somebody on the trip who is not going to use the application. They count in splits straight away, and you record their expenses. If they want in later, send them an invitation and have them type this same name.',
+  'trip.noDevice': 'No device',
+  'trip.invite.one': 'Hand them the app',
+  'trip.invite.again': 'Invite again',
+  'trip.invite.pending': 'Creating…',
+  'trip.invite.label': 'Create a link for {name} to get into the application',
+  'trip.invite.ready': "{name}'s link",
+  'trip.invite.ready.body':
+    'It opens their place and no other: coming in through this, {name} is {name} and nobody else. Send it to them or show them the code.',
+  'trip.invite.close': 'Close',
   'trip.role.promote': 'Make organiser',
   'trip.role.promote.label': 'Make {name} an organiser of the trip',
   'trip.role.demote': 'Make traveller',
@@ -166,6 +175,8 @@ export const en: Catalogue = {
   'invite.live': 'Live invitations',
   'invite.empty.title': 'No invitations yet',
   'invite.empty.body': 'Create one and pass it to whoever is travelling with you.',
+  'invite.forAnybody': 'For anybody',
+  'invite.forSomebody': 'For {name}',
   'invite.expires': 'Expires on {date}',
   'invite.link.label': 'Invitation link',
   'invite.qr.label': 'Invitation QR code',
@@ -278,6 +289,11 @@ export const en: Catalogue = {
   'join.heading': 'Join the trip',
   'join.body':
     'Somebody sent you an invitation. Type your name and you are in: no account, no password.',
+  'join.place.heading': 'Hello, {name}',
+  'join.place.body':
+    'Whoever organises the trip has already put you on it. This link is your place: come in and everything in your name is there.',
+  'join.place.submit': 'Come in as {name}',
+  'error.place_taken': 'That place is already being used from another device.',
   'join.dead.heading': 'This invitation no longer works',
   'join.name.label': 'What is your name?',
   'join.name.placeholder': 'Ana',

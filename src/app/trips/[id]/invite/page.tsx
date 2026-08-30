@@ -24,8 +24,8 @@ export default async function InvitePage({ params }: { params: Promise<{ id: str
   // screen should confirm to somebody who cannot act on it.
   if (!found || found.trip.yourRole !== 'admin') notFound()
 
-  const { trip } = found
-  const invitations = await listInvitations(id)
+  const { trip, participants } = found
+  const invitations = await listInvitations(id, participants)
 
   return (
     <AppShell locale={locale} t={t} viewer={viewer}>
@@ -69,6 +69,13 @@ export default async function InvitePage({ params }: { params: Promise<{ id: str
                   <QrCode text={invitation.url} label={t('invite.qr.label')} />
                   <div className="flex w-full min-w-0 flex-col gap-3">
                     <div className="flex flex-wrap items-center gap-2">
+                      {invitation.forName === null ? (
+                        <Pill tone="quiet">{t('invite.forAnybody')}</Pill>
+                      ) : (
+                        <Pill tone="accent">
+                          {t('invite.forSomebody', { name: invitation.forName })}
+                        </Pill>
+                      )}
                       <Pill tone={invitation.role === 'admin' ? 'accent' : 'plain'}>
                         {t(
                           invitation.role === 'admin'

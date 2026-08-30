@@ -1,7 +1,7 @@
 import { headers } from 'next/headers'
 
 import { createSupabaseServerClient } from '@/lib/supabase/server'
-import type { TripRole } from './queries'
+import type { TripParticipant, TripRole } from './queries'
 
 export type Invitation = {
   id: string
@@ -10,6 +10,8 @@ export type Invitation = {
   expiresAt: string
   /** Absolute, because it is going into a chat message or into a camera. */
   url: string
+  /** Whose place this link opens, or null for the general one anybody can type a name into. */
+  forName: string | null
 }
 
 /**
@@ -34,12 +36,15 @@ export function joinPath(token: string): string {
  * The invitations somebody could still use. A revoked or expired one is not shown at all: a list
  * of dead links is a list of things to mistake for live ones.
  */
-export async function listInvitations(tripId: string): Promise<Invitation[]> {
+export async function listInvitations(
+  tripId: string,
+  participants: TripParticipant[] = [],
+): Promise<Invitation[]> {
   const supabase = await createSupabaseServerClient()
 
   const { data, error } = await supabase
     .from('invitations')
-    .select('id, token, role, expires_at')
+    .select('id, token, role, expires_at, participant_id')
     .eq('trip_id', tripId)
     .is('revoked_at', null)
     .gt('expires_at', new Date().toISOString())
@@ -48,6 +53,9 @@ export async function listInvitations(tripId: string): Promise<Invitation[]> {
   if (error) throw new Error(error.message)
 
   const origin = await appOrigin()
+  const named = new Map<string | null, string>(
+    participants.map((participant) => [participant.id, participant.displayName]),
+  )
 
   return data.map((row) => ({
     id: row.id,
@@ -55,7 +63,24 @@ export async function listInvitations(tripId: string): Promise<Invitation[]> {
     role: row.role as TripRole,
     expiresAt: row.expires_at,
     url: `${origin}${joinPath(row.token)}`,
+    forName: named.get(row.participant_id as string | null) ?? null,
   }))
+}
+
+/**
+ * The name of the place a link opens, when it opens one and nobody is on it yet.
+ *
+ * Readable without a session, because the person about to use it has none: it is the one thing the
+ * join screen may say about a trip somebody is not part of, and it says only a name they were
+ * given by whoever invited them.
+ */
+export async function invitationPlace(token: string): Promise<string | null> {
+  const supabase = await createSupabaseServerClient()
+  const { data, error } = await supabase.rpc('invitation_place', { p_token: token })
+
+  if (error) return null
+
+  return (data as string | null) ?? null
 }
 
 /** What the join screen may say about a token before anybody has typed a name. */

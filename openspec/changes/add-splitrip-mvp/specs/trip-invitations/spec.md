@@ -44,6 +44,31 @@ The system SHALL allow anyone opening an active invitation to join the trip by p
 - **WHEN** a person opens an invitation URL that matches no invitation
 - **THEN** the system shows a message stating that the invitation is not valid, and discloses no information about any trip
 
+### Requirement: An invitation for one place
+The system SHALL allow an `admin` to create an invitation that opens the place of one participant of the trip and no other. Opening such an invitation SHALL bind the reader's device to that participant without asking for a name, keeping the role, expenses and balance the place already holds. The role SHALL be the one the participant already has, whatever the invitation was asked to carry. Asking again for the same place SHALL hand back the invitation it already has rather than creating another. The system SHALL refuse to open a place a device is already answering from.
+
+#### Scenario: Handing somebody the application
+- **WHEN** an `admin` creates an invitation for a participant who holds no session
+- **THEN** the system produces a link that opens that participant's place
+- **AND** shows it as a link and as a QR code without leaving the participant list
+
+#### Scenario: Coming in through it
+- **WHEN** that person opens the link
+- **THEN** the system shows them the name of the place and lets them come in with a single action, asking for nothing
+- **AND** binds their device to the participant that already exists
+
+#### Scenario: One live link per place
+- **WHEN** an `admin` asks again for an invitation for the same participant
+- **THEN** the system hands back the one already in force
+
+#### Scenario: A place that is already answered from
+- **WHEN** somebody opens a link for a place a device is already using
+- **THEN** the system refuses, and does not offer to take it over
+
+#### Scenario: Somebody from another trip
+- **WHEN** an invitation is asked for naming a participant of a different trip
+- **THEN** the system rejects it
+
 ### Requirement: Handing the application to somebody already on the trip
 When a person opens an invitation and gives a name matching a participant of that trip who holds no session, the system SHALL bind their device to that participant rather than creating a second one, keeping the role, the expenses and the balance that participant already has. The system SHALL tell them apart from a name taken by a participant who is already using the application, because displacing somebody's device and taking up an unused place are not the same act.
 

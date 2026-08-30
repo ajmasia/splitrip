@@ -4,9 +4,23 @@ import { revalidatePath } from 'next/cache'
 
 import { errorCopyKey } from '@/lib/errors'
 import type { CopyKey } from '@/lib/i18n'
+import { qrCode } from '@/lib/qr'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { appOrigin, joinPath } from '@/lib/trips/invitations'
 
-export type CreateInvitationState = { error: CopyKey | null }
+/** Everything the screen needs to hand a link over, without going anywhere to find it. */
+export type MintedInvitation = {
+  url: string
+  expiresAt: string
+  /** The QR modules, computed here so the encoder never travels to the browser. */
+  qr: { size: number; path: string }
+}
+
+export type CreateInvitationState = {
+  error: CopyKey | null
+  /** Set when the invitation was minted for one person, and is to be shown then and there. */
+  minted: MintedInvitation | null
+}
 
 const text = (value: FormDataEntryValue | null) => (typeof value === 'string' ? value : '')
 
@@ -21,15 +35,33 @@ export async function createInvitation(
   const tripId = text(formData.get('trip_id'))
   const supabase = await createSupabaseServerClient()
 
-  const { error } = await supabase.rpc('create_invitation', {
+  // A place, when the invitation is for somebody already on the list. The role travels with the
+  // place in that case, so the form beside a name sends none and the database takes theirs.
+  const participantId = text(formData.get('participant_id')).trim()
+  const role = text(formData.get('role')).trim()
+
+  const { data, error } = await supabase.rpc('create_invitation', {
     p_trip_id: tripId,
-    p_role: text(formData.get('role')),
+    p_role: role === '' ? null : role,
+    p_participant_id: participantId === '' ? null : participantId,
   })
 
-  if (error) return { error: errorCopyKey(error.code) }
+  if (error) return { error: errorCopyKey(error.code), minted: null }
 
   revalidatePath(`/trips/${tripId}/invite`)
-  return { error: null }
+  revalidatePath(`/trips/${tripId}`)
+
+  // A link minted beside somebody's name is handed over on the spot: sending whoever pressed the
+  // button to another screen to look for it would lose the one thing they wanted.
+  if (participantId === '') return { error: null, minted: null }
+
+  const invitation = data as { token: string; expires_at: string }
+  const url = `${await appOrigin()}${joinPath(invitation.token)}`
+
+  return {
+    error: null,
+    minted: { url, expiresAt: invitation.expires_at, qr: qrCode(url) },
+  }
 }
 
 export type RevokeInvitationState = { error: CopyKey | null }

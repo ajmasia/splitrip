@@ -23,6 +23,8 @@ export type TripParticipant = {
   displayName: string
   role: TripRole
   isYou: boolean
+  /** False for somebody the organiser added by name, who is not using the application yet. */
+  hasDevice: boolean
 }
 
 type OverviewRow = {
@@ -120,6 +122,7 @@ export async function getTrip(
       displayName: row.display_name,
       role: row.role as TripRole,
       isYou: row.user_id === user.id,
+      hasDevice: row.user_id !== null,
     })),
   }
 }

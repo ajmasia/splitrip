@@ -147,6 +147,15 @@ export const es = {
   'trip.addParticipant.done': 'Ya está',
   'trip.addParticipant.hint':
     'Para quien viene al viaje pero no va a usar la aplicación. Cuenta en los repartos desde ya, y sus gastos los apuntas tú. Si más adelante quiere entrar, le pasas una invitación y escribe este mismo nombre.',
+  'trip.noDevice': 'Sin móvil',
+  'trip.invite.one': 'Pasarle la app',
+  'trip.invite.again': 'Volver a invitar',
+  'trip.invite.pending': 'Creando…',
+  'trip.invite.label': 'Crear un enlace para que {name} entre en la aplicación',
+  'trip.invite.ready': 'El enlace de {name}',
+  'trip.invite.ready.body':
+    'Solo abre su sitio: al entrar por aquí, {name} es {name} y nadie más. Pásaselo o enséñale el código.',
+  'trip.invite.close': 'Cerrar',
   'trip.role.promote': 'Hacer organizador',
   'trip.role.promote.label': 'Hacer a {name} organizador del viaje',
   'trip.role.demote': 'Pasar a participante',
@@ -169,6 +178,8 @@ export const es = {
   'invite.live': 'Invitaciones activas',
   'invite.empty.title': 'Todavía no hay invitaciones',
   'invite.empty.body': 'Crea una y pásasela a quien viaje contigo.',
+  'invite.forAnybody': 'Para cualquiera',
+  'invite.forSomebody': 'Para {name}',
   'invite.expires': 'Caduca el {date}',
   'invite.link.label': 'Enlace de invitación',
   'invite.qr.label': 'Código QR de la invitación',
@@ -281,6 +292,11 @@ export const es = {
   'join.heading': 'Entrar en el viaje',
   'join.body':
     'Te han pasado una invitación. Escribe tu nombre y ya estás dentro: sin cuenta y sin contraseña.',
+  'join.place.heading': 'Hola, {name}',
+  'join.place.body':
+    'Quien organiza el viaje ya te ha apuntado. Este enlace es tu sitio: entra y verás lo que lleva tu nombre.',
+  'join.place.submit': 'Entrar como {name}',
+  'error.place_taken': 'Ese sitio ya lo está usando alguien desde otro móvil.',
   'join.dead.heading': 'Esta invitación ya no sirve',
   'join.name.label': '¿Cómo te llamas?',
   'join.name.placeholder': 'Ana',

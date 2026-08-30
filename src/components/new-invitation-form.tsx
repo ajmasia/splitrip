@@ -5,7 +5,7 @@ import { useActionState } from 'react'
 import { createInvitation, type CreateInvitationState } from '@/app/actions/invitations'
 import { translator, type Locale } from '@/lib/i18n'
 
-const EMPTY: CreateInvitationState = { error: null }
+const EMPTY: CreateInvitationState = { error: null, minted: null }
 
 const ROLES = [
   { value: 'participant', label: 'invite.role.participant' },

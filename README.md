@@ -8,7 +8,7 @@ Shared travel expenses, settled in seconds. A mobile-first PWA where travellers 
 
 - Create a trip and invite travellers with a link or a QR code. They join by typing a name — no account, no password.
 - Log expenses on the go: who paid, how much, and who it is split among (everyone, or just the three who went to that dinner).
-- Add somebody who is not going to use the application at all — a child, a grandmother: the organiser names them and records their expenses, and they count in the split like anybody else. An invitation can hand them the application later: they type the same name and take the place waiting for them, keeping the role, the expenses and the balance it already has.
+- Add somebody who is not going to use the application at all — a child, a grandmother: the organiser names them and records their expenses, and they count in the split like anybody else. An invitation can hand them the application later — a button beside their name mints a link that opens their place and no other, so they come in with one tap and keep the role, the expenses and the balance already in their name.
 - Mark an expense as a contribution when someone picks up the tab as a gift: it counts towards the trip total but creates no debt.
 - See at any moment what the trip has cost and who owes whom, with the minimum set of transfers that settles everything.
 - Record settlement payments as they happen, so balances stay honest.
