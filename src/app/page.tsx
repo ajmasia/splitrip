@@ -1,7 +1,10 @@
+import { LanguageSwitcher } from '@/components/language-switcher'
+import { getCopy } from '@/lib/i18n/server'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { APP_VERSION } from '@/lib/version'
 
 export default async function HomePage() {
+  const { locale, t } = await getCopy()
   const supabase = await createSupabaseServerClient()
   const {
     data: { user },
@@ -9,16 +12,17 @@ export default async function HomePage() {
 
   return (
     <main>
-      <h1>Splitrip</h1>
-      <p>Gastos de viaje compartidos, cuadrados en un momento.</p>
+      <h1>{t('app.name')}</h1>
+      <p>{t('app.tagline')}</p>
       {user ? (
         <p>
-          Este dispositivo ya tiene identidad: <code>{user.id}</code>
+          {t('identity.known')} <code>{user.id}</code>
         </p>
       ) : (
-        <p>Este dispositivo aún no tiene identidad.</p>
+        <p>{t('identity.unknown')}</p>
       )}
-      <footer>v{APP_VERSION}</footer>
+      <LanguageSwitcher locale={locale} t={t} />
+      <footer>{t('app.version', { version: APP_VERSION })}</footer>
     </main>
   )
 }
