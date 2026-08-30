@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useActionState, useEffect, useRef } from 'react'
+import { useActionState, useEffect, useRef, useState } from 'react'
 
 import { createExpense, type NewExpenseState } from '@/app/actions/expenses'
 import { translator, type Locale } from '@/lib/i18n'
@@ -28,6 +28,10 @@ export function NewExpenseForm({
   const t = translator(locale)
   const [state, action, pending] = useActionState(createExpense, EMPTY)
   const date = useRef<HTMLInputElement>(null)
+
+  // Shared to begin with, always: an expense that is not split is the rare one, and a form that
+  // starts on the rare answer asks everybody to correct it.
+  const [type, setType] = useState<'shared' | 'contribution'>('shared')
 
   // The day of an expense is the day where the person spending it is, not where the server is
   // hosted. The browser's date can only be read after hydration, so the server's stands in until
@@ -118,27 +122,58 @@ export function NewExpenseForm({
         </p>
       )}
 
-      <fieldset className="flex flex-col gap-1">
-        <legend className="pb-1 text-sm font-medium">{t('newExpense.split.label')}</legend>
-        <div className="flex flex-col">
-          {participants.map((participant) => (
-            <label
-              key={participant.id}
-              className="flex min-h-touch cursor-pointer items-center gap-3 border-b border-rule last:border-b-0"
-            >
-              <input
-                type="checkbox"
-                name="split"
-                value={participant.id}
-                defaultChecked
-                className="size-5 accent-accent"
-              />
-              {participant.displayName}
-            </label>
-          ))}
-        </div>
-        <span className="pt-1 text-sm text-ink-soft">{t('newExpense.split.hint')}</span>
-      </fieldset>
+      {yourRole === 'admin' ? (
+        <fieldset className="flex flex-col gap-2">
+          <legend className="pb-1 text-sm font-medium">{t('newExpense.type.label')}</legend>
+          <div className="flex flex-wrap gap-2">
+            {(['shared', 'contribution'] as const).map((candidate) => (
+              <label
+                key={candidate}
+                className="flex min-h-touch cursor-pointer items-center gap-2 rounded-card border border-rule bg-surface px-3 text-sm"
+              >
+                <input
+                  type="radio"
+                  name="type"
+                  value={candidate}
+                  checked={type === candidate}
+                  onChange={() => setType(candidate)}
+                  className="accent-accent"
+                />
+                {t(candidate === 'shared' ? 'expenses.type.shared' : 'expenses.type.contribution')}
+              </label>
+            ))}
+          </div>
+          <span className="text-sm text-ink-soft">{t('newExpense.type.hint')}</span>
+        </fieldset>
+      ) : null}
+
+      {/*
+        Not merely hidden: a hidden checkbox is still submitted, and the database refuses a
+        contribution that arrives with a split. Nothing to split means nothing to send.
+      */}
+      {type === 'contribution' ? null : (
+        <fieldset className="flex flex-col gap-1">
+          <legend className="pb-1 text-sm font-medium">{t('newExpense.split.label')}</legend>
+          <div className="flex flex-col">
+            {participants.map((participant) => (
+              <label
+                key={participant.id}
+                className="flex min-h-touch cursor-pointer items-center gap-3 border-b border-rule last:border-b-0"
+              >
+                <input
+                  type="checkbox"
+                  name="split"
+                  value={participant.id}
+                  defaultChecked
+                  className="size-5 accent-accent"
+                />
+                {participant.displayName}
+              </label>
+            ))}
+          </div>
+          <span className="pt-1 text-sm text-ink-soft">{t('newExpense.split.hint')}</span>
+        </fieldset>
+      )}
 
       {state.error ? (
         <p role="alert" className="rounded-card bg-debt-soft px-3 py-2 text-sm text-debt">

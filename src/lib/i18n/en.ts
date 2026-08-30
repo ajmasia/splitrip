@@ -83,6 +83,9 @@ export const en: Catalogue = {
   'newExpense.amount.hint': 'In euros. A comma or a point both work.',
   'newExpense.payer.label': 'Who paid?',
   'newExpense.payer.you': 'You paid. If somebody else did, ask an organiser to record it.',
+  'newExpense.type.label': 'Is it split?',
+  'newExpense.type.hint':
+    'A treat adds to the trip total and changes nobody’s balance, not even the payer’s.',
   'newExpense.split.label': 'Split among whom?',
   'newExpense.split.hint': 'Everybody starts ticked. Untick whoever was not there.',
   'newExpense.date.label': 'Which day?',
@@ -179,6 +182,7 @@ export const en: Catalogue = {
   'error.split_outsider': 'Somebody in the split is not on the trip.',
   'error.payer_not_in_trip': 'Whoever paid has to be on the trip.',
   'error.payer_is_organisers': 'Only an organiser can record what somebody else paid.',
+  'error.type_is_organisers': 'Only an organiser can record something that is not split.',
   'error.not_allowed': 'You are not allowed to do that.',
   'error.needs_admin': 'That is for an organiser of the trip.',
   'error.trip_closed': 'The trip is closed.',

@@ -475,6 +475,11 @@ It checks what is being asked for rather than what the expense ends up with. An 
 attributed somebody's expense elsewhere, and that must not lock its author out of fixing a typo in
 it.
 
+The form starts on `shared`, always: an expense nobody shares is the rare one, and a form that opens
+on the rare answer asks everybody to correct it. Picking the other option takes the split checkboxes
+out of the document rather than merely hiding them — a hidden checkbox is still submitted, and the
+database refuses a contribution that arrives with a split.
+
 Choosing who a shared expense is split among stays with everybody. Whoever paid for a dinner three
 of them had is the person who knows who was there, and sending them to find an organiser is exactly
 the friction this application exists to remove. The split is sent as the people who were on screen

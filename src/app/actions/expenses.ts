@@ -48,13 +48,19 @@ export async function createExpense(
   // refused there rather than here.
   const paidBy = text(formData.get('paid_by')).trim()
 
+  // Anything but the one word is read as the ordinary kind, so a form with no type control — which
+  // is what a traveller sees — records a shared expense and nothing else.
+  const type = text(formData.get('type')) === 'contribution' ? 'contribution' : 'shared'
+
   const { error } = await supabase.rpc('create_expense', {
     p_trip_id: tripId,
     p_description: description,
     p_amount_cents: amount.amountCents,
+    p_type: type,
     p_spent_on: dateOrNull(formData.get('spent_on')),
     p_paid_by: paidBy === '' ? null : paidBy,
-    p_split_participant_ids: split,
+    // A contribution is split among nobody, and the database refuses one that arrives with a split.
+    p_split_participant_ids: type === 'contribution' ? null : split,
   })
 
   if (error) return { error: errorCopyKey(error.code) }

@@ -85,6 +85,9 @@ export const es = {
   'newExpense.amount.hint': 'En euros. Sirve la coma o el punto.',
   'newExpense.payer.label': '¿Quién pagó?',
   'newExpense.payer.you': 'Lo pagas tú. Si pagó otra persona, díselo a quien organiza.',
+  'newExpense.type.label': '¿Se reparte?',
+  'newExpense.type.hint':
+    'Un aporte suma al total del viaje y no cambia el saldo de nadie, tampoco el de quien paga.',
   'newExpense.split.label': '¿Entre quiénes se reparte?',
   'newExpense.split.hint': 'Empieza marcado todo el grupo. Desmarca a quien no entre.',
   'newExpense.date.label': '¿Qué día?',
@@ -183,6 +186,7 @@ export const es = {
   'error.split_outsider': 'Hay alguien en el reparto que no está en el viaje.',
   'error.payer_not_in_trip': 'Quien pagó tiene que estar en el viaje.',
   'error.payer_is_organisers': 'Solo quien organiza puede apuntar lo que pagó otra persona.',
+  'error.type_is_organisers': 'Solo quien organiza puede apuntar algo que no se reparte.',
   'error.not_allowed': 'No tienes permiso para hacer eso.',
   'error.needs_admin': 'Para eso hay que organizar el viaje.',
   'error.trip_closed': 'El viaje está cerrado.',

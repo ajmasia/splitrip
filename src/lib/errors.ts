@@ -25,6 +25,7 @@ const COPY_BY_CODE: Record<string, CopyKey> = {
   SP018: 'error.needs_admin',
   SP023: 'error.trip_needs_an_admin',
   SP024: 'error.payer_is_organisers',
+  SP025: 'error.type_is_organisers',
 }
 
 export function errorCopyKey(code: string | undefined): CopyKey {
