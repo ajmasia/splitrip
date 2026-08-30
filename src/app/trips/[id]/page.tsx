@@ -28,21 +28,24 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
   // Stepping down is a role change like any other, so this one appears beside yourself too.
   const organising = trip.yourRole === 'admin' && trip.status === 'open'
 
-  // Pinned to the bottom edge on a phone by the shell, which is where a thumb reaches: recording an
-  // expense is the one thing somebody does while the trip is happening.
-  const record =
-    trip.yourRole !== null && trip.status === 'open' ? (
-      <Link
-        href={`/trips/${id}/expenses/new`}
-        className="flex min-h-touch w-full items-center justify-center rounded-card bg-accent px-4 font-semibold text-accent-ink wide:w-fit"
-      >
-        {t('expenses.record')}
-      </Link>
-    ) : undefined
+  const canRecord = trip.yourRole !== null && trip.status === 'open'
+
+  // Twice over, and only ever one of them on screen. On a phone it is pinned to the bottom edge,
+  // where a thumb reaches without the hand shifting its grip. On a desk that same bar would follow
+  // the content and land under the whole expense list, so the action sits by the heading it acts
+  // on instead.
+  const record = canRecord ? (
+    <Link
+      href={`/trips/${id}/expenses/new`}
+      className="flex min-h-touch w-full items-center justify-center rounded-card bg-accent px-4 font-semibold text-accent-ink"
+    >
+      {t('expenses.record')}
+    </Link>
+  ) : undefined
   const dates = formatDateRange(trip.startDate, trip.endDate, locale)
 
   return (
-    <AppShell locale={locale} t={t} viewer={viewer} bottom={record}>
+    <AppShell locale={locale} t={t} viewer={viewer} bottom={record} bottomOnPhone>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <Link
@@ -79,9 +82,19 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
         </div>
 
         <section className="flex flex-col gap-3">
-          <h2 className="font-mono text-xs tracking-widest text-ink-faint uppercase">
-            {t('expenses.heading')}
-          </h2>
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="font-mono text-xs tracking-widest text-ink-faint uppercase">
+              {t('expenses.heading')}
+            </h2>
+            {canRecord ? (
+              <Link
+                href={`/trips/${id}/expenses/new`}
+                className="hidden min-h-touch items-center rounded-card bg-accent px-4 text-sm font-semibold text-accent-ink wide:flex"
+              >
+                {t('expenses.record')}
+              </Link>
+            ) : null}
+          </div>
           {expenses.length === 0 ? (
             <div className="flex max-w-prose flex-col gap-2 rounded-card border border-rule bg-surface p-5">
               <h3 className="text-lg font-semibold">{t('expenses.empty.title')}</h3>

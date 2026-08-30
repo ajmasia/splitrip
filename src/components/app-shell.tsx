@@ -37,19 +37,29 @@ function Account({ viewer, t }: { viewer: Viewer | null; t: Translate }) {
  * On a phone the `bottom` slot is pinned to the bottom edge, where a thumb reaches without the hand
  * shifting its grip, and it clears the home indicator of a notched screen. Above the breakpoint the
  * same slot simply follows the content: on a desktop the bottom of the window is the furthest thing
- * from the pointer, so pinning it there would be worse rather than better.
+ * from the pointer, so pinning it there would be worse rather than better. On a long page it is
+ * worse still — it lands under everything and has to be scrolled to — which is what `bottomOnPhone`
+ * is for: the page drops the bar above the breakpoint and puts its action somewhere a pointer
+ * already is.
  */
 export function AppShell({
   locale,
   t,
   viewer = null,
   bottom,
+  bottomOnPhone = false,
   children,
 }: {
   locale: Locale
   t: Translate
   viewer?: Viewer | null
   bottom?: ReactNode
+  /**
+   * Drops the bar above the breakpoint, for a page whose main action has a better home on a desk.
+   * Following the content is fine on a short page and useless on a long one, where it lands below
+   * everything and has to be scrolled to.
+   */
+  bottomOnPhone?: boolean
   children: ReactNode
 }) {
   return (
@@ -81,7 +91,11 @@ export function AppShell({
       </main>
 
       {bottom ? (
-        <div className="fixed inset-x-0 bottom-0 border-t border-rule bg-surface-2 pb-[env(safe-area-inset-bottom)] wide:static wide:border-t-0 wide:bg-transparent">
+        <div
+          className={`fixed inset-x-0 bottom-0 border-t border-rule bg-surface-2 pb-[env(safe-area-inset-bottom)] ${
+            bottomOnPhone ? 'wide:hidden' : 'wide:static wide:border-t-0 wide:bg-transparent'
+          }`}
+        >
           <div className="mx-auto w-full max-w-3xl px-4 py-2">{bottom}</div>
         </div>
       ) : null}
