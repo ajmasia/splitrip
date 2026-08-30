@@ -37,15 +37,18 @@ The reasoning behind each choice, and the alternatives that were rejected, is in
 ```bash
 npm install
 cp .env.example .env.local
-npm run db:start   # first run downloads the Supabase images; it takes a while
-npm run dev
+npm run dev:all
 ```
 
-The application is then served at <http://localhost:3000>.
+`npm run dev:all` starts the Supabase stack in Docker and then the Next.js dev server. The first run downloads the Supabase images and takes several minutes; later runs take seconds. The application is served at <http://localhost:3000>.
 
-### Local services
+To check the wiring before anything else, run `npm run db:check`. It reads the same environment variables the application reads and calls the Supabase API with them, which is the failure `supabase status` cannot catch: a stack that is perfectly healthy while `.env.local` points somewhere else.
 
-`npm run db:start` brings up the whole Supabase stack in Docker containers:
+### How local development is put together
+
+The backend runs in Docker; the application runs on your machine.
+
+`npm run db:start` brings up the whole Supabase stack in containers through the Supabase CLI, which is pinned as a dev dependency so every clone runs the same version:
 
 | Service                   | URL                                                       |
 | ------------------------- | --------------------------------------------------------- |
@@ -56,26 +59,46 @@ The application is then served at <http://localhost:3000>.
 
 Studio is the fastest way to look at the data: it shows the tables, the RLS policies and the SQL editor.
 
+The point of running the database in Docker is not isolating Node, it is having the same Postgres, with the same RLS policies and the same triggers, on your laptop. RLS is the kind of thing that can only be tested against a real database.
+
+#### Why the application itself is not containerised
+
+There is no `Dockerfile` and no `docker compose`, on purpose. Containerising the app would buy either production parity or reproducibility, and it buys neither here:
+
+- **Production is Vercel**, which builds Next.js natively and never reads a Dockerfile. An app container would be parity with nothing — infrastructure nobody runs, quietly rotting.
+- **On macOS a dev server behind a bind mount** has slow file watching and unreliable hot reload. It would trade a good developer experience for a worse one.
+- **The Node version is already pinned** by `engines` and the lockfile, which is the reproducibility that actually matters.
+
+The Supabase CLI also orchestrates its own containers rather than exposing a compose file to extend, so a single compose file for everything was never really available: it would have meant reimplementing the stack by hand and then owning its upgrades.
+
+This is worth revisiting if self-hosting becomes a goal. The AGPL makes it plausible that someone will want to deploy a modified Splitrip outside Vercel, and that is when a production Dockerfile earns its place — built and tested against a target that actually exists.
+
 ### Environment variables
 
-Copy `.env.example` to `.env.local`. The values it carries are the local stack defaults — the Supabase CLI generates the same ones on every machine, so they are committed deliberately and are not secrets. Production values are configured in Vercel and never live in the repository.
+Copy `.env.example` to `.env.local`. The values it carries are the local stack defaults: the Supabase CLI generates the same ones on every machine, so they are committed deliberately and are not secrets. Production values are configured in Vercel and never live in the repository.
 
 | Variable                               | What it is                                                                                  |
 | -------------------------------------- | ------------------------------------------------------------------------------------------- |
 | `NEXT_PUBLIC_SUPABASE_URL`             | Base URL of the Supabase API                                                                |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Publishable key; safe in the browser because every table is protected by Row Level Security |
 
+### Resetting the database
+
+`npm run db:reset` recreates the database from the migrations in `supabase/migrations/`, discarding whatever local data you had. It is the fastest way back to a known state, and it is also how you verify that the migrations really do build the schema from nothing.
+
 ## Available scripts
 
 | Script                 | What it does                                                      |
 | ---------------------- | ----------------------------------------------------------------- |
 | `npm run dev`          | Runs the development server with hot reloading                    |
+| `npm run dev:all`      | Starts the Supabase stack and then the dev server                 |
 | `npm run build`        | Produces the production build                                     |
 | `npm start`            | Serves the production build                                       |
 | `npm run db:start`     | Starts the local Supabase stack in Docker                         |
 | `npm run db:stop`      | Stops it                                                          |
 | `npm run db:status`    | Shows the service URLs and keys                                   |
 | `npm run db:reset`     | Recreates the database from the migrations, discarding local data |
+| `npm run db:check`     | Checks that the app environment reaches the Supabase API          |
 | `npm run lint`         | Runs ESLint; fails on any warning                                 |
 | `npm run lint:fix`     | Runs ESLint and applies the fixes it can                          |
 | `npm run typecheck`    | Type-checks the project without emitting output                   |
@@ -98,6 +121,7 @@ TypeScript runs in strict mode with `noUncheckedIndexedAccess` and the unused-sy
 src/app/            Next.js App Router pages and layouts
 openspec/           Specifications, design and task breakdown
 supabase/           Database migrations and local stack configuration
+scripts/            Development and verification scripts
 ```
 
 ## Contributing
