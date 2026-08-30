@@ -182,6 +182,17 @@ export const en: Catalogue = {
   'balances.total.note': "A trip's balances always add up to exactly zero.",
   'balances.contributed': 'Also treated the group to {amount}, which is split among nobody.',
 
+  'settlement.heading': 'How to settle up',
+  'settlement.line': '{from} pays {to}',
+  'settlement.count.one': 'That one transfer leaves nobody owing anybody.',
+  'settlement.count.other': 'Those {count} transfers leave nobody owing anybody.',
+  'settlement.settled.title': 'All settled',
+  'settlement.settled.body': 'Nothing is outstanding between you.',
+  'settlement.you.pay': 'You pay {name}',
+  'settlement.you.collect': '{name} pays you',
+  'settlement.note':
+    'This is a proposal, the shortest one these balances allow. Settle it some other way if that suits you better: record the payments you make and the accounts still add up.',
+
   'join.heading': 'Join the trip',
   'join.body':
     'Somebody sent you an invitation. Type your name and you are in: no account, no password.',

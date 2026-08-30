@@ -3,11 +3,13 @@ import { notFound } from 'next/navigation'
 
 import { AppShell } from '@/components/app-shell'
 import { BalanceSheet } from '@/components/balance-sheet'
+import { SettlementPlan } from '@/components/settlement-plan'
 import { getViewer } from '@/lib/auth/viewer'
 import { intlLocale } from '@/lib/i18n'
 import { getCopy } from '@/lib/i18n/server'
 import { formatAmount } from '@/lib/money/amount'
 import { getTrip, listBalances } from '@/lib/trips/queries'
+import { planFor } from '@/lib/trips/settlement'
 
 export default async function BalancesPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -21,9 +23,11 @@ export default async function BalancesPage({ params }: { params: Promise<{ id: s
   if (trip.yourRole === null) notFound()
 
   const balances = await listBalances(id, participants)
+  const plan = planFor(balances)
   const yours = balances.find((balance) => balance.isYou)
   const net = yours?.netCents ?? 0
   const owing = net < 0
+  const amount = (cents: number) => formatAmount(cents, intlLocale(locale))
 
   return (
     <AppShell locale={locale} t={t} viewer={viewer}>
@@ -42,7 +46,8 @@ export default async function BalancesPage({ params }: { params: Promise<{ id: s
         {/*
           Everything else on this screen is the group's; this is the reader's own position, which is
           the one figure they came for. It says the direction in words before the amount, so the
-          colour is a second reading of it rather than the only one.
+          colour is a second reading of it rather than the only one, and it names the person on the
+          other side: "you owe 9.95" is an answer, "pay Yvonne 9.95" is an instruction.
         */}
         {yours ? (
           <div
@@ -54,7 +59,7 @@ export default async function BalancesPage({ params }: { params: Promise<{ id: s
               {net === 0
                 ? t('balances.you.settled')
                 : t(owing ? 'balances.you.owe' : 'balances.you.owed', {
-                    amount: formatAmount(Math.abs(net), intlLocale(locale)),
+                    amount: amount(Math.abs(net)),
                   })}
             </p>
             <p className="text-ink-soft">
@@ -66,8 +71,35 @@ export default async function BalancesPage({ params }: { params: Promise<{ id: s
                     : 'balances.you.owed.body',
               )}
             </p>
+            {plan.some((line) => line.yours !== null) ? (
+              <ul className="flex flex-col gap-1 pt-2">
+                {plan
+                  .filter((line) => line.yours !== null)
+                  .map((line, index) => (
+                    <li key={index} className="flex flex-wrap items-baseline gap-x-2">
+                      <span className="font-semibold">
+                        {line.yours === 'pay'
+                          ? t('settlement.you.pay', { name: line.toName })
+                          : t('settlement.you.collect', { name: line.fromName })}
+                      </span>
+                      <span className="leader" aria-hidden="true" />
+                      <span className="tabular font-semibold">{amount(line.amountCents)}</span>
+                    </li>
+                  ))}
+              </ul>
+            ) : null}
           </div>
         ) : null}
+
+        <section className="flex flex-col gap-3">
+          <h2 className="font-mono text-xs tracking-widest text-ink-faint uppercase">
+            {t('settlement.heading')}
+          </h2>
+          <SettlementPlan plan={plan} locale={locale} t={t} />
+          {plan.length > 0 ? (
+            <p className="max-w-prose text-sm text-ink-soft">{t('settlement.note')}</p>
+          ) : null}
+        </section>
 
         <section className="flex flex-col gap-3">
           <h2 className="font-mono text-xs tracking-widest text-ink-faint uppercase">

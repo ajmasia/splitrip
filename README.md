@@ -112,6 +112,16 @@ These are the figures the balances screen must show for it, worked out from the 
 Francisca is deepest in the red despite paying for the flat: those 800 € are a contribution, which
 counts towards what the trip cost and puts nobody in debt.
 
+And this is the settlement it must propose — four transfers, one fewer than the five people with
+something outstanding:
+
+```
+Francisca pays Marta    168,53 €
+Francisca pays Yvonne   106,98 €
+Virginia pays Yvonne     38,85 €
+Sonia pays Yvonne         9,95 €
+```
+
 ### Trying it from a phone
 
 `next dev` listens on the whole network and prints a `Network:` address next to the local one. Open

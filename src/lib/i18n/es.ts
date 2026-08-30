@@ -185,6 +185,17 @@ export const es = {
   'balances.total.note': 'Los saldos de un viaje suman siempre cero.',
   'balances.contributed': 'Además invitó a {amount}, que no se reparte con nadie.',
 
+  'settlement.heading': 'Cómo saldarlo',
+  'settlement.line': '{from} le paga a {to}',
+  'settlement.count.one': 'Con ese movimiento nadie le debe nada a nadie.',
+  'settlement.count.other': 'Con esos {count} movimientos nadie le debe nada a nadie.',
+  'settlement.settled.title': 'Todo saldado',
+  'settlement.settled.body': 'No queda nada pendiente entre vosotros.',
+  'settlement.you.pay': 'Le pagas a {name}',
+  'settlement.you.collect': '{name} te paga',
+  'settlement.note':
+    'Es una propuesta, la más corta que sale de estos saldos. Si os viene mejor saldarlo de otra manera, apuntad los pagos que hagáis y las cuentas cuadran igual.',
+
   'join.heading': 'Entrar en el viaje',
   'join.body':
     'Te han pasado una invitación. Escribe tu nombre y ya estás dentro: sin cuenta y sin contraseña.',
