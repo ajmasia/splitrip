@@ -79,4 +79,6 @@ Everything in this repository is written in English: code, comments, tests, comm
 
 ## Licence
 
-MIT
+[GNU General Public License v3.0 or later](LICENSE).
+
+Splitrip is free software: you may redistribute and modify it under the terms of the GPL. Any distributed derivative work must be released under the same licence, with its source available.
