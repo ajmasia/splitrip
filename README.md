@@ -107,6 +107,13 @@ A participant carrying expenses or payments cannot be deleted, and neither can t
 behind them: their money would be left dangling. Those checks are `DEFERRABLE`, so deleting a whole
 trip is still possible inside a transaction that asks for them to be deferred first.
 
+Balances are derived, never stored. The `participant_balances` view sums, for each participant,
+what they paid, what the splits charged them and what they have moved in settlement payments, and
+reports the net: positive means the group owes them. Because every shared expense is charged in
+full to somebody and every payment is both sent and received, the net figures of a trip always sum
+to exactly zero. Contributions are reported apart — they add to what the trip cost but put nobody
+in debt, their payer included.
+
 Isolation between trips is enforced by Row Level Security, so a route cannot leak one group's
 money to another by oversight: every table is readable only by the people who take part in the
 trip, resolved through `auth.uid()`. Writing follows the roles — an admin edits the trip, invites,
