@@ -29,7 +29,7 @@ The reasoning behind each choice, and the alternatives that were rejected, is in
 
 ## Requirements
 
-- Node.js 20.9 or newer
+- Node.js 20.9 or newer (`npm install` refuses to run on anything older)
 - Docker, running, for the local Supabase stack
 
 ## Getting started
@@ -43,6 +43,8 @@ npm run dev:all
 `npm run dev:all` starts the Supabase stack in Docker and then the Next.js dev server. The first run downloads the Supabase images and takes several minutes; later runs take seconds. The application is served at <http://localhost:3000>.
 
 `npm run db:check` verifies that the application environment actually reaches the Supabase API, using the same variables the app reads.
+
+Everything above is verified from a clean clone: `npm install`, `cp .env.example .env.local`, `npm run dev:all`, with nothing else installed globally.
 
 ### How local development is put together
 
