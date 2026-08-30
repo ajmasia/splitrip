@@ -27,7 +27,7 @@ The system SHALL allow a person signed in with an account to create a trip by pr
 - **AND** if the end date precedes the start date, it rejects the creation and reports the error
 
 ### Requirement: Signing in to organise
-The system SHALL allow a person to sign in with an email address and a password, and to sign out. The system SHALL NOT offer public sign-up: accounts are created out of band, so that the number of people who can open new trips stays bounded. Signing in SHALL NOT be required to take part in a trip.
+The system SHALL allow a person to sign in with an email address and a password, and to sign out. Opening trips SHALL be limited to the email addresses an instance explicitly allows, so that the number of people who can open new trips stays bounded whoever else holds an account. Signing in SHALL NOT be required to take part in a trip.
 
 #### Scenario: Signing in
 - **WHEN** a person enters the email address and password of an existing account
@@ -37,9 +37,10 @@ The system SHALL allow a person to sign in with an email address and a password,
 - **WHEN** a person enters an email address or password that does not match an account
 - **THEN** the system rejects the attempt and reports that the credentials do not match, without disclosing which of the two was wrong
 
-#### Scenario: No public sign-up
-- **WHEN** a person looks for a way to create an account from the application
-- **THEN** the system offers none, and states that accounts are arranged with whoever runs the instance
+#### Scenario: An account nobody allowed
+- **WHEN** a person signed in with an account that the instance does not allow attempts to create a trip
+- **THEN** the system rejects the creation and states that opening trips is arranged with whoever runs the instance
+- **AND** they keep taking part in every trip they were invited to
 
 #### Scenario: Signing out
 - **WHEN** a signed-in person signs out

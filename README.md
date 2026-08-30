@@ -76,7 +76,10 @@ Copy `.env.example` to `.env.local`. The values it carries are the local stack d
 
 ### Sample data
 
-`supabase/seed.sql` loads a trip to play with on every reset: five friends in Alsace over four days
+`supabase/seed.sql` loads a trip to play with on every reset, and the account that organises it —
+**sonia@splitrip.test / unViajeALaAlsacia** — which is also the one allowed to open new trips
+locally. The other four travellers have only the identity their phone was given, which is what the
+model expects of a traveller. The trip itself is: five friends in Alsace over four days
 of Christmas markets, with the awkward cases already in it — a flat one of them paid for on her own
 and asked nobody to share, expenses split among only some of the group, amounts that leave cents
 over, and settlement payments already made. The balances it produces sum to exactly zero, so it
@@ -263,6 +266,20 @@ asks the auth server rather than trusting whatever the cookie was last set to.
 
 That file is named `proxy.ts` and exports `proxy`. In Next.js 16 the `middleware` convention was
 renamed; the behaviour is the same, the name is not.
+
+Opening a trip is the one thing that needs more. `create_trip` refuses an anonymous session, and
+refuses an account whose address is not in `trip_creators` — a list the instance keeps. Without it, a
+deployment reachable from the public internet, that hands an identity to whoever asks and lets that
+identity create data, is somebody else's free hosting waiting to be found.
+
+The list is a table rather than a setting because the platform offers no setting that would do. Its
+per-provider switch closes email logins along with email sign-ups, and its global one closes
+anonymous sign-ins too, which would take every invitation down with it. A table is better anyway: it
+is enforced by the only door into `trips`, it travels in a migration, it can be tested, and somebody
+can be allowed before their account exists.
+
+Two powers, deliberately apart: running a trip you were invited to, and opening new ones. An
+invitation carrying the `admin` role still makes an account-less traveller an organiser of that trip.
 
 The accepted consequence is that clearing browser data means losing access. The organiser
 regenerates an invitation, and rejoining under the same name recovers the participant. Attaching an

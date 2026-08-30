@@ -46,7 +46,9 @@ Four constraints shape the design:
 
 ### Creating a trip needs an account
 
-**Chosen:** only a session that is not anonymous may create a trip. The check lives in the `create_trip` function — `auth.jwt() ->> 'is_anonymous'` — and public sign-up is turned off, so accounts exist only because somebody made them out of band. Joining by invitation is untouched, and an invitation carrying the `admin` role still makes an account-less traveller an organiser of that trip.
+**Chosen:** creating a trip requires a session that is not anonymous *and* whose email address is on a list the instance keeps, in a `trip_creators` table. The check lives in the `create_trip` function. Joining by invitation is untouched, and an invitation carrying the `admin` role still makes an account-less traveller an organiser of that trip.
+
+**Why a table and not a setting:** the obvious answer was to turn off public sign-up, and the platform cannot do it. GoTrue's per-provider switch closes email logins along with email sign-ups — it disables the provider, not the registration — and its global switch closes anonymous sign-ins too, which would take every invitation down with it. Neither offers "logins yes, registrations no". A list in the database is better anyway: it is enforced by the only door into `trips`, it travels in a migration, it can be tested, and somebody can be allowed before their account exists.
 
 **Why:** a personal deployment reachable from the public internet, that hands an identity to whoever asks and lets that identity create data, is somebody else's free hosting waiting to be discovered. The barrier is where it is because a check in the interface is a suggestion: `create_trip` is the only door into `trips`, and neither table accepts an insert from a client.
 
