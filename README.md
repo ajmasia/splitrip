@@ -332,6 +332,15 @@ browser's own error page — and measuring that reports nothing about the applic
 can be answered from the markup — both are results of layout — and both are easy to break without
 noticing.
 
+### When something breaks
+
+A trip's numbers come from a database over a network, and a screen that throws when that fails once
+should say so rather than take the page down. `src/app/error.tsx` catches it, offers another go, and
+prints the digest so a report can be matched against the server log; `global-error.tsx` does the same
+for a failure in the root layout, carrying its own colours because the stylesheet never reaches it;
+`not-found.tsx` answers a link that leads nowhere — or to a trip the reader is not part of, which
+Row Level Security makes indistinguishable from nowhere, deliberately.
+
 ## Interface language
 
 The interface is Spanish and English, defaulting to Spanish. The copy lives in two catalogues under
