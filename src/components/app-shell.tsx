@@ -3,8 +3,10 @@ import type { ReactNode } from 'react'
 
 import { signOut } from '@/app/actions/auth'
 import { LanguageSwitcher } from '@/components/language-switcher'
+import { ThemeSwitcher } from '@/components/theme-switcher'
 import type { Viewer } from '@/lib/auth/viewer'
 import type { Locale, Translate } from '@/lib/i18n'
+import { getTheme } from '@/lib/theme/server'
 
 function Account({ viewer, t }: { viewer: Viewer | null; t: Translate }) {
   if (viewer === null || viewer.isAnonymous) {
@@ -42,7 +44,7 @@ function Account({ viewer, t }: { viewer: Viewer | null; t: Translate }) {
  * is for: the page drops the bar above the breakpoint and puts its action somewhere a pointer
  * already is.
  */
-export function AppShell({
+export async function AppShell({
   locale,
   t,
   viewer = null,
@@ -62,6 +64,10 @@ export function AppShell({
   bottomOnPhone?: boolean
   children: ReactNode
 }) {
+  // Read here rather than handed down: the theme is the shell's own business, and every page that
+  // draws a shell would otherwise carry a prop it never looks at.
+  const theme = await getTheme()
+
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="border-b border-rule">
@@ -74,6 +80,7 @@ export function AppShell({
           </Link>
           <div className="flex items-center gap-1">
             <Account viewer={viewer} t={t} />
+            <ThemeSwitcher theme={theme} t={t} />
             <LanguageSwitcher locale={locale} t={t} />
           </div>
         </div>

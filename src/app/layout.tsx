@@ -4,6 +4,8 @@ import type { ReactNode } from 'react'
 
 import { ConnectionBar } from '@/components/connection-bar'
 import { getLocale } from '@/lib/i18n/server'
+import { THEME_COLOUR } from '@/lib/theme'
+import { getTheme } from '@/lib/theme/server'
 
 import './globals.css'
 
@@ -38,22 +40,38 @@ export const metadata: Metadata = {
   other: { 'apple-mobile-web-app-capable': 'yes' },
 }
 
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  viewportFit: 'cover',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#edefec' },
-    { media: '(prefers-color-scheme: dark)', color: '#0e1211' },
-  ],
+/*
+ * The colour of the browser chrome, and of the status bar of the installed application. It is a
+ * pair of media queries only while the reader has made no choice: a media query cannot see a
+ * cookie, so once they have chosen, the pair would keep colouring the frame after the operating
+ * system rather than after them.
+ */
+export async function generateViewport(): Promise<Viewport> {
+  const theme = await getTheme()
+
+  return {
+    width: 'device-width',
+    initialScale: 1,
+    viewportFit: 'cover',
+    themeColor:
+      theme === 'system'
+        ? [
+            { media: '(prefers-color-scheme: light)', color: THEME_COLOUR.light },
+            { media: '(prefers-color-scheme: dark)', color: THEME_COLOUR.dark },
+          ]
+        : THEME_COLOUR[theme],
+  }
 }
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const locale = await getLocale()
+  const [locale, theme] = await Promise.all([getLocale(), getTheme()])
 
   return (
     <html
       lang={locale}
+      // Absent while the reader follows their operating system, which is what the stylesheet
+      // assumes: the attribute exists to override that, not to state it.
+      data-theme={theme === 'system' ? undefined : theme}
       className={`${archivo.variable} ${bricolage.variable} ${plexMono.variable}`}
     >
       <body>

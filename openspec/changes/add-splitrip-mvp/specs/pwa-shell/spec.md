@@ -85,6 +85,23 @@ Interface affordances built for preparing a trip at a desk — successive expens
 - **THEN** the denser desktop layout is used
 - **AND** no organiser tool is offered
 
+### Requirement: Light and dark appearance
+The system SHALL present the interface in a light and a dark palette, following the reader's operating system unless they say otherwise. It SHALL offer a persistent control to choose light or dark explicitly, and to return to following the system. The choice SHALL survive a reload and SHALL apply from the first paint, without the interface appearing briefly in the other palette.
+
+#### Scenario: Following the operating system
+- **WHEN** somebody who has chosen nothing opens the application on a device set to dark
+- **THEN** the system shows the dark palette
+- **AND** shows the light one on a device set to light
+
+#### Scenario: Overriding the operating system
+- **WHEN** a reader on a device set to light chooses the dark appearance
+- **THEN** the system shows the dark palette
+- **AND** keeps showing it after a reload and on the next visit
+
+#### Scenario: Returning to the operating system
+- **WHEN** a reader who had chosen an appearance sets the control back to following the system
+- **THEN** the system shows the palette their device asks for
+
 ### Requirement: Updating the installed application
 The system SHALL detect when a new version has been published and SHALL apply it without the user having to uninstall and reinstall the application.
 

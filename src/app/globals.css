@@ -8,21 +8,28 @@
  * a name and its amount, a rule above a subtotal and a double rule above a total. Money owed reads
  * in red and money owing in plain ink, the way accounting has always done it — never by colour
  * alone, always with the sign and the word beside it.
+ *
+ * Each colour states both of its values at once, with `light-dark()`. Dark is the same palette lit
+ * differently rather than a second palette, and writing it as one pair per token is what keeps it
+ * that way: there is no second block that can be edited and forgotten. Which half applies is
+ * decided by `color-scheme` further down, so a reader's own choice and the operating system's are
+ * the same mechanism. The accent is not merely lightened — it drops saturation and gains
+ * luminosity, which is what keeps its contrast on a dark ground.
  */
 @theme {
-  --color-paper: #edefec;
-  --color-surface: #fbfcfa;
-  --color-surface-2: #f4f6f2;
-  --color-ink: #131816;
-  --color-ink-soft: #5b635f;
-  --color-ink-faint: #8a928e;
-  --color-rule: #d9ded8;
-  --color-rule-strong: #131816;
-  --color-accent: #1f5b4e;
-  --color-accent-ink: #fbfcfa;
-  --color-accent-soft: #dfebe6;
-  --color-debt: #9e2b2b;
-  --color-debt-soft: #f6e4e3;
+  --color-paper: light-dark(#edefec, #0e1211);
+  --color-surface: light-dark(#fbfcfa, #171b1a);
+  --color-surface-2: light-dark(#f4f6f2, #1e2422);
+  --color-ink: light-dark(#131816, #e9edea);
+  --color-ink-soft: light-dark(#5b635f, #9aa39f);
+  --color-ink-faint: light-dark(#8a928e, #6e7772);
+  --color-rule: light-dark(#d9ded8, #2a312e);
+  --color-rule-strong: light-dark(#131816, #e9edea);
+  --color-accent: light-dark(#1f5b4e, #74c4ac);
+  --color-accent-ink: light-dark(#fbfcfa, #0e1211);
+  --color-accent-soft: light-dark(#dfebe6, #17332c);
+  --color-debt: light-dark(#9e2b2b, #e98486);
+  --color-debt-soft: light-dark(#f6e4e3, #34201f);
 
   --font-display: var(--font-bricolage), var(--font-archivo), system-ui, sans-serif;
   --font-sans: var(--font-archivo), system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -38,27 +45,18 @@
 }
 
 /*
- * Dark is the same palette lit differently, and it is set on `:root` rather than in a second
- * `@theme`: the utilities compile down to `var(--color-…)`, so redefining the variable is all it
- * takes, and `@theme` only belongs at the top level. The accent is not merely lightened — it drops
- * saturation and gains luminosity, which is what keeps its contrast on a dark ground.
+ * The switch. `color-scheme: light dark` on its own means "whichever the operating system says",
+ * which is what a reader gets until they choose. A choice pins it with `only`, and every
+ * `light-dark()` above resolves to that half — so one attribute on the document, set on the server
+ * from a cookie, changes the whole palette before the first paint. Nothing flashes, and nothing
+ * waits for JavaScript.
  */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-paper: #0e1211;
-    --color-surface: #171b1a;
-    --color-surface-2: #1e2422;
-    --color-ink: #e9edea;
-    --color-ink-soft: #9aa39f;
-    --color-ink-faint: #6e7772;
-    --color-rule: #2a312e;
-    --color-rule-strong: #e9edea;
-    --color-accent: #74c4ac;
-    --color-accent-ink: #0e1211;
-    --color-accent-soft: #17332c;
-    --color-debt: #e98486;
-    --color-debt-soft: #34201f;
-  }
+:root[data-theme='light'] {
+  color-scheme: only light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: only dark;
 }
 
 @layer base {

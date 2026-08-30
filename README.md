@@ -192,6 +192,17 @@ is the check.
 Which language a reader gets is decided on the server: the preference they stored, then the browser's
 `Accept-Language`, then Spanish.
 
+## Appearance
+
+Light and dark are the same palette lit differently, and each colour states both of its values at
+once with `light-dark()` in `src/app/globals.css`. There is no second block of tokens to edit and
+forget.
+
+Which half applies is `color-scheme`: unset, it follows the operating system; a reader's choice pins
+it through a `data-theme` attribute the server writes on the document from a cookie, so the palette
+is already right in the first paint. The control in the header cycles through following the system,
+light and dark.
+
 ## Code quality
 
 ESLint uses `eslint-config-next/core-web-vitals` plus its TypeScript rules and runs with

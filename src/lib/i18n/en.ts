@@ -5,6 +5,11 @@ export const en: Catalogue = {
   'app.tagline': 'Shared travel expenses, settled in seconds.',
   'app.version': 'Version {version}',
 
+  'theme.system': 'As the system',
+  'theme.light': 'Light',
+  'theme.dark': 'Dark',
+  'theme.switch': 'Appearance: {current}. Switch to {next}.',
+
   'language.label': 'Language',
 
   'connection.offline':

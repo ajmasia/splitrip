@@ -7,6 +7,11 @@ export const es = {
   'app.tagline': 'Gastos de viaje compartidos, cuadrados en un momento.',
   'app.version': 'Versión {version}',
 
+  'theme.system': 'Como el sistema',
+  'theme.light': 'Claro',
+  'theme.dark': 'Oscuro',
+  'theme.switch': 'Apariencia: {current}. Cambiar a {next}.',
+
   'language.label': 'Idioma',
 
   'connection.offline': 'Sin conexión. Ves lo último que se cargó, y no se puede apuntar nada.',

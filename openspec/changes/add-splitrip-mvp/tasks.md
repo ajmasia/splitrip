@@ -54,6 +54,7 @@
 - [x] 6.6 Implement the role-and-viewport gate offering the organiser tools only to an `admin` on a desktop viewport; verify that an `admin` sees them at 1280 pixels, does not at 360 pixels, that a `participant` never does, and that the dashboard stays reachable on a phone
 - [x] 6.7 Add the PWA manifest with icons for iOS and Android, a theme colour and standalone mode; verify by installing the application on an Android device and on an iOS device that it opens without the browser interface
 - [x] 6.8 Add the shell-caching service worker, the offline notice and new-version detection; verify that the second opening does not wait for the network, that the notice appears offline instead of the browser error, and that a new version is applied without reinstalling
+- [x] 6.9 Add the light and dark appearance control: follow the operating system unless the reader says otherwise, with a choice that persists and applies from the first paint; verify the six combinations of the two system settings and the three states of the control, and that the colour of the browser chrome follows the choice
 
 ## 7. Expenses
 
