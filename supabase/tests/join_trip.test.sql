@@ -15,9 +15,9 @@ from (values ('11111111-1111-1111-1111-111111111111'::uuid),   -- Ana, who organ
              ('66666666-6666-6666-6666-666666666666'::uuid)    -- somebody trying their luck
      ) as u(id);
 
-insert into public.trips (id, name, status, closed_at) values
-    ('aaaaaaaa-0000-0000-0000-00000000000a', 'Iceland 2026', 'open', null),
-    ('aaaaaaaa-0000-0000-0000-00000000000b', 'Porto 2026', 'closed', now());
+insert into public.trips (id, name, status, closed_at, summary) values
+    ('aaaaaaaa-0000-0000-0000-00000000000a', 'Iceland 2026', 'open', null, null),
+    ('aaaaaaaa-0000-0000-0000-00000000000b', 'Porto 2026', 'closed', now(), '{}'::jsonb);
 
 insert into public.participants (id, trip_id, user_id, display_name, role) values
     ('cccccccc-0000-0000-0000-00000000000a', 'aaaaaaaa-0000-0000-0000-00000000000a', '11111111-1111-1111-1111-111111111111', 'Ana', 'admin');

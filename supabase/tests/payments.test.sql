@@ -192,7 +192,7 @@ insert into public.payments (id, trip_id, from_participant_id, to_participant_id
     ('ffffffff-0000-0000-0000-00000000000f', 'aaaaaaaa-0000-0000-0000-00000000000a',
      'cccccccc-0000-0000-0000-00000000000b', 'cccccccc-0000-0000-0000-00000000000a', 500,
      'cccccccc-0000-0000-0000-00000000000b');
-update public.trips set status = 'closed', closed_at = now()
+update public.trips set status = 'closed', closed_at = now(), summary = '{}'::jsonb
 where id = 'aaaaaaaa-0000-0000-0000-00000000000a';
 set local request.jwt.claims = '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}';
 set local role authenticated;

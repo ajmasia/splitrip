@@ -231,7 +231,7 @@ select throws_ok(
 
 -- ---------------------------------------------------------------------- once the trip is closed
 reset role;
-update public.trips set status = 'closed', closed_at = now()
+update public.trips set status = 'closed', closed_at = now(), summary = '{}'::jsonb
 where id = 'aaaaaaaa-0000-0000-0000-00000000000a';
 set local request.jwt.claims = '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}';
 set local role authenticated;
