@@ -96,11 +96,17 @@ Four constraints shape the design:
 
 **Why:** the spec requires the summary not to change while the trip is closed. A summary recomputed each time would change if somebody corrected something, and would also repeat the whole aggregation on every read. The snapshot is the cheapest read and the only one that satisfies the requirement literally.
 
-### Local development entirely in Docker
+### Local development: the backend in Docker, the app on the host
 
-**Chosen:** `supabase start` brings up the complete Supabase stack in containers (Postgres, GoTrue, Realtime, Studio, API). The Next.js application runs in its own container, and a `docker compose` at the repository root orchestrates both so that starting up is a single command. The schema lives as versioned SQL migrations in the repository and is applied identically locally and in production.
+**Chosen:** `supabase start` brings up the complete Supabase stack in containers (Postgres, GoTrue, Realtime, Studio, API) through the Supabase CLI, pinned as a dev dependency. The Next.js application runs on the host, not in a container. A single npm script starts both. The schema lives as versioned SQL migrations in the repository and is applied identically locally and in production.
 
 **Why:** the real value of Docker here is not isolating Node, it is having the same Postgres, with the same RLS policies and the same triggers, on the laptop. RLS policies are the kind of thing that can only truly be tested against the database, and testing them against the shared remote project is slow and destructive.
+
+**Why the application is not containerised:** containerising it would buy either production parity or reproducibility, and it buys neither. Production is Vercel, which builds Next.js natively and never reads a Dockerfile, so an app container would be parity with nothing — unrun infrastructure that rots silently. And on macOS a dev server behind a bind mount has slow file watching and unreliable hot reload, so it would trade a good developer experience for a worse one. The Node version is pinned by `engines` and the lockfile, which is the reproducibility that actually matters here.
+
+**Alternative considered:** a `docker compose` at the repository root orchestrating both. Rejected on the above, and on a practical point: the Supabase CLI orchestrates its own containers rather than exposing a compose file to extend, so "one compose file for everything" was never really on the table — it would have meant reimplementing the stack by hand and then owning its upgrades.
+
+**Revisit this if:** self-hosting becomes a goal. The AGPL makes it plausible that someone will want to deploy a modified Splitrip outside Vercel, and that is when a production Dockerfile earns its place — built and tested for a target that actually exists.
 
 ### Repository conventions
 

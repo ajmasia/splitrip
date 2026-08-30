@@ -4,7 +4,7 @@
 - [x] 1.2 Configure ESLint, Prettier and the type-check script; verify that `npm run lint` and `npm run typecheck` pass cleanly
 - [x] 1.3 Add the Conventional Commits setup (commitlint and a commit hook) and the SemVer version file; verify that a non-conforming message is rejected and a valid one passes
 - [x] 1.4 Initialise the local Supabase project with the CLI; verify that `supabase start` brings the containers up and that Studio responds on its port
-- [ ] 1.5 Add the application `Dockerfile` and the `docker compose` orchestrating the app and the Supabase stack; verify that from a clean clone a single command brings everything up and the application connects to the local database
+- [x] 1.5 Add the single-command development environment that starts the Supabase stack and the application together, plus a connectivity check that reads the app's own environment variables; verify that from a clean clone one command brings everything up and the check confirms the app reaches the local Supabase API
 - [ ] 1.6 Document in the README the local start-up, the required environment variables and the day-to-day commands; verify by following the README from scratch in a clean directory
 
 ## 2. Data schema and authorisation
