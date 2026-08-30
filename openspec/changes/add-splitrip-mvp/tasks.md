@@ -20,7 +20,7 @@
 
 - [x] 3.1 Implement the pure split-in-cents function with deterministic assignment of the remainder; verify with unit tests that €60.00 among 4 gives equal shares, that €10.00 among 3 gives 3.34/3.33/3.33, and that the sum of shares always equals the amount
 - [x] 3.2 Implement the pure greedy settlement function over the balances; verify with unit tests that it solves the spec case, that it never proposes more than `n-1` transfers and that applying them leaves every balance at zero
-- [ ] 3.3 Add a property-based test over random sets of expenses and payments; verify that for any input the balances sum to zero and the settlement clears them
+- [x] 3.3 Add a property-based test over random sets of expenses and payments; verify that for any input the balances sum to zero and the settlement clears them
 - [ ] 3.4 Implement the interface amount formatting and parsing; verify with tests that it rejects amounts with more than two decimal places, zero and negatives, and that it rounds correctly when converting to cents
 
 ## 4. Database write functions
