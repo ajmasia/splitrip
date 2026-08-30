@@ -81,7 +81,24 @@ function send(method, params = {}) {
   return new Promise((resolve) => pending.set(id, resolve))
 }
 
+/*
+ * A hydration mismatch does not break the page, it only complains in the console — which is exactly
+ * why it survives unnoticed. Rendering a different tree for a phone than for a desk is the usual
+ * cause, so the check that measures the phone layout is the right place to listen for it.
+ */
+const complaints = []
+socket.addEventListener('message', (event) => {
+  const message = JSON.parse(event.data)
+  if (message.method === 'Runtime.consoleAPICalled' && /error|warning/.test(message.params.type)) {
+    complaints.push(message.params.args.map((arg) => arg.value ?? arg.description).join(' '))
+  }
+  if (message.method === 'Runtime.exceptionThrown') {
+    complaints.push(message.params.exceptionDetails.text)
+  }
+})
+
 await send('Page.enable')
+await send('Runtime.enable')
 await send('Emulation.setDeviceMetricsOverride', {
   width: Number(width),
   height: Number(height),
@@ -148,6 +165,15 @@ if (scrollWidth > viewport) {
   }
 } else {
   console.log(`✓ Nothing reaches past the ${viewport}px viewport`)
+}
+
+if (complaints.length > 0) {
+  failures.push(`✗ ${complaints.length} complaint(s) in the browser console`)
+  for (const complaint of complaints.slice(0, 8)) {
+    failures.push(`    ${complaint.split('\n')[0].slice(0, 160)}`)
+  }
+} else {
+  console.log('✓ The browser console stayed quiet')
 }
 
 if (small.length > 0) {
