@@ -79,6 +79,6 @@ Everything in this repository is written in English: code, comments, tests, comm
 
 ## Licence
 
-[GNU General Public License v3.0 or later](LICENSE).
+[GNU Affero General Public License v3.0 or later](LICENSE).
 
-Splitrip is free software: you may redistribute and modify it under the terms of the GPL. Any distributed derivative work must be released under the same licence, with its source available.
+Splitrip is free software: you may redistribute and modify it under the terms of the AGPL. The Affero clause matters for a hosted application: anyone who runs a modified version as a network service must make their source available to its users, not only those who redistribute the code.
