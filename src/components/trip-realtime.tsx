@@ -55,17 +55,24 @@ export function TripRealtime({
       timer = setTimeout(() => router.refresh(), 250)
     }
 
+    // Closing a channel reports itself as a channel that closed, and that report arrives after the
+    // screen has already gone. Without this the notice would be raised on the way out and left
+    // there, with nothing subscribed any more to take it back.
+    let cancelled = false
+
     // A subscription that comes back has been away, and everything that happened in between arrived
     // nowhere. Re-reading on the way back is the whole of the recovery: the events are gone, but
     // the state they described is still in the database, and that is what the screen asks for.
     let away = false
     const restored = () => {
+      if (cancelled) return
       setLiveConnection(true)
       if (!away) return
       away = false
       refresh()
     }
     const lost = () => {
+      if (cancelled) return
       away = true
       setLiveConnection(false)
     }
@@ -92,7 +99,6 @@ export function TripRealtime({
     // The socket authorises itself once, when it opens, and Row Level Security is what decides
     // whether an event reaches this reader at all. Subscribing before the session has been read
     // would open it as an anonymous stranger, who is entitled to nothing and would be told nothing.
-    let cancelled = false
     void supabase.auth.getSession().then(({ data }) => {
       if (cancelled) return
       if (data.session) supabase.realtime.setAuth(data.session.access_token)
@@ -117,10 +123,10 @@ export function TripRealtime({
       clearTimeout(timer)
       window.removeEventListener('offline', onOffline)
       window.removeEventListener('online', onOnline)
-      // Leaving the trip is not losing the connection, and the notice belongs to the screen that
-      // had one.
-      setLiveConnection(true)
       void supabase.removeChannel(channel)
+      // Leaving the trip is not losing the connection, and the notice belongs to the screen that
+      // had one. Said last, so nothing on the way out can contradict it.
+      setLiveConnection(true)
     }
   }, [tripId, router, feed, youParticipantId])
 
