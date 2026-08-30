@@ -88,7 +88,17 @@ await send('Emulation.setDeviceMetricsOverride', {
   deviceScaleFactor: 1,
   mobile: Number(width) < 768,
 })
-await send('Page.navigate', { url })
+// A navigation that fails still leaves a document behind — the browser's own error page — and
+// measuring that reports whatever its markup happens to contain rather than anything about the app.
+const navigation = await send('Page.navigate', { url })
+if (navigation.errorText) {
+  socket.close()
+  chrome.kill()
+  console.error(`✗ ${url} did not load: ${navigation.errorText}`)
+  console.error('  Start the application first, with: npm run dev')
+  process.exit(1)
+}
+
 await new Promise((resolve) => setTimeout(resolve, 3500))
 
 const { result } = await send('Runtime.evaluate', {

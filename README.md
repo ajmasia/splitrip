@@ -300,7 +300,9 @@ Density is expressed in CSS, never by branching on a width measured in JavaScrip
 that differs between server and client causes hydration mismatches and makes the first paint wrong.
 
 `npm run check:viewport -- <url> <width> <height>` drives a real browser against a running dev server
-and fails if anything reaches past the viewport or if a control is shorter than 44 pixels. Neither
+and fails if anything reaches past the viewport or if a control is shorter than 44 pixels. It refuses
+to measure a page that did not load, since a failed navigation still leaves a document behind — the
+browser's own error page — and measuring that reports nothing about the application. Neither
 can be answered from the markup — both are results of layout — and both are easy to break without
 noticing.
 
