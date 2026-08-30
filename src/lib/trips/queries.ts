@@ -116,3 +116,56 @@ export async function getTrip(
     })),
   }
 }
+
+export type ExpenseType = 'shared' | 'contribution'
+
+export type TripExpense = {
+  id: string
+  description: string
+  amountCents: number
+  type: ExpenseType
+  spentOn: string
+  paidByName: string
+  /** Zero for a contribution, which is split among nobody. */
+  splitCount: number
+}
+
+type ExpenseRow = {
+  id: string
+  description: string
+  amount_cents: number | string
+  type: ExpenseType
+  spent_on: string
+  paid_by_name: string
+  split_count: number | string
+}
+
+/**
+ * Most recent first, and within a day the most recently recorded first: several expenses carry the
+ * same date, and leaving their order to the database would shuffle the list between two reads. The
+ * identifier settles the last of it — two expenses recorded in the same statement share a timestamp
+ * as well as a date, and an arbitrary order is fine as long as it is the same one every time.
+ */
+export async function listExpenses(tripId: string): Promise<TripExpense[]> {
+  const supabase = await createSupabaseServerClient()
+
+  const { data, error } = await supabase
+    .from('expense_overview')
+    .select('id, description, amount_cents, type, spent_on, paid_by_name, split_count')
+    .eq('trip_id', tripId)
+    .order('spent_on', { ascending: false })
+    .order('created_at', { ascending: false })
+    .order('id', { ascending: false })
+
+  if (error) throw new Error(error.message)
+
+  return (data as ExpenseRow[]).map((row) => ({
+    id: row.id,
+    description: row.description,
+    amountCents: count(row.amount_cents),
+    type: row.type,
+    spentOn: row.spent_on,
+    paidByName: row.paid_by_name,
+    splitCount: count(row.split_count),
+  }))
+}

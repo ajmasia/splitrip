@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 
 import { AppShell } from '@/components/app-shell'
 import { ChangeRoleButton } from '@/components/change-role-button'
+import { ExpenseList } from '@/components/expense-list'
 import { Pill } from '@/components/pill'
 import { RemoveParticipantButton } from '@/components/remove-participant-button'
 import { intlLocale } from '@/lib/i18n'
@@ -10,7 +11,7 @@ import { formatDateRange } from '@/lib/i18n/format'
 import { getViewer } from '@/lib/auth/viewer'
 import { getCopy } from '@/lib/i18n/server'
 import { formatAmount } from '@/lib/money/amount'
-import { getTrip } from '@/lib/trips/queries'
+import { getTrip, listExpenses } from '@/lib/trips/queries'
 
 export default async function TripPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -23,6 +24,7 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
   if (!found) notFound()
 
   const { trip, participants } = found
+  const expenses = await listExpenses(id)
   // Stepping down is a role change like any other, so this one appears beside yourself too.
   const organising = trip.yourRole === 'admin' && trip.status === 'open'
   const dates = formatDateRange(trip.startDate, trip.endDate, locale)
@@ -31,7 +33,10 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
     <AppShell locale={locale} t={t} viewer={viewer}>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
-          <Link href="/" className="font-mono text-xs tracking-widest text-ink-faint uppercase">
+          <Link
+            href="/"
+            className="flex min-h-touch w-fit items-center font-mono text-xs tracking-widest text-ink-faint uppercase"
+          >
             ← {t('trip.back')}
           </Link>
           <h1 className="text-2xl font-bold">{trip.name}</h1>
@@ -60,6 +65,20 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
             {formatAmount(trip.totalCents, intlLocale(locale))}
           </p>
         </div>
+
+        <section className="flex flex-col gap-3">
+          <h2 className="font-mono text-xs tracking-widest text-ink-faint uppercase">
+            {t('expenses.heading')}
+          </h2>
+          {expenses.length === 0 ? (
+            <div className="flex max-w-prose flex-col gap-2 rounded-card border border-rule bg-surface p-5">
+              <h3 className="text-lg font-semibold">{t('expenses.empty.title')}</h3>
+              <p className="text-ink-soft">{t('expenses.empty.body')}</p>
+            </div>
+          ) : (
+            <ExpenseList expenses={expenses} locale={locale} t={t} />
+          )}
+        </section>
 
         <section className="flex flex-col gap-3">
           <h2 className="font-mono text-xs tracking-widest text-ink-faint uppercase">

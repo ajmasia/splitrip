@@ -34,3 +34,14 @@ export function formatDateRange(
     timeZone: 'UTC',
   }).formatRange(new Date(`${start}T00:00:00Z`), new Date(`${end}T00:00:00Z`))
 }
+
+/**
+ * A date for a list, where the long form would push the amount off a phone screen. The year stays:
+ * a trip can cross new year, and "1 ene" without it is ambiguous for the rest of its life.
+ */
+export function formatShortDate(day: string, locale: Locale): string {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
+    dateStyle: 'medium',
+    timeZone: 'UTC',
+  }).format(new Date(`${day}T00:00:00Z`))
+}

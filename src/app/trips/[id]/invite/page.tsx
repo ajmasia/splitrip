@@ -33,7 +33,7 @@ export default async function InvitePage({ params }: { params: Promise<{ id: str
         <div className="flex flex-col gap-2">
           <Link
             href={`/trips/${id}`}
-            className="font-mono text-xs tracking-widest text-ink-faint uppercase"
+            className="flex min-h-touch w-fit items-center font-mono text-xs tracking-widest text-ink-faint uppercase"
           >
             ← {trip.name}
           </Link>

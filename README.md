@@ -240,6 +240,15 @@ transfers are just as frozen. `reopen_trip` puts the trip back to `open` and dro
 it — a trip taking changes again has no final figures to show — and the next close writes them
 afresh.
 
+`expense_overview` is the read behind the trip screen: the payer's name rather than their id, and
+how many people the expense is split among, in one query. A contribution's split count is 0 rather
+than null, because a column that is sometimes a number and sometimes absent has to be handled twice
+everywhere it is read. Like `trip_overview` it runs as the invoker, so the policies decide the rows.
+
+The list is ordered by date descending, then by when it was recorded, then by identifier. The last of
+those looks arbitrary and is: two expenses entered in the same statement share a timestamp as well as
+a date, and an arbitrary order is fine as long as it is the same one on every read.
+
 `create_trip` makes a trip and its first organiser in one go, which is why neither `trips` nor
 `participants` accepts an insert from a client. It asks for two names: the trip's, and the
 creator's, because creating a trip makes you a participant of it and a participant without a name is

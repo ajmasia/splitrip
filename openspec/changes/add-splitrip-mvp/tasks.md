@@ -57,7 +57,7 @@
 
 ## 7. Expenses
 
-- [ ] 7.1 Implement the main trip screen with the expense list sorted by date descending and the empty state; verify that it shows description, amount, payer, type and the number of people in the split
+- [x] 7.1 Implement the main trip screen with the expense list sorted by date descending and the empty state; verify that it shows description, amount, payer, type and the number of people in the split
 - [ ] 7.2 Implement the add-expense form with its default values (payer is whoever records it, split among everyone, today's date); verify that an expense can be recorded providing only a description and an amount
 - [ ] 7.3 Add payer selection and split-subset selection to the form; verify that a €45.00 expense split among three of five charges €15.00 to each and leaves the other two unchanged
 - [ ] 7.4 Add the `contribution` expense type to the form, hiding the split when selected; verify that a €300.00 contribution adds to the trip total and changes no balance
