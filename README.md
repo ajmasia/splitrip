@@ -100,7 +100,8 @@ covers the tables that bound a trip and the money spent on it:
 
 Rules that must never be bypassed are database constraints rather than application checks, so no
 route can forget one: a trip only accepts `EUR` and cannot end before it starts, a summary exists
-only on a closed trip, two people on the same trip cannot answer to the same name (ignoring case and
+exactly when the trip is closed — so no trip is closed and left without its figures — two people on
+the same trip cannot answer to the same name (ignoring case and
 surrounding whitespace), one device identity joins a trip once, and an invitation token is unique
 and long enough to carry 128 bits of entropy.
 
@@ -188,6 +189,19 @@ phone. The interface asks which it is and comes back confirming, at which point 
 rebound to the new device. So anybody holding an invitation can claim any name on that trip — the
 price of joining without an account, and the reason invitations expire and can be revoked.
 
+`close_trip` ends the trip and freezes it into a summary stored as JSON on the trip itself: what it
+cost in all, how much of that was shared and how much was somebody's treat, the cost per person, the
+final balance of each traveller, the contributions nobody was asked to share, and every payment
+already handed over. Recomputing those figures on each read would let them move the moment somebody
+corrected an old expense, which is exactly what a closing summary must not do.
+
+What the snapshot does not hold is the outstanding transfers, and deliberately: turning balances
+into transfers is one greedy algorithm that already lives in TypeScript, and a second copy in SQL
+would be two versions of one rule waiting to disagree. Derived from balances that are frozen, the
+transfers are just as frozen. `reopen_trip` puts the trip back to `open` and drops the summary with
+it — a trip taking changes again has no final figures to show — and the next close writes them
+afresh.
+
 A rejection carries its own `SQLSTATE`, so the bilingual interface maps a broken rule to its copy
 without reading English text:
 
@@ -207,6 +221,7 @@ without reading English text:
 | `SP011` | The invitation has expired                              |
 | `SP012` | A name is required to join                              |
 | `SP013` | Somebody on the trip already goes by that name          |
+| `SP014` | The trip is already in the state it is being moved to   |
 
 `npm run db:test` runs the pgTAP tests over all of it. Each one checks both halves of the same
 policy: that the person who belongs can, and that the person who does not cannot.
