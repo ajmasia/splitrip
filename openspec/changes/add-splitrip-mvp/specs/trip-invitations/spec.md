@@ -1,88 +1,88 @@
 ## Purpose
 
-Permite incorporar viajeros a un viaje con la menor fricción posible: el organizador comparte un enlace o un código QR, y quien lo abre entra escribiendo únicamente su nombre, sin crear cuenta ni recordar contraseñas. Cubre también la retirada de ese acceso.
+Brings travellers into a trip with as little friction as possible: the organiser shares a link or a QR code, and whoever opens it joins by typing only their name, with no account to create and no password to remember. It also covers withdrawing that access.
 
 ## ADDED Requirements
 
-### Requirement: Generación de invitaciones
-El sistema SHALL permitir a un `admin` de un viaje en estado `open` generar una invitación. Cada invitación SHALL llevar asociado el rol (`admin` o `participant`) con el que entrará quien la use, SHALL tener una URL única e imposible de adivinar, y SHALL poder mostrarse como código QR además de como enlace copiable.
+### Requirement: Invitation generation
+The system SHALL allow an `admin` of a trip in the `open` state to generate an invitation. Every invitation SHALL carry the role (`admin` or `participant`) that its user will join with, SHALL have a unique and unguessable URL, and SHALL be presentable as a QR code as well as a copyable link.
 
-#### Scenario: Generación de una invitación de participante
-- **WHEN** un `admin` genera una invitación con rol `participant`
-- **THEN** el sistema devuelve una URL única y su representación en código QR
-- **AND** la invitación queda registrada como activa y asociada a ese viaje y a ese rol
+#### Scenario: Generating a participant invitation
+- **WHEN** an `admin` generates an invitation with the `participant` role
+- **THEN** the system returns a unique URL and its QR code representation
+- **AND** the invitation is recorded as active and bound to that trip and that role
 
-#### Scenario: Generación de una invitación de organizador
-- **WHEN** un `admin` genera una invitación con rol `admin`
-- **THEN** quien use esa invitación se incorporará al viaje con rol `admin`
+#### Scenario: Generating an admin invitation
+- **WHEN** an `admin` generates an invitation with the `admin` role
+- **THEN** whoever uses that invitation joins the trip with the `admin` role
 
-#### Scenario: Invitación con rol de organizador solicitada por un participante
-- **WHEN** un participante con rol `participant` intenta generar una invitación
-- **THEN** el sistema rechaza la operación e informa de que requiere permisos de organizador
+#### Scenario: Participant attempts to generate an invitation
+- **WHEN** a participant with the `participant` role attempts to generate an invitation
+- **THEN** the system rejects the operation and reports that admin permissions are required
 
-#### Scenario: Enlace no adivinable
-- **WHEN** el sistema genera el identificador de una invitación
-- **THEN** ese identificador tiene al menos 128 bits de entropía y se genera con un generador criptográficamente seguro
+#### Scenario: Unguessable link
+- **WHEN** the system generates an invitation identifier
+- **THEN** that identifier has at least 128 bits of entropy and is produced by a cryptographically secure generator
 
-### Requirement: Incorporación al viaje sin cuenta
-El sistema SHALL permitir a cualquier persona que abra una invitación activa incorporarse al viaje indicando únicamente un nombre visible. El sistema NO SHALL exigir contraseña, correo electrónico ni verificación externa para completar la incorporación.
+### Requirement: Joining a trip without an account
+The system SHALL allow anyone opening an active invitation to join the trip by providing only a display name. The system SHALL NOT require a password, an email address or any external verification to complete joining.
 
-#### Scenario: Incorporación correcta
-- **WHEN** una persona abre una invitación activa e introduce el nombre "Ana"
-- **THEN** el sistema la registra como participante del viaje con el rol que llevaba la invitación
-- **AND** la lleva a la pantalla del viaje, donde ya puede consultar y registrar gastos
+#### Scenario: Successful join
+- **WHEN** a person opens an active invitation and enters the name "Ana"
+- **THEN** the system records them as a participant of the trip with the role carried by the invitation
+- **AND** takes them to the trip screen, where they can already view and record expenses
 
-#### Scenario: Nombre vacío
-- **WHEN** una persona intenta incorporarse sin indicar nombre
-- **THEN** el sistema rechaza la incorporación e informa de que el nombre es obligatorio
+#### Scenario: Empty name
+- **WHEN** a person attempts to join without providing a name
+- **THEN** the system rejects the join and reports that the name is required
 
-#### Scenario: Nombre ya usado en el mismo viaje
-- **WHEN** una persona intenta incorporarse con un nombre que ya usa otro participante del mismo viaje, ignorando mayúsculas y espacios sobrantes
-- **THEN** el sistema rechaza la incorporación e informa de que ese nombre ya está en uso en este viaje
+#### Scenario: Name already used in the same trip
+- **WHEN** a person attempts to join with a name already used by another participant of the same trip, ignoring case and surrounding whitespace
+- **THEN** the system rejects the join and reports that the name is already taken in this trip
 
-#### Scenario: Invitación inexistente o mal formada
-- **WHEN** una persona abre una URL de invitación que no corresponde a ninguna invitación
-- **THEN** el sistema muestra un mensaje indicando que la invitación no es válida, y no revela ninguna información del viaje
+#### Scenario: Missing or malformed invitation
+- **WHEN** a person opens an invitation URL that matches no invitation
+- **THEN** the system shows a message stating that the invitation is not valid, and discloses no information about any trip
 
-### Requirement: Persistencia de la identidad en el dispositivo
-Tras incorporarse a un viaje, el sistema SHALL emitir al participante una credencial de sesión que se conserva en su dispositivo, de forma que en visitas posteriores acceda al viaje sin volver a identificarse. Esa credencial SHALL dar acceso únicamente a los viajes en los que la persona participa.
+### Requirement: Identity persistence on the device
+After joining a trip, the system SHALL issue the participant a session credential stored on their device, so that later visits reach the trip without identifying again. That credential SHALL grant access only to the trips the person takes part in.
 
-#### Scenario: Regreso al viaje desde el mismo dispositivo
-- **WHEN** un participante que ya se incorporó vuelve a abrir la aplicación en el mismo dispositivo
-- **THEN** el sistema lo reconoce y le muestra directamente sus viajes, sin pedirle el nombre de nuevo
+#### Scenario: Returning to the trip from the same device
+- **WHEN** a participant who already joined reopens the application on the same device
+- **THEN** the system recognises them and shows their trips directly, without asking for a name again
 
-#### Scenario: Acceso desde un dispositivo sin credencial
-- **WHEN** una persona abre la URL de un viaje en un dispositivo que no tiene credencial para ese viaje
-- **THEN** el sistema no muestra los datos del viaje y ofrece la vía de incorporación mediante invitación
+#### Scenario: Access from a device with no credential
+- **WHEN** a person opens a trip URL on a device that holds no credential for that trip
+- **THEN** the system does not show the trip data and offers the join path through an invitation
 
-#### Scenario: Reutilización de la invitación desde un segundo dispositivo
-- **WHEN** un participante ya incorporado abre de nuevo la misma invitación desde otro dispositivo e introduce exactamente el nombre con el que ya figura en el viaje
-- **THEN** el sistema le ofrece continuar como ese participante existente en lugar de crear uno duplicado
-- **AND** al confirmarlo, emite una credencial para ese participante en el nuevo dispositivo
+#### Scenario: Reusing the invitation from a second device
+- **WHEN** an already joined participant reopens the same invitation from another device and enters exactly the name they are registered under
+- **THEN** the system offers to continue as that existing participant instead of creating a duplicate
+- **AND** on confirmation, issues a credential for that participant on the new device
 
-### Requirement: Revocación y caducidad de invitaciones
-El sistema SHALL permitir a un `admin` revocar una invitación activa. Una invitación revocada o caducada NO SHALL permitir nuevas incorporaciones, y SHALL dejar intactos a los participantes que ya se incorporaron con ella.
+### Requirement: Invitation revocation and expiry
+The system SHALL allow an `admin` to revoke an active invitation. A revoked or expired invitation SHALL NOT allow further joins, and SHALL leave untouched the participants who already joined through it.
 
-#### Scenario: Revocación de una invitación
-- **WHEN** un `admin` revoca una invitación
-- **THEN** cualquier intento posterior de usar esa URL es rechazado con un mensaje de invitación no válida
-- **AND** los participantes que ya se habían incorporado con ella conservan su acceso
+#### Scenario: Revoking an invitation
+- **WHEN** an `admin` revokes an invitation
+- **THEN** any later attempt to use that URL is rejected with an invalid invitation message
+- **AND** the participants who had already joined through it keep their access
 
-#### Scenario: Invitación caducada
-- **WHEN** una persona abre una invitación cuya fecha de caducidad ya ha pasado
-- **THEN** el sistema rechaza la incorporación e indica que la invitación ha caducado
+#### Scenario: Expired invitation
+- **WHEN** a person opens an invitation whose expiry date has passed
+- **THEN** the system rejects the join and states that the invitation has expired
 
-#### Scenario: Invitación sobre un viaje cerrado
-- **WHEN** una persona abre una invitación de un viaje en estado `closed`
-- **THEN** el sistema rechaza la incorporación e informa de que el viaje está cerrado
+#### Scenario: Invitation to a closed trip
+- **WHEN** a person opens an invitation to a trip in the `closed` state
+- **THEN** the system rejects the join and reports that the trip is closed
 
-### Requirement: Expulsión de participantes
-El sistema SHALL permitir a un `admin` retirar a un participante de un viaje en estado `open`. Si ese participante tiene gastos, pagos o participaciones en el reparto asociados, el sistema NO SHALL borrarlo: SHALL rechazar la expulsión e indicar qué le impide salir del viaje, para no dejar los saldos incoherentes.
+### Requirement: Removing participants
+The system SHALL allow an `admin` to remove a participant from a trip in the `open` state. If that participant has any expense, payment or expense share attached to them, the system SHALL NOT delete them: it SHALL reject the removal and state what prevents them from leaving, so that balances are never left inconsistent.
 
-#### Scenario: Expulsión de un participante sin actividad económica
-- **WHEN** un `admin` expulsa a un participante que no ha pagado ningún gasto ni figura en el reparto de ninguno
-- **THEN** el sistema lo retira del viaje y su credencial deja de dar acceso a él
+#### Scenario: Removing a participant with no financial activity
+- **WHEN** an `admin` removes a participant who has paid no expense and appears in no expense share
+- **THEN** the system removes them from the trip and their credential stops granting access to it
 
-#### Scenario: Expulsión de un participante con gastos
-- **WHEN** un `admin` intenta expulsar a un participante que ha pagado al menos un gasto o participa en el reparto de alguno
-- **THEN** el sistema rechaza la expulsión e informa de cuántos gastos lo implican
+#### Scenario: Removing a participant with expenses
+- **WHEN** an `admin` attempts to remove a participant who has paid at least one expense or takes part in the share of one
+- **THEN** the system rejects the removal and reports how many expenses involve them

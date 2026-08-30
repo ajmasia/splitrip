@@ -1,62 +1,62 @@
 ## Why
 
-Repartir los gastos de un viaje en grupo se sigue haciendo con notas en el móvil, mensajes de chat y una hoja de cálculo que alguien mantiene al volver. El resultado es que nadie sabe cuánto lleva gastado el grupo mientras el viaje ocurre, y la liquidación se pospone semanas.
+Splitting the cost of a group trip is still done with notes on a phone, chat messages and a spreadsheet somebody maintains once everyone is back home. The result is that nobody knows how much the group has spent while the trip is happening, and settling up gets postponed for weeks.
 
-Splitrip resuelve exactamente eso: durante el viaje, cualquier participante apunta un gasto en segundos desde el móvil y todos ven al instante el total del viaje y quién debe cuánto a quién. Es una PWA desplegable en Vercel, sin fricción de registro: se entra por un QR o un enlace.
+Splitrip solves exactly that: during the trip, any participant logs an expense in seconds from their phone and everyone immediately sees the trip total and who owes what to whom. It is a PWA deployable on Vercel, with no sign-up friction: you get in through a QR code or a link.
 
 ## What Changes
 
-Esta es la primera versión del producto. No hay código previo: el change introduce la aplicación completa en su alcance mínimo viable.
+This is the first release of the product. There is no prior code: the change introduces the whole application at its minimum viable scope.
 
-- **Gestión de viajes**: crear un viaje (nombre, fechas opcionales, divisa base), ver la lista de viajes en los que participas, y cerrar un viaje cuando termina.
-- **Roles**: cada viaje tiene al menos un organizador (admin) y N participantes. El organizador puede invitar, expulsar, editar cualquier gasto y cerrar el viaje. El participante gestiona sus propios gastos.
-- **Invitación sin cuenta**: el organizador genera un enlace de invitación (y su QR). Quien lo abre escribe su nombre y queda dentro del viaje con el rol que llevaba la invitación. La sesión persiste en el dispositivo; no hay contraseñas ni email en esta versión.
-- **Registro de gastos**: importe, concepto, fecha, quién pagó y entre quiénes se reparte. Dos tipos de gasto:
-  - `shared`: se reparte a partes iguales entre los participantes seleccionados (por defecto, todos).
-  - `contribution`: lo paga una persona, suma al total del viaje y **no genera deuda** — cubre el caso "esto lo pongo yo".
-- **Reparto parcial**: un gasto puede repartirse solo entre un subconjunto de participantes (la cena a la que fueron 3 de 5), siempre a partes iguales entre los elegidos.
-- **Dashboard de estado**: total gastado en el viaje, desglose por participante (cuánto ha pagado cada uno frente a cuánto le corresponde) y saldo neto de cada persona.
-- **Liquidación**: cálculo del conjunto mínimo de transferencias que salda todas las deudas del grupo, y registro de pagos ("ya le he pagado 40 € a Ana") que actualiza los saldos.
-- **Vistas de administración**: el organizador dispone de una vista de control del viaje con el total gastado, el desglose por participante (pagado frente a lo que le corresponde), el reparto por tipo de gasto (`shared` frente a `contribution`), la evolución del gasto por día y el detalle completo de todos los gastos del viaje con filtros. Es la vista que responde a "¿cómo vamos?" sin tener que abrir gasto por gasto.
-- **Resumen de cierre**: al cerrar el viaje se congela un resumen que **todos los participantes** pueden consultar: total del viaje, coste por persona, lo que aportó cada uno, las contribuciones no repartidas y la liquidación final con el estado de cada pago. El viaje cerrado pasa a ser de solo lectura y su resumen queda disponible de forma permanente.
-- **Tiempo real y actividad**: los cambios de cualquier participante se reflejan al instante en las pantallas abiertas del resto, y el viaje mantiene un feed de actividad reciente que deja rastro de quién hizo qué.
-- **Bilingüe (español / inglés)**: toda la interfaz está traducida a español e inglés. El idioma por defecto es el español; la aplicación detecta el idioma del dispositivo y el usuario puede cambiarlo manualmente en cualquier momento.
-- **PWA instalable**: interfaz mobile-first, instalable en la pantalla de inicio de iOS y Android, con shell cacheado para que abra rápido.
+- **Trip management**: create a trip (name, optional dates, base currency), see the list of trips you take part in, and close a trip when it ends.
+- **Roles**: every trip has at least one organiser (admin) and N participants. The organiser can invite, remove participants, edit any expense and close the trip. A participant manages their own expenses.
+- **Account-free invitations**: the organiser generates an invitation link (and its QR code). Whoever opens it types their name and is in, with the role the invitation carried. The session persists on the device; there are no passwords or email addresses in this release.
+- **Expense tracking**: amount, description, date, who paid and who it is split among. Two expense types:
+  - `shared`: split equally among the selected participants (all of them by default).
+  - `contribution`: paid by one person, adds to the trip total and creates **no debt** — this covers the "this one is on me" case.
+- **Partial splits**: an expense can be split among only a subset of participants (the dinner three out of five attended), always equally among those chosen.
+- **Status dashboard**: total spent on the trip, per-participant breakdown (how much each has paid against how much they are charged) and each person's net balance.
+- **Settlement**: computation of the minimum set of transfers that clears every debt in the group, and recording of payments ("I already paid Ana €40") that updates the balances.
+- **Real time and activity**: changes made by any participant are reflected immediately on everyone else's open screens, and the trip keeps a recent activity feed that traces who did what.
+- **Organiser views**: the organiser gets a trip dashboard with the total spent, the per-participant breakdown (paid against charged), the split between `shared` and `contribution` spending, spending over time by day, and the full filterable detail of every expense. This is the view that answers "how are we doing?" without opening expenses one by one.
+- **Closing summary**: closing the trip freezes a summary that **every participant** can consult: trip total, cost per person, what each person put in, the contributions that were not split, and the final settlement with the state of each payment. A closed trip becomes read-only and its summary stays available permanently.
+- **Bilingual (Spanish / English)**: the whole interface is translated into Spanish and English. The default language is Spanish; the application detects the device language and the user can change it manually at any time.
+- **Installable PWA**: mobile-first interface, installable to the home screen on iOS and Android, with a cached shell so it opens fast.
 
-### Fuera de alcance en esta versión
+### Out of scope for this release
 
-Decisiones tomadas de forma explícita, para acotar la v1:
+Decisions taken explicitly, to bound the first release:
 
-- **Web Push** (notificaciones con la app cerrada). La sincronización en tiempo real y el feed de actividad cubren el caso de uso dominante — el grupo está de viaje junto y con la app a mano — mientras que push en iOS exige que la PWA esté instalada y sigue siendo frágil. Queda como fase 2.
-- **Multi-divisa en la interfaz**. La v1 opera solo en euros, pero el modelo de datos guarda divisa e importe desde el primer día para que añadir conversión más adelante no obligue a migrar los gastos ya registrados.
-- **Foto del ticket** como justificante adjunto al gasto.
-- **Reparto por porcentajes o partes desiguales** (más allá de excluir participantes de un gasto).
-- **Recuperación de acceso entre dispositivos** vía email. Si un participante pierde su dispositivo, el organizador le regenera una invitación.
-- **Escritura sin conexión**. La PWA cachea el shell para arrancar rápido, pero registrar un gasto requiere conexión.
+- **Web Push** (notifications with the app closed). Real-time sync and the activity feed cover the dominant use case — the group is travelling together with the app at hand — while push on iOS requires the PWA to be installed and remains fragile. Deferred to phase 2.
+- **Multi-currency in the interface**. This release operates in euros only, but the data model stores currency and amount from day one so that adding conversion later does not force a migration of the expenses already recorded.
+- **Receipt photos** attached to an expense.
+- **Percentage or uneven splits** (beyond excluding participants from an expense).
+- **Cross-device access recovery** by email. If a participant loses their device, the organiser regenerates an invitation for them.
+- **Offline writes**. The PWA caches the shell so it starts fast, but recording an expense requires a connection.
 
 ## Capabilities
 
 ### New Capabilities
 
-- `trip-management`: ciclo de vida de un viaje (creación, datos básicos, participantes, roles admin/participante, cierre) y la lista de viajes de una persona.
-- `trip-invitations`: generación de enlaces y códigos QR de invitación, incorporación de un viajero sin cuenta mediante nombre, identidad ligada al dispositivo, revocación de invitaciones y expulsión de participantes.
-- `expense-tracking`: alta, edición y borrado de gastos de un viaje, con pagador, tipo (`shared` / `contribution`), conjunto de participantes entre los que se reparte, e importe con divisa.
-- `balance-settlement`: cálculo de saldos por participante a partir de los gastos, propuesta de liquidación con el mínimo de transferencias, y registro de pagos que saldan deuda.
-- `trip-reporting`: vistas agregadas del viaje — panel de control del organizador con totales y desgloses, y resumen de cierre congelado y consultable por todos los participantes.
-- `realtime-activity`: propagación en tiempo real de los cambios del viaje a los clientes conectados y feed de actividad reciente.
-- `localization`: soporte bilingüe español/inglés de la interfaz, con español por defecto, detección del idioma del dispositivo, cambio manual persistente y formateo de importes y fechas según el idioma activo.
-- `pwa-shell`: instalabilidad de la aplicación en el móvil, manifiesto, service worker de shell y comportamiento de la interfaz mobile-first.
+- `trip-management`: the life cycle of a trip (creation, basic data, participants, admin/participant roles, closing) and a person's trip list.
+- `trip-invitations`: generation of invitation links and QR codes, joining without an account by providing a name, device-bound identity, invitation revocation and participant removal.
+- `expense-tracking`: creation, editing and deletion of a trip's expenses, with payer, type (`shared` / `contribution`), the set of participants it is split among, and an amount with a currency.
+- `balance-settlement`: per-participant balance computation from the expenses, a settlement proposal with the minimum number of transfers, and recording of payments that clear debt.
+- `trip-reporting`: aggregate trip views — the organiser dashboard with totals and breakdowns, and the frozen closing summary every participant can consult.
+- `realtime-activity`: real-time propagation of trip changes to connected clients, and the recent activity feed.
+- `localization`: bilingual Spanish/English interface, with Spanish as the default, device language detection, a persistent manual switch, and amount and date formatting per the active language.
+- `pwa-shell`: installability on a phone, the manifest, the shell service worker and the behaviour of the mobile-first interface.
 
 ### Modified Capabilities
 
-Ninguna. El proyecto no tiene specs previas.
+None. The project has no prior specs.
 
 ## Impact
 
-- **Repositorio**: proyecto nuevo. Se introduce toda la base de código: Next.js (App Router) desplegado en Vercel, con TypeScript.
-- **Datos y backend**: Supabase — Postgres para el modelo de datos, Realtime para la propagación de cambios y Row Level Security para el aislamiento entre viajes. Se crean las tablas de viajes, participantes, invitaciones, gastos, participaciones en gasto, pagos y actividad.
-- **Autenticación**: no se usa un proveedor de identidad. La sesión es un token de participante emitido al aceptar la invitación y guardado en el dispositivo; la autorización se apoya en ese token frente a las políticas RLS.
-- **Dependencias nuevas**: framework web y cliente de Supabase, biblioteca de generación de QR, y utilidad de aritmética decimal para importes monetarios (los importes se guardan en céntimos como entero para evitar errores de coma flotante).
-- **Desarrollo local**: todo el entorno corre en Docker. El stack de Supabase (Postgres, Realtime, Studio, API) se levanta en contenedores con la CLI de Supabase, y la aplicación web se ejecuta en su propio contenedor, orquestado con `docker compose`. Un desarrollador clona el repositorio y arranca con un solo comando, sin depender de un proyecto remoto.
-- **Operativa**: despliegue en Vercel, proyecto de Supabase gestionado para producción, y variables de entorno para ambos. Las migraciones de base de datos viven en el repositorio y se aplican tanto al entorno local en Docker como al remoto. Sin coste en los planes gratuitos al volumen esperado.
-- **Riesgo principal**: el modelo "sin cuenta" implica que quien tenga el enlace de invitación puede entrar en el viaje. Se mitiga con invitaciones revocables y caducables, y expulsión de participantes, pero es una decisión de producto consciente a favor de la ausencia de fricción.
+- **Repository**: new project. The whole codebase is introduced: Next.js (App Router) deployed on Vercel, in TypeScript.
+- **Data and backend**: Supabase — Postgres for the data model, Realtime for change propagation and Row Level Security for isolation between trips. Tables are created for trips, participants, invitations, expenses, expense shares, payments and activity.
+- **Authentication**: no identity provider is used. The session is a participant token issued on accepting the invitation and stored on the device; authorisation rests on that token against the RLS policies.
+- **New dependencies**: the web framework and the Supabase client, a QR generation library, and a decimal arithmetic utility for monetary amounts (amounts are stored as integer cents to avoid floating-point errors).
+- **Local development**: the whole environment runs in Docker. The Supabase stack (Postgres, Realtime, Studio, API) comes up in containers through the Supabase CLI, and the web application runs in its own container, orchestrated with `docker compose`. A developer clones the repository and starts with a single command, with no dependency on a remote project.
+- **Operations**: deployment on Vercel, a managed Supabase project for production, and environment variables for both. Database migrations live in the repository and are applied to both the local Docker environment and the remote one. No cost on the free tiers at the expected volume.
+- **Main risk**: the account-free model means anyone holding the invitation link can enter the trip. This is mitigated with revocable and expiring invitations and with participant removal, but it is a deliberate product decision in favour of zero friction.

@@ -1,91 +1,91 @@
 ## Purpose
 
-Define el ciclo de vida de un viaje compartido: su creación, los datos que lo describen, quién participa y con qué rol, y su cierre cuando el viaje termina. Es la capacidad que delimita el ámbito dentro del cual existen los gastos y los saldos.
+Defines the life cycle of a shared trip: how it is created, the data that describes it, who takes part and in what role, and how it is closed when the trip ends. This is the capability that bounds the scope within which expenses and balances exist.
 
 ## ADDED Requirements
 
-### Requirement: Creación de un viaje
-El sistema SHALL permitir a cualquier persona crear un viaje indicando un nombre. La persona que lo crea SHALL quedar registrada como participante del viaje con rol `admin`. El viaje SHALL nacer en estado `open` y con divisa base `EUR`.
+### Requirement: Trip creation
+The system SHALL allow any person to create a trip by providing a name. The person who creates it SHALL be recorded as a participant of the trip with the `admin` role. The trip SHALL start in the `open` state with `EUR` as its base currency.
 
-#### Scenario: Creación con los datos mínimos
-- **WHEN** una persona crea un viaje indicando únicamente el nombre "Islandia 2026"
-- **THEN** el sistema crea el viaje en estado `open`, con divisa base `EUR`, y registra a esa persona como participante con rol `admin`
-- **AND** la redirige a la pantalla del viaje recién creado
+#### Scenario: Creation with the minimum data
+- **WHEN** a person creates a trip providing only the name "Iceland 2026"
+- **THEN** the system creates the trip in the `open` state, with `EUR` as base currency, and records that person as a participant with the `admin` role
+- **AND** redirects them to the screen of the newly created trip
 
-#### Scenario: Nombre de viaje vacío
-- **WHEN** una persona intenta crear un viaje sin nombre o con un nombre que solo contiene espacios
-- **THEN** el sistema rechaza la creación e informa de que el nombre es obligatorio
+#### Scenario: Empty trip name
+- **WHEN** a person attempts to create a trip with no name, or with a name containing only whitespace
+- **THEN** the system rejects the creation and reports that the name is required
 
-#### Scenario: Fechas opcionales
-- **WHEN** una persona crea un viaje indicando fecha de inicio y fecha de fin
-- **THEN** el sistema guarda ambas fechas asociadas al viaje
-- **AND** si la fecha de fin es anterior a la de inicio, rechaza la creación e informa del error
+#### Scenario: Optional dates
+- **WHEN** a person creates a trip providing a start date and an end date
+- **THEN** the system stores both dates with the trip
+- **AND** if the end date precedes the start date, it rejects the creation and reports the error
 
-### Requirement: Lista de viajes de un participante
-El sistema SHALL mostrar a cada persona la lista de viajes en los que participa, y SHALL excluir de esa lista los viajes en los que no participa.
+### Requirement: A participant's trip list
+The system SHALL show each person the list of trips they take part in, and SHALL exclude from that list any trip they do not take part in.
 
-#### Scenario: Participante con varios viajes
-- **WHEN** un participante que pertenece a tres viajes abre la aplicación
-- **THEN** el sistema lista esos tres viajes con su nombre, su estado (`open` o `closed`) y el total gastado en cada uno
-- **AND** no muestra ningún viaje del que no sea participante
+#### Scenario: Participant with several trips
+- **WHEN** a participant who belongs to three trips opens the application
+- **THEN** the system lists those three trips with their name, their state (`open` or `closed`) and the total spent on each
+- **AND** shows no trip they are not a participant of
 
-#### Scenario: Persona sin viajes
-- **WHEN** una persona sin ningún viaje abre la aplicación
-- **THEN** el sistema muestra un estado vacío que ofrece crear un viaje o unirse a uno mediante invitación
+#### Scenario: Person with no trips
+- **WHEN** a person with no trips opens the application
+- **THEN** the system shows an empty state offering to create a trip or to join one through an invitation
 
-### Requirement: Roles y permisos dentro de un viaje
-Cada participante de un viaje SHALL tener exactamente uno de dos roles: `admin` u `participant`. Un `admin` SHALL poder editar los datos del viaje, invitar y expulsar participantes, cambiar roles, editar o borrar cualquier gasto del viaje y cerrarlo. Un `participant` SHALL poder registrar gastos, y editar o borrar únicamente los gastos que él mismo ha registrado. Ambos roles SHALL poder consultar todos los gastos, los saldos y la liquidación del viaje.
+### Requirement: Roles and permissions within a trip
+Every participant of a trip SHALL hold exactly one of two roles: `admin` or `participant`. An `admin` SHALL be able to edit the trip data, invite and remove participants, change roles, edit or delete any expense of the trip, and close it. A `participant` SHALL be able to record expenses, and to edit or delete only the expenses they recorded themselves. Both roles SHALL be able to view every expense, balance and settlement of the trip.
 
-#### Scenario: Participante edita un gasto ajeno
-- **WHEN** un participante con rol `participant` intenta editar un gasto registrado por otra persona
-- **THEN** el sistema rechaza la operación e informa de que solo puede modificar sus propios gastos
+#### Scenario: Participant edits someone else's expense
+- **WHEN** a participant with the `participant` role attempts to edit an expense recorded by someone else
+- **THEN** the system rejects the operation and reports that they may only modify their own expenses
 
-#### Scenario: Organizador edita un gasto ajeno
-- **WHEN** un participante con rol `admin` edita un gasto registrado por otra persona
-- **THEN** el sistema aplica el cambio y lo atribuye en el registro de actividad al `admin` que lo realizó
+#### Scenario: Admin edits someone else's expense
+- **WHEN** a participant with the `admin` role edits an expense recorded by someone else
+- **THEN** the system applies the change and attributes it in the activity log to the `admin` who made it
 
-#### Scenario: Promoción de un participante a organizador
-- **WHEN** un `admin` cambia el rol de otro participante a `admin`
-- **THEN** ese participante pasa a disponer de todos los permisos de organizador
+#### Scenario: Promoting a participant to admin
+- **WHEN** an `admin` changes another participant's role to `admin`
+- **THEN** that participant gains every organiser permission
 
-### Requirement: Garantía de al menos un organizador
-Un viaje SHALL tener en todo momento al menos un participante con rol `admin`. El sistema SHALL rechazar cualquier operación que dejaría el viaje sin ningún organizador.
+### Requirement: At least one admin is guaranteed
+A trip SHALL have at least one participant with the `admin` role at all times. The system SHALL reject any operation that would leave the trip with no admin.
 
-#### Scenario: El único organizador intenta degradarse
-- **WHEN** el único participante con rol `admin` intenta cambiar su propio rol a `participant`
-- **THEN** el sistema rechaza la operación e informa de que el viaje debe conservar al menos un organizador
+#### Scenario: The only admin attempts to demote themselves
+- **WHEN** the only participant with the `admin` role attempts to change their own role to `participant`
+- **THEN** the system rejects the operation and reports that the trip must keep at least one admin
 
-#### Scenario: Degradación con otro organizador presente
-- **WHEN** un `admin` cambia su rol a `participant` en un viaje que tiene otro `admin`
-- **THEN** el sistema aplica el cambio
+#### Scenario: Demotion with another admin present
+- **WHEN** an `admin` changes their role to `participant` in a trip that has another `admin`
+- **THEN** the system applies the change
 
-### Requirement: Edición de los datos del viaje
-El sistema SHALL permitir a un `admin` modificar el nombre y las fechas de un viaje en estado `open`.
+### Requirement: Editing the trip data
+The system SHALL allow an `admin` to modify the name and the dates of a trip in the `open` state.
 
-#### Scenario: Organizador renombra el viaje
-- **WHEN** un `admin` cambia el nombre del viaje
-- **THEN** el sistema guarda el nuevo nombre y lo refleja para todos los participantes
+#### Scenario: Admin renames the trip
+- **WHEN** an `admin` changes the trip name
+- **THEN** the system stores the new name and reflects it for every participant
 
-#### Scenario: Participante intenta editar el viaje
-- **WHEN** un participante con rol `participant` intenta cambiar el nombre del viaje
-- **THEN** el sistema rechaza la operación e informa de que requiere permisos de organizador
+#### Scenario: Participant attempts to edit the trip
+- **WHEN** a participant with the `participant` role attempts to change the trip name
+- **THEN** the system rejects the operation and reports that admin permissions are required
 
-### Requirement: Cierre y reapertura de un viaje
-El sistema SHALL permitir a un `admin` cerrar un viaje en estado `open`. Un viaje en estado `closed` SHALL ser de solo lectura: no se admiten altas, ediciones ni borrados de gastos, pagos o participantes. El sistema SHALL permitir a un `admin` reabrir un viaje cerrado, devolviéndolo al estado `open`.
+### Requirement: Closing and reopening a trip
+The system SHALL allow an `admin` to close a trip in the `open` state. A trip in the `closed` state SHALL be read-only: no creation, edit or deletion of expenses, payments or participants is accepted. The system SHALL allow an `admin` to reopen a closed trip, returning it to the `open` state.
 
-#### Scenario: Cierre del viaje
-- **WHEN** un `admin` cierra el viaje
-- **THEN** el sistema marca el viaje como `closed`, genera su resumen de cierre y lo pone a disposición de todos los participantes
+#### Scenario: Closing the trip
+- **WHEN** an `admin` closes the trip
+- **THEN** the system marks the trip as `closed`, generates its closing summary and makes it available to every participant
 
-#### Scenario: Intento de registrar un gasto en un viaje cerrado
-- **WHEN** cualquier participante intenta registrar un gasto en un viaje en estado `closed`
-- **THEN** el sistema rechaza la operación e informa de que el viaje está cerrado
+#### Scenario: Attempt to record an expense on a closed trip
+- **WHEN** any participant attempts to record an expense on a trip in the `closed` state
+- **THEN** the system rejects the operation and reports that the trip is closed
 
-#### Scenario: Reapertura del viaje
-- **WHEN** un `admin` reabre un viaje en estado `closed`
-- **THEN** el sistema devuelve el viaje al estado `open` y vuelve a admitir cambios
-- **AND** el resumen de cierre deja de estar congelado y se recalculará en el siguiente cierre
+#### Scenario: Reopening the trip
+- **WHEN** an `admin` reopens a trip in the `closed` state
+- **THEN** the system returns the trip to the `open` state and accepts changes again
+- **AND** the closing summary is no longer frozen and will be recalculated on the next close
 
-#### Scenario: Participante intenta cerrar el viaje
-- **WHEN** un participante con rol `participant` intenta cerrar el viaje
-- **THEN** el sistema rechaza la operación e informa de que requiere permisos de organizador
+#### Scenario: Participant attempts to close the trip
+- **WHEN** a participant with the `participant` role attempts to close the trip
+- **THEN** the system rejects the operation and reports that admin permissions are required

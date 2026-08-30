@@ -1,67 +1,67 @@
 ## Purpose
 
-Mantiene a todo el grupo mirando la misma realidad: cuando alguien registra o corrige un gasto, el resto lo ve al instante sin recargar, y el viaje conserva un rastro legible de quién hizo qué. Es lo que evita el "¿ya has apuntado tú la cena?" durante el viaje.
+Keeps the whole group looking at the same reality: when someone records or corrects an expense, everyone else sees it at once without reloading, and the trip keeps a readable trace of who did what. This is what removes the "have you already logged the dinner?" question during the trip.
 
 ## ADDED Requirements
 
-### Requirement: Propagación en tiempo real de los cambios del viaje
-El sistema SHALL propagar a todos los clientes conectados a un viaje, sin intervención del usuario y en un plazo de pocos segundos, las altas, ediciones y bajas de gastos y pagos, así como las incorporaciones de participantes. Los totales, saldos y liquidación mostrados SHALL actualizarse en consecuencia.
+### Requirement: Real-time propagation of trip changes
+The system SHALL propagate to every client connected to a trip, without user action and within a few seconds, the creation, edit and deletion of expenses and payments, as well as participants joining. The totals, balances and settlement on display SHALL update accordingly.
 
-#### Scenario: Un gasto registrado por otra persona aparece al instante
-- **WHEN** un participante tiene abierta la pantalla del viaje y otro participante registra un gasto desde su móvil
-- **THEN** el gasto aparece en la pantalla del primero sin que este recargue ni interactúe
-- **AND** el total del viaje y los saldos se actualizan con ese gasto
+#### Scenario: An expense recorded by someone else appears at once
+- **WHEN** a participant has the trip screen open and another participant records an expense from their phone
+- **THEN** the expense appears on the first participant's screen without them reloading or interacting
+- **AND** the trip total and the balances update with that expense
 
-#### Scenario: Corrección propagada
-- **WHEN** un participante corrige el importe de un gasto mientras otros tienen la pantalla abierta
-- **THEN** el importe corregido y los saldos recalculados se reflejan en las pantallas del resto
+#### Scenario: Propagated correction
+- **WHEN** a participant corrects the amount of an expense while others have the screen open
+- **THEN** the corrected amount and the recalculated balances are reflected on the other screens
 
-#### Scenario: Incorporación de un participante
-- **WHEN** una persona se incorpora al viaje mediante una invitación
-- **THEN** aparece en la lista de participantes de quienes tienen el viaje abierto
+#### Scenario: A participant joins
+- **WHEN** a person joins the trip through an invitation
+- **THEN** they appear in the participant list of everyone who has the trip open
 
-### Requirement: Aislamiento de los datos por viaje
-El sistema SHALL entregar las actualizaciones en tiempo real únicamente a los participantes del viaje al que corresponden. Un cliente NO SHALL recibir datos de viajes en los que no participa.
+### Requirement: Data isolation per trip
+The system SHALL deliver real-time updates only to the participants of the trip they belong to. A client SHALL NOT receive data from trips they do not take part in.
 
-#### Scenario: Cliente de otro viaje
-- **WHEN** un cliente conectado al viaje A está activo mientras se registra un gasto en el viaje B
-- **THEN** ese cliente no recibe ninguna información sobre el gasto del viaje B
+#### Scenario: Client of another trip
+- **WHEN** a client connected to trip A is active while an expense is recorded on trip B
+- **THEN** that client receives no information about the trip B expense
 
-#### Scenario: Participante expulsado
-- **WHEN** un `admin` retira a un participante del viaje
-- **THEN** ese participante deja de recibir actualizaciones en tiempo real de ese viaje
+#### Scenario: Removed participant
+- **WHEN** an `admin` removes a participant from the trip
+- **THEN** that participant stops receiving real-time updates for that trip
 
-### Requirement: Recuperación tras pérdida de conexión
-El sistema SHALL indicar al usuario cuándo la conexión en tiempo real no está activa, y SHALL restablecerla y sincronizar los datos pendientes al recuperar la conectividad, sin exigir que el usuario recargue la aplicación.
+### Requirement: Recovery after connection loss
+The system SHALL indicate to the user when the real-time connection is not active, and SHALL restore it and synchronise the pending data once connectivity returns, without requiring the user to reload the application.
 
-#### Scenario: Pérdida temporal de cobertura
-- **WHEN** un participante pierde la conexión mientras tiene el viaje abierto
-- **THEN** el sistema muestra un indicador de que los datos pueden no estar actualizados
+#### Scenario: Temporary loss of coverage
+- **WHEN** a participant loses connection while they have the trip open
+- **THEN** the system shows an indicator that the data may not be up to date
 
-#### Scenario: Recuperación de la conexión
-- **WHEN** la conexión se restablece
-- **THEN** el sistema vuelve a suscribirse, recarga los datos del viaje y retira el indicador
-- **AND** la pantalla refleja los cambios ocurridos durante la desconexión
+#### Scenario: Connection restored
+- **WHEN** the connection is restored
+- **THEN** the system resubscribes, reloads the trip data and removes the indicator
+- **AND** the screen reflects the changes that occurred while disconnected
 
-### Requirement: Feed de actividad del viaje
-El sistema SHALL registrar y mostrar un feed cronológico de la actividad del viaje. Cada entrada SHALL indicar quién realizó la acción, qué acción fue y cuándo. SHALL registrarse al menos: alta, edición y borrado de gastos; alta y anulación de pagos; incorporación y salida de participantes; y cierre y reapertura del viaje.
+### Requirement: Trip activity feed
+The system SHALL record and display a chronological activity feed for the trip. Each entry SHALL state who performed the action, what the action was and when. At least the following SHALL be recorded: creation, edit and deletion of expenses; creation and voiding of payments; participants joining and leaving; and the closing and reopening of the trip.
 
-#### Scenario: Consulta del feed
-- **WHEN** un participante abre el feed de actividad del viaje
-- **THEN** el sistema muestra las entradas más recientes primero, cada una con autor, acción y momento
+#### Scenario: Viewing the feed
+- **WHEN** a participant opens the trip activity feed
+- **THEN** the system shows the most recent entries first, each with author, action and timestamp
 
-#### Scenario: Entrada generada por un gasto nuevo
-- **WHEN** Ana registra un gasto "Cena" de 60,00 €
-- **THEN** el feed incorpora una entrada del tipo "Ana añadió Cena · 60,00 €" con su marca temporal
+#### Scenario: Entry created by a new expense
+- **WHEN** Ana records a "Dinner" expense of €60.00
+- **THEN** the feed gains an entry of the form "Ana added Dinner · €60.00" with its timestamp
 
-#### Scenario: Entrada generada por una edición
-- **WHEN** un `admin` corrige un gasto registrado por otra persona
-- **THEN** el feed incorpora una entrada que identifica al `admin` como autor de la corrección
+#### Scenario: Entry created by an edit
+- **WHEN** an `admin` corrects an expense recorded by someone else
+- **THEN** the feed gains an entry identifying the `admin` as the author of the correction
 
-#### Scenario: El feed llega en tiempo real
-- **WHEN** se produce cualquier acción registrable mientras un participante tiene el viaje abierto
-- **THEN** la entrada correspondiente aparece en su feed sin recargar
+#### Scenario: The feed arrives in real time
+- **WHEN** any recordable action occurs while a participant has the trip open
+- **THEN** the corresponding entry appears in their feed without reloading
 
-#### Scenario: Aviso de novedades
-- **WHEN** se produce actividad en el viaje mientras el participante está en otra pantalla de la aplicación
-- **THEN** el sistema le muestra un indicador de que hay actividad nueva sin interrumpir lo que está haciendo
+#### Scenario: New activity indicator
+- **WHEN** activity occurs on the trip while the participant is on another screen of the application
+- **THEN** the system shows them an indicator that there is new activity, without interrupting what they are doing

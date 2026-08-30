@@ -1,152 +1,152 @@
 ## Context
 
-Proyecto nuevo, sin código previo. La motivación y el alcance están en `proposal.md`; los requisitos de comportamiento, en `specs/`.
+New project, no prior code. The motivation and scope are in `proposal.md`; the behavioural requirements, in `specs/`.
 
-Las restricciones que condicionan el diseño son cuatro:
+Four constraints shape the design:
 
-1. **Sin cuentas.** Un viajero entra por QR y escribe su nombre. No hay contraseña ni email, pero sí hace falta una identidad estable por dispositivo sobre la que apoyar la autorización.
-2. **Tiempo real.** Varios móviles con la misma pantalla abierta deben ver los mismos números en segundos.
-3. **Dinero.** Los importes tienen que cuadrar al céntimo, siempre, y de forma reproducible.
-4. **Operación mínima.** Un desarrollador, planes gratuitos, desarrollo local completo en Docker y despliegue en Vercel.
+1. **No accounts.** A traveller gets in through a QR code and types their name. There is no password and no email, but there still has to be a stable per-device identity for authorisation to rest on.
+2. **Real time.** Several phones with the same screen open must see the same numbers within seconds.
+3. **Money.** Amounts have to add up to the cent, always, and reproducibly.
+4. **Minimal operations.** One developer, free tiers, a complete local environment in Docker and deployment on Vercel.
 
 ## Goals / Non-Goals
 
 **Goals:**
 
-- Un modelo de datos en el que los saldos son derivables y verificables, no un contador que se va actualizando y puede desincronizarse.
-- Autorización centrada en la base de datos (Row Level Security), de manera que ninguna ruta de la aplicación pueda saltarse el aislamiento entre viajes por descuido.
-- Aritmética monetaria exacta y determinista, aislada en funciones puras que se puedan probar sin base de datos.
-- Entorno local reproducible en Docker, idéntico en esquema al de producción.
+- A data model where balances are derived and verifiable, not a counter that gets updated and can drift out of sync.
+- Authorisation centred on the database (Row Level Security), so that no application route can bypass trip isolation by oversight.
+- Exact, deterministic monetary arithmetic, isolated in pure functions testable without a database.
+- A reproducible local environment in Docker, schema-identical to production.
 
 **Non-Goals:**
 
-- Escalabilidad más allá de decenas de viajes concurrentes con grupos pequeños. Las consultas se diseñan para claridad, no para volumen.
-- Escritura sin conexión con resolución de conflictos.
-- Un sistema de tipos compartido con clientes nativos: la única interfaz de usuario es la PWA.
+- Scaling beyond dozens of concurrent trips with small groups. Queries are designed for clarity, not for volume.
+- Offline writes with conflict resolution.
+- A type system shared with native clients: the only user interface is the PWA.
 
 ## Decisions
 
 ### Stack: Next.js (App Router) + Supabase
 
-**Elegido:** Next.js 15 con App Router y TypeScript, desplegado en Vercel; Supabase como Postgres gestionado con Auth, Realtime y RLS.
+**Chosen:** Next.js 15 with the App Router and TypeScript, deployed on Vercel; Supabase as managed Postgres with Auth, Realtime and RLS.
 
-**Por qué:** el reparto de gastos es un problema relacional puro (participantes, gastos, participaciones, pagos) donde SQL y las restricciones de integridad hacen la mitad del trabajo. Supabase aporta además, sin código propio, las dos piezas que más costarían: propagación en tiempo real sobre los cambios de tablas y un modelo de autorización que vive junto a los datos.
+**Why:** splitting expenses is a purely relational problem (participants, expenses, shares, payments) where SQL and integrity constraints do half the work. Supabase additionally provides, with no code of our own, the two pieces that would cost the most: real-time propagation of table changes and an authorisation model that lives next to the data.
 
-**Alternativas consideradas:** *Convex*, que da reactividad por defecto y habría simplificado el tiempo real, pero con un modelo de datos propietario y sin SQL, justo donde este problema es más fuerte. *Postgres directo (Neon) con Drizzle*, que obligaba a construir a mano tanto la autenticación como el tiempo real, trabajo desproporcionado para una v1.
+**Alternatives considered:** *Convex*, which gives reactivity by default and would have simplified real time, but with a proprietary data model and no SQL, precisely where this problem is strongest. *Postgres directly (Neon) with Drizzle*, which would have required building both authentication and real time by hand — disproportionate work for a first release.
 
-### Identidad: sesiones anónimas de Supabase Auth
+### Identity: Supabase anonymous sessions
 
-**Elegido:** cada dispositivo obtiene un usuario anónimo de Supabase Auth (`signInAnonymously`) en su primera visita. La fila de `participants` de un viaje se vincula a ese `auth.uid()`. Las políticas RLS se escriben contra `auth.uid()`, exactamente igual que si hubiera login real.
+**Chosen:** each device gets an anonymous Supabase Auth user (`signInAnonymously`) on its first visit. A trip's `participants` row is bound to that `auth.uid()`. RLS policies are written against `auth.uid()`, exactly as if there were a real login.
 
-**Por qué:** convierte "sin cuenta" en un problema resuelto por la plataforma. Hay un JWT auténtico, refresco de token, y RLS puede razonar sobre la identidad sin trucos. Y deja la puerta abierta: cuando se quiera añadir email o OAuth, Supabase permite promover un usuario anónimo a permanente conservando su `uid` y, por tanto, todo su historial de viajes.
+**Why:** it turns "no accounts" into a problem the platform has already solved. There is a genuine JWT, token refresh, and RLS can reason about identity without tricks. It also leaves the door open: when email or OAuth is wanted, Supabase allows promoting an anonymous user to a permanent one while keeping its `uid` and therefore its whole trip history.
 
-**Alternativas consideradas:** un token opaco propio guardado en `localStorage` y validado en cada ruta de servidor — funciona, pero deja RLS sin identidad y obliga a que toda la autorización viva en código de aplicación, que es justo lo que se quiere evitar. Cookie firmada por el servidor: mismo problema, más ceremonia.
+**Alternatives considered:** an opaque token of our own stored in `localStorage` and validated on every server route — it works, but it leaves RLS without an identity and forces all authorisation into application code, which is precisely what we want to avoid. A server-signed cookie: same problem, more ceremony.
 
-**Consecuencia asumida:** borrar los datos del navegador equivale a perder el acceso. La mitigación es organizativa (el organizador regenera una invitación) y está declarada como riesgo.
+**Accepted consequence:** clearing browser data means losing access. The mitigation is organisational (the organiser regenerates an invitation) and is stated as a risk.
 
-### Escrituras por RPC, lecturas por RLS
+### Writes through RPC, reads through RLS
 
-**Elegido:** las lecturas van directas a las tablas y vistas desde el cliente, protegidas por RLS. Las escrituras que tocan más de una fila —crear un gasto con sus participaciones, cerrar un viaje generando su resumen, incorporarse mediante invitación— se hacen con funciones de Postgres invocadas por RPC.
+**Chosen:** reads go straight to tables and views from the client, protected by RLS. Writes touching more than one row — creating an expense with its shares, closing a trip and generating its summary, joining through an invitation — go through Postgres functions invoked over RPC.
 
-**Por qué:** crear un gasto y repartirlo son una sola operación atómica. Hacerlo desde el cliente en dos escrituras abre la puerta a gastos sin reparto si falla la segunda. Además, el reparto en céntimos debe calcularlo una única autoridad para ser reproducible, y esa autoridad natural es la base de datos.
+**Why:** creating an expense and splitting it are a single atomic operation. Doing it from the client as two writes opens the door to expenses with no split if the second one fails. Beyond that, the split in cents must be computed by a single authority to be reproducible, and the natural authority is the database.
 
-**Alternativas consideradas:** Server Actions de Next.js con la `service_role` key. Rechazado: esa clave salta RLS por completo, de modo que un fallo de autorización en el código de aplicación se convierte en una fuga de datos entre viajes. Las funciones RPC corren con los permisos del usuario y validan pertenencia explícitamente.
+**Alternatives considered:** Next.js Server Actions with the `service_role` key. Rejected: that key bypasses RLS entirely, so an authorisation bug in application code becomes a data leak between trips. RPC functions run with the user's permissions and validate membership explicitly.
 
-### Participaciones materializadas en lugar de calculadas
+### Materialised shares rather than computed ones
 
-**Elegido:** cada gasto de tipo `shared` genera N filas en `expense_shares`, una por participante del reparto, con el importe en céntimos que le corresponde. El reparto se calcula en el momento del alta y se persiste.
+**Chosen:** every `shared` expense generates N rows in `expense_shares`, one per participant in the split, holding the amount in cents charged to them. The split is computed at creation time and persisted.
 
-**Por qué:** el requisito de reparto reproducible (`balance-settlement`) exige que los céntimos sobrantes recaigan siempre sobre las mismas personas. Persistir el reparto lo garantiza por construcción y hace auditables los números: la fila dice literalmente cuánto le tocó a cada uno. También reduce los saldos a una suma trivial en SQL.
+**Why:** the reproducible-split requirement (`balance-settlement`) demands that leftover cents always land on the same people. Persisting the split guarantees this by construction and makes the numbers auditable: the row literally states what each person was charged. It also reduces balances to a trivial SQL sum.
 
-**Regla de reparto:** cociente entero de céntimos entre el número de participantes, y los `r` céntimos sobrantes se asignan de uno en uno a los `r` primeros participantes ordenados por su identificador. Al depender de un orden estable y no del azar, es determinista y verificable.
+**Split rule:** integer division of the cents by the number of participants, with the `r` leftover cents assigned one by one to the first `r` participants ordered by their identifier. Because it depends on a stable order rather than on chance, it is deterministic and verifiable.
 
-**Alternativa considerada:** calcular el reparto al vuelo en cada consulta. Más limpio en apariencia, pero deja el destino de los céntimos sobrantes a merced del orden que devuelva la consulta, que no está garantizado.
+**Alternative considered:** computing the split on the fly on every query. Cleaner in appearance, but it leaves the fate of the leftover cents at the mercy of whatever order the query returns, which is not guaranteed.
 
-### Saldos como vista, liquidación como función pura
+### Balances as a view, settlement as a pure function
 
-**Elegido:** los saldos se exponen en una vista de Postgres que suma, por participante, lo pagado menos lo imputado, más lo cobrado menos lo pagado en liquidaciones. El algoritmo que convierte saldos en transferencias vive en TypeScript, como función pura compartida entre servidor y cliente.
+**Chosen:** balances are exposed through a Postgres view that sums, per participant, what they paid minus what they were charged, plus what they collected minus what they paid in settlements. The algorithm turning balances into transfers lives in TypeScript, as a pure function shared between server and client.
 
-**Por qué:** los saldos son una agregación y Postgres los calcula mejor y siempre coherentes con los datos. La liquidación, en cambio, es un algoritmo (voraz: emparejar repetidamente el mayor acreedor con el mayor deudor) sobre un puñado de números que ya están en memoria; como función pura se prueba de forma exhaustiva sin base de datos, incluidos los casos límite. El resultado tiene como máximo `n-1` transferencias, que es lo que exige la spec.
+**Why:** balances are an aggregation and Postgres computes them better and always consistently with the data. Settlement, by contrast, is an algorithm (greedy: repeatedly match the largest creditor with the largest debtor) over a handful of numbers already in memory; as a pure function it can be tested exhaustively without a database, edge cases included. The result has at most `n-1` transfers, which is what the spec requires.
 
-**Nota:** el voraz no siempre da el mínimo absoluto de transferencias —el problema óptimo es NP-difícil—, pero sí cumple la cota `n-1` y da resultados óptimos o casi para grupos de este tamaño. Buscar el óptimo exacto no aporta nada perceptible con 5 personas.
+**Note:** the greedy approach does not always yield the absolute minimum number of transfers — the optimal problem is NP-hard — but it does satisfy the `n-1` bound and gives optimal or near-optimal results for groups of this size. Chasing the exact optimum adds nothing perceptible with 5 people.
 
-### Dinero: enteros de céntimos y divisa explícita desde el día uno
+### Money: integer cents and an explicit currency from day one
 
-**Elegido:** los importes se almacenan como `BIGINT` de céntimos. Cada gasto y cada pago llevan una columna `currency` con `CHECK (currency = 'EUR')` en esta versión. El formateo a texto ocurre solo en el borde de la interfaz.
+**Chosen:** amounts are stored as `BIGINT` cents. Every expense and every payment carries a `currency` column with `CHECK (currency = 'EUR')` in this release. Formatting to text happens only at the edge of the interface.
 
-**Por qué:** ningún tipo de coma flotante debe tocar dinero. Y llevar la columna de divisa desde el principio, aunque solo admita un valor, evita la migración más cara del futuro: añadir multidivisa después obliga a decidir retroactivamente en qué divisa estaba cada gasto histórico. Ampliar es entonces relajar el `CHECK` y añadir una tabla de tasas.
+**Why:** no floating-point type should ever touch money. And carrying the currency column from the start, even accepting only one value, avoids the most expensive future migration: adding multi-currency later would otherwise force a retroactive decision about which currency each historical expense was in. Extending then means relaxing the `CHECK` and adding a rates table.
 
-### Feed de actividad por triggers
+### Activity feed through triggers
 
-**Elegido:** las entradas de `activity` las escriben triggers de Postgres sobre `expenses`, `payments`, `participants` y `trips`.
+**Chosen:** `activity` entries are written by Postgres triggers on `expenses`, `payments`, `participants` and `trips`.
 
-**Por qué:** el feed es un registro de auditoría, y un registro que depende de que el código de aplicación se acuerde de escribirlo acaba con huecos. En triggers es imposible modificar un gasto sin dejar rastro. Como efecto secundario, el feed viaja por el mismo canal de tiempo real que el resto de tablas, sin código adicional.
+**Why:** the feed is an audit log, and a log that depends on application code remembering to write it ends up with gaps. In triggers it is impossible to modify an expense without leaving a trace. As a side effect, the feed travels over the same real-time channel as the rest of the tables, with no extra code.
 
-### Tiempo real: un canal por viaje
+### Real time: one channel per trip
 
-**Elegido:** suscripción a los cambios de Postgres (`postgres_changes`) filtrada por `trip_id`, un canal por viaje. Cada evento recibido invalida la consulta correspondiente del cliente en lugar de aplicar el cambio a mano sobre el estado local.
+**Chosen:** subscription to Postgres changes (`postgres_changes`) filtered by `trip_id`, one channel per trip. Each received event invalidates the corresponding client query rather than applying the change by hand to local state.
 
-**Por qué:** invalidar y volver a leer es mucho más difícil de estropear que fusionar mensajes en el estado local, y con este volumen de datos el coste de recargar la pantalla de un viaje es despreciable. Además, resuelve gratis la reconexión: al recuperar la conexión se invalida todo y la pantalla vuelve a ser correcta, que es justo lo que pide `realtime-activity`.
+**Why:** invalidating and re-reading is far harder to get wrong than merging messages into local state, and at this data volume the cost of reloading a trip screen is negligible. It also solves reconnection for free: when the connection returns, everything is invalidated and the screen becomes correct again, which is exactly what `realtime-activity` requires.
 
-**Aislamiento:** el filtro por `trip_id` es una comodidad, no la garantía. La garantía es RLS: Supabase Realtime aplica las políticas de la tabla antes de entregar un evento, de modo que un cliente no puede recibir datos de un viaje ajeno ni suscribiéndose a propósito.
+**Isolation:** the `trip_id` filter is a convenience, not the guarantee. The guarantee is RLS: Supabase Realtime applies the table policies before delivering an event, so a client cannot receive data from someone else's trip even by subscribing deliberately.
 
-### Resumen de cierre congelado como snapshot
+### Closing summary frozen as a snapshot
 
-**Elegido:** al cerrar un viaje, la función RPC de cierre calcula el resumen completo y lo guarda como JSONB en una columna del viaje. Las consultas de un viaje `closed` leen ese snapshot, no las tablas vivas.
+**Chosen:** on closing a trip, the closing RPC function computes the complete summary and stores it as JSONB in a column on the trip. Queries for a `closed` trip read that snapshot, not the live tables.
 
-**Por qué:** la spec exige que el resumen no varíe mientras el viaje esté cerrado. Un resumen recalculado cada vez cambiaría si alguien corrigiese algo, y además obligaría a repetir toda la agregación en cada consulta. El snapshot es la lectura más barata y la única que cumple literalmente el requisito.
+**Why:** the spec requires the summary not to change while the trip is closed. A summary recomputed each time would change if somebody corrected something, and would also repeat the whole aggregation on every read. The snapshot is the cheapest read and the only one that satisfies the requirement literally.
 
-### Desarrollo local íntegramente en Docker
+### Local development entirely in Docker
 
-**Elegido:** `supabase start` levanta el stack completo de Supabase en contenedores (Postgres, GoTrue, Realtime, Studio, API). La aplicación Next.js corre en su propio contenedor, y un `docker compose` en la raíz orquesta ambos para que arrancar sea un único comando. El esquema vive como migraciones SQL versionadas en el repositorio y se aplica igual en local que en producción.
+**Chosen:** `supabase start` brings up the complete Supabase stack in containers (Postgres, GoTrue, Realtime, Studio, API). The Next.js application runs in its own container, and a `docker compose` at the repository root orchestrates both so that starting up is a single command. The schema lives as versioned SQL migrations in the repository and is applied identically locally and in production.
 
-**Por qué:** el valor real de Docker aquí no es aislar Node, es tener el mismo Postgres, con las mismas políticas RLS y los mismos triggers, en el portátil. Las políticas RLS son la clase de cosa que solo se puede probar de verdad contra la base de datos, y probarlas contra el proyecto remoto compartido es lento y destructivo.
+**Why:** the real value of Docker here is not isolating Node, it is having the same Postgres, with the same RLS policies and the same triggers, on the laptop. RLS policies are the kind of thing that can only truly be tested against the database, and testing them against the shared remote project is slow and destructive.
 
-### Internacionalización: catálogos estáticos, español por defecto
+### Repository conventions
 
-**Elegido:** los textos viven en catálogos JSON por idioma (`es`, `en`) cargados en el servidor según el idioma resuelto, sin biblioteca pesada de i18n. La resolución sigue este orden: preferencia guardada del usuario → cabecera `Accept-Language` del navegador → español. Los importes y las fechas se formatean con las APIs `Intl` nativas del navegador usando el idioma activo.
+**Chosen:** Semantic Versioning for released versions and Conventional Commits for the history, with atomic commits — one commit per logical change — and no reference to AI tooling in the messages. A `0.X.0` annotated tag is published on completing each of the task groups in `tasks.md`, and `1.0.0` on completing the MVP. The application version file is the source of the version the PWA shows the user.
 
-**Por qué:** con dos idiomas y una interfaz pequeña, una biblioteca completa de i18n aporta más peso y configuración que valor. Los catálogos estáticos con un tipo TypeScript derivado de las claves del catálogo español dan lo que de verdad importa aquí: que el compilador avise si una clave falta en inglés. `Intl` ya está en todos los navegadores objetivo y evita añadir una dependencia de formateo.
+**Why:** with conventional, atomic commits the history is the source of the changelog and makes the version bump derivable rather than a manual decision. It is also what makes Vercel's rollback useful: reverting to a specific version is only safe if each commit is a coherent unit.
 
-**Consecuencia de diseño:** ningún texto visible se escribe literal en un componente; todos pasan por el catálogo desde la primera pantalla. Retraducir una interfaz ya construida cuesta mucho más que construirla ya traducida, y es un error que solo se detecta cuando ya está por todas partes.
+**Consequence for the tasks:** the task list is grouped so that each task is a reasonable commit on its own, and each group a releasable increment.
 
-### Estrategia de pruebas
+### Internationalisation: static catalogues, Spanish by default
 
-Tres niveles, elegidos por lo que puede romperse:
+**Chosen:** the copy lives in per-language JSON catalogues (`es`, `en`) loaded on the server according to the resolved language, with no heavy i18n library. Resolution follows this order: stored user preference → browser `Accept-Language` header → Spanish. Amounts and dates are formatted with the browser's native `Intl` APIs using the active language.
 
-- **Unitarias sobre funciones puras**: reparto en céntimos y algoritmo de liquidación. Aquí es donde vive el riesgo de que el dinero no cuadre, y son gratis de probar de forma exhaustiva. Incluyen una prueba basada en propiedades: para cualquier conjunto de gastos, la suma de saldos es exactamente cero.
-- **Integración contra el Postgres local en Docker**: políticas RLS y funciones RPC. Cada prueba comprueba tanto que el participante legítimo puede como que el ajeno no puede.
-- **Un recorrido de extremo a extremo** con Playwright: crear viaje → invitar → unirse → añadir gasto → ver liquidación → cerrar y ver resumen. Uno solo, el camino feliz, como red de seguridad antes de desplegar.
+**Why:** with two languages and a small interface, a full i18n library adds more weight and configuration than value. Static catalogues with a TypeScript type derived from the Spanish catalogue's keys give what actually matters here: the compiler warns when a key is missing from English. `Intl` is already in every target browser and avoids a formatting dependency.
 
-### Convenciones del repositorio
+**Design consequence:** no visible copy is written inline in a component; everything goes through the catalogue from the very first screen. Retranslating an interface that is already built costs far more than building it translated, and it is a mistake that only surfaces once it is everywhere.
 
-**Elegido:** versionado semántico (SemVer) para las versiones publicadas y Conventional Commits para el historial, con commits atómicos —un commit por cambio lógico— y sin ninguna referencia a herramientas de IA en los mensajes. El fichero de versión de la aplicación es la fuente de la versión que la PWA muestra al usuario.
+### Testing strategy
 
-**Por qué:** con commits convencionales y atómicos, el historial es la fuente del changelog y permite deducir el salto de versión sin decidirlo a mano. Es además lo que hace útil el rollback de Vercel: revertir una versión concreta solo es seguro si cada commit es una unidad coherente.
+Three levels, chosen by what can actually break:
 
-**Consecuencia para las tareas:** la lista de tareas está agrupada de modo que cada tarea sea un commit razonable por sí sola.
+- **Unit tests over pure functions**: the split in cents and the settlement algorithm. This is where the risk of the money not adding up lives, and they are free to test exhaustively. They include a property-based test: for any set of expenses, the balances sum to exactly zero.
+- **Integration tests against the local Postgres in Docker**: RLS policies and RPC functions. Each test checks both that the legitimate participant can and that the outsider cannot.
+- **One end-to-end run** with Playwright: create trip → invite → join → add expense → view settlement → close and view the summary. Just one, the happy path, as a safety net before deploying.
 
 ## Risks / Trade-offs
 
-- **Quien tenga el enlace de invitación entra en el viaje** → Identificadores de 128 bits generados criptográficamente (no adivinables), invitaciones revocables y con caducidad, y expulsión de participantes. Es una decisión de producto consciente: la ausencia de fricción es el motivo por el que la app se usará durante el viaje en lugar de después.
-- **Perder el dispositivo o borrar los datos del navegador es perder el acceso** → La reincorporación con el mismo nombre desde la misma invitación permite recuperar la identidad de participante, y el organizador puede regenerar invitaciones. La solución de fondo, asociar un email, está declarada fuera de alcance.
-- **Un error en las políticas RLS filtra datos entre viajes** → Es el riesgo más grave del diseño. Se mitiga con RLS activo por defecto en todas las tablas, sin uso de `service_role` en el camino de las peticiones de usuario, y pruebas de integración que verifican explícitamente los accesos denegados.
-- **Alguien corrige un gasto mientras otro lo está editando** → El último en escribir gana, sin bloqueos. Con grupos de cinco personas la colisión es rara y el tiempo real la hace visible de inmediato. Detectarla explícitamente no compensa en la v1.
-- **Sin push, un participante puede no enterarse de un cambio hasta abrir la app** → Aceptado y declarado en el proposal. El feed de actividad deja el rastro completo, de modo que al abrir se ve qué ha pasado.
-- **La fecha del gasto depende de la zona horaria del dispositivo** → Se guarda como fecha civil (`DATE`), sin hora ni zona, porque lo que importa es "el día del viaje" y no el instante exacto. Evita que un gasto de la cena aparezca al día siguiente por la diferencia horaria del destino.
-- **Los planes gratuitos tienen límites** → Con grupos pequeños el volumen es trivial; el límite que primero se alcanzaría es el de pausa por inactividad del proyecto de Supabase, que afecta a la disponibilidad, no a los datos.
+- **Anyone holding the invitation link gets into the trip** → 128-bit cryptographically generated identifiers (unguessable), revocable and expiring invitations, and participant removal. This is a deliberate product decision: the absence of friction is the reason the app will be used during the trip rather than after it.
+- **Losing the device or clearing browser data means losing access** → Rejoining with the same name from the same invitation recovers the participant identity, and the organiser can regenerate invitations. The real fix, attaching an email address, is stated as out of scope.
+- **A bug in the RLS policies leaks data between trips** → This is the gravest risk in the design. It is mitigated with RLS enabled by default on every table, no use of `service_role` on the user request path, and integration tests that explicitly verify denied access.
+- **Someone corrects an expense while another person is editing it** → Last write wins, with no locking. With groups of five the collision is rare and real time makes it immediately visible. Detecting it explicitly is not worth it in the first release.
+- **With no push, a participant may not learn about a change until they open the app** → Accepted and stated in the proposal. The activity feed keeps the complete trace, so opening the app shows what has happened.
+- **The expense date depends on the device time zone** → It is stored as a civil date (`DATE`), with no time and no zone, because what matters is "the day of the trip" and not the exact instant. This prevents a dinner expense from showing up on the following day because of the destination's time difference.
+- **Free tiers have limits** → With small groups the volume is trivial; the first limit that would be reached is the Supabase project's inactivity pause, which affects availability, not data.
 
 ## Migration Plan
 
-No hay migración: es un proyecto nuevo, sin usuarios ni datos previos. La puesta en marcha es:
+There is no migration: this is a new project with no prior users or data. Bringing it up means:
 
-1. Crear el proyecto de Supabase de producción y aplicarle las migraciones del repositorio.
-2. Desplegar en Vercel con las variables de entorno apuntando a ese proyecto.
-3. Verificar el recorrido completo en el entorno desplegado desde un móvil real, incluida la instalación como PWA en iOS y en Android.
+1. Create the production Supabase project and apply the repository migrations to it.
+2. Deploy on Vercel with the environment variables pointing at that project.
+3. Verify the complete run in the deployed environment from a real phone, including installation as a PWA on iOS and on Android.
 
-**Reversión:** el despliegue se revierte con el rollback de Vercel a la versión anterior. Las migraciones de base de datos son aditivas dentro de esta versión, así que una reversión de la aplicación no deja el esquema incompatible.
+**Rollback:** the deployment is rolled back through Vercel's rollback to the previous version. Database migrations are additive within this release, so rolling the application back does not leave the schema incompatible.
 
 ## Open Questions
 
-- **Caducidad por defecto de las invitaciones.** El comportamiento está especificado; el plazo concreto (¿la duración del viaje, 30 días?) se puede fijar al implementar sin afectar a specs ni a tareas.
-- **Identidad visual.** El nombre está fijado: **Splitrip**, repositorio `github.com/ajmasia/splitrip`. Queda por definir el icono y la paleta, que afectan solo al manifiesto y a los recursos estáticos.
+- **Default invitation expiry.** The behaviour is specified; the concrete period (the length of the trip? 30 days?) can be settled during implementation without affecting the specs or the tasks.
+- **Visual identity.** The name is settled: **Splitrip**, repository `github.com/ajmasia/splitrip`. The icon and the palette remain to be defined, and they affect only the manifest and the static assets.

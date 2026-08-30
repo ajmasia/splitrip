@@ -1,65 +1,65 @@
 ## Purpose
 
-Permite que la aplicación se use indistintamente en español y en inglés, para que un grupo de viaje con personas de distinta lengua pueda compartir el mismo viaje viendo cada una la interfaz en su idioma.
+Lets the application be used in either Spanish or English, so that a travel group with people of different languages can share the same trip while each person sees the interface in their own language.
 
 ## ADDED Requirements
 
-### Requirement: Idiomas admitidos e idioma por defecto
-El sistema SHALL ofrecer la interfaz completa en español e inglés. El español SHALL ser el idioma por defecto: cuando no pueda determinarse una preferencia aplicable, la interfaz SHALL mostrarse en español.
+### Requirement: Supported languages and default language
+The system SHALL offer the complete interface in Spanish and in English. Spanish SHALL be the default language: where no applicable preference can be determined, the interface SHALL be shown in Spanish.
 
-#### Scenario: Idioma no determinable
-- **WHEN** un usuario abre la aplicación sin preferencia guardada y su navegador declara un idioma que no es ni español ni inglés
-- **THEN** el sistema muestra la interfaz en español
+#### Scenario: Language cannot be determined
+- **WHEN** a user with no stored preference opens the application and their browser declares a language that is neither Spanish nor English
+- **THEN** the system shows the interface in Spanish
 
-#### Scenario: Cobertura de la traducción
-- **WHEN** se muestra cualquier pantalla de la aplicación en inglés
-- **THEN** todos sus textos visibles aparecen en inglés, sin literales sin traducir
+#### Scenario: Translation coverage
+- **WHEN** any screen of the application is shown in English
+- **THEN** every visible text on it appears in English, with no untranslated literals
 
-### Requirement: Detección del idioma del dispositivo
-En ausencia de una preferencia explícita del usuario, el sistema SHALL seleccionar el idioma a partir del idioma declarado por el navegador, si este corresponde a uno de los idiomas admitidos.
+### Requirement: Device language detection
+In the absence of an explicit user preference, the system SHALL select the language from the language declared by the browser, where it matches one of the supported languages.
 
-#### Scenario: Navegador en inglés
-- **WHEN** un usuario sin preferencia guardada abre la aplicación en un navegador configurado en inglés
-- **THEN** el sistema muestra la interfaz en inglés
+#### Scenario: Browser in English
+- **WHEN** a user with no stored preference opens the application in a browser configured in English
+- **THEN** the system shows the interface in English
 
-#### Scenario: Navegador en español
-- **WHEN** un usuario sin preferencia guardada abre la aplicación en un navegador configurado en español
-- **THEN** el sistema muestra la interfaz en español
+#### Scenario: Browser in Spanish
+- **WHEN** a user with no stored preference opens the application in a browser configured in Spanish
+- **THEN** the system shows the interface in Spanish
 
-### Requirement: Cambio manual de idioma
-El sistema SHALL permitir al usuario cambiar el idioma de la interfaz en cualquier momento. La preferencia elegida SHALL conservarse en el dispositivo y SHALL prevalecer sobre el idioma declarado por el navegador en las visitas posteriores.
+### Requirement: Manual language switching
+The system SHALL allow the user to change the interface language at any time. The chosen preference SHALL be kept on the device and SHALL take precedence over the browser-declared language on later visits.
 
-#### Scenario: Cambio de idioma
-- **WHEN** un usuario cambia el idioma de español a inglés
-- **THEN** la interfaz pasa a mostrarse en inglés sin perder el contexto en el que estaba
+#### Scenario: Switching language
+- **WHEN** a user switches the language from Spanish to English
+- **THEN** the interface switches to English without losing the context they were in
 
-#### Scenario: Persistencia de la preferencia
-- **WHEN** un usuario que eligió inglés vuelve a abrir la aplicación en el mismo dispositivo, con el navegador configurado en español
-- **THEN** el sistema muestra la interfaz en inglés
+#### Scenario: Preference persistence
+- **WHEN** a user who chose English reopens the application on the same device, with the browser configured in Spanish
+- **THEN** the system shows the interface in English
 
-### Requirement: Idioma independiente entre participantes
-El idioma SHALL ser una preferencia de cada dispositivo y NO SHALL afectar a lo que ven los demás participantes del viaje. Los datos introducidos por los usuarios —nombres de viaje, conceptos de gasto, nombres de participantes— SHALL mostrarse siempre tal cual se escribieron, sin traducir.
+### Requirement: Language is independent between participants
+Language SHALL be a per-device preference and SHALL NOT affect what other participants of the trip see. User-entered data — trip names, expense descriptions, participant names — SHALL always be shown exactly as written, untranslated.
 
-#### Scenario: Dos participantes con idiomas distintos
-- **WHEN** un participante usa la aplicación en inglés y otro del mismo viaje la usa en español
-- **THEN** cada uno ve la interfaz en su idioma
-- **AND** ambos ven los mismos conceptos de gasto e importes, con el texto introducido sin alterar
+#### Scenario: Two participants with different languages
+- **WHEN** one participant uses the application in English and another on the same trip uses it in Spanish
+- **THEN** each sees the interface in their own language
+- **AND** both see the same expense descriptions and amounts, with the entered text unaltered
 
-#### Scenario: Concepto de gasto en otro idioma
-- **WHEN** un participante registra un gasto con el concepto "Dinner" y otro consulta el viaje en español
-- **THEN** el segundo ve el concepto "Dinner" tal cual se escribió
+#### Scenario: Expense description in another language
+- **WHEN** a participant records an expense with the description "Dinner" and another views the trip in Spanish
+- **THEN** the second one sees the description "Dinner" exactly as written
 
-### Requirement: Formato de importes y fechas según el idioma
-El sistema SHALL formatear importes monetarios y fechas conforme a las convenciones del idioma activo, manteniendo el euro como divisa en ambos idiomas.
+### Requirement: Amount and date formatting by language
+The system SHALL format monetary amounts and dates according to the conventions of the active language, keeping the euro as the currency in both languages.
 
-#### Scenario: Importe en español
-- **WHEN** se muestra un importe de 1055 céntimos con la interfaz en español
-- **THEN** el sistema lo presenta como "10,55 €"
+#### Scenario: Amount in Spanish
+- **WHEN** an amount of 1055 cents is shown with the interface in Spanish
+- **THEN** the system presents it as "10,55 €"
 
-#### Scenario: Importe en inglés
-- **WHEN** se muestra ese mismo importe con la interfaz en inglés
-- **THEN** el sistema lo presenta con las convenciones del inglés, con el separador decimal correspondiente y el símbolo del euro
+#### Scenario: Amount in English
+- **WHEN** that same amount is shown with the interface in English
+- **THEN** the system presents it using English conventions, with the corresponding decimal separator and the euro symbol
 
-#### Scenario: Fechas
-- **WHEN** se muestra la fecha de un gasto
-- **THEN** el sistema la formatea según las convenciones del idioma activo
+#### Scenario: Dates
+- **WHEN** the date of an expense is shown
+- **THEN** the system formats it according to the conventions of the active language

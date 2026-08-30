@@ -1,118 +1,118 @@
 ## Purpose
 
-Registra el dinero que se gasta durante un viaje: quién lo pagó, cuánto, en qué, y entre quiénes se reparte. Es la fuente de verdad a partir de la cual se calculan todos los saldos y liquidaciones del grupo.
+Records the money spent during a trip: who paid it, how much, on what, and among whom it is split. It is the source of truth from which every balance and settlement of the group is derived.
 
 ## ADDED Requirements
 
-### Requirement: Registro de un gasto compartido
-El sistema SHALL permitir a cualquier participante de un viaje en estado `open` registrar un gasto de tipo `shared` indicando concepto, importe, fecha, pagador y el conjunto de participantes entre los que se reparte. Por defecto, el pagador SHALL ser quien registra el gasto y el reparto SHALL incluir a todos los participantes del viaje.
+### Requirement: Recording a shared expense
+The system SHALL allow any participant of a trip in the `open` state to record an expense of type `shared`, providing a description, an amount, a date, a payer and the set of participants it is split among. By default, the payer SHALL be whoever records the expense and the split SHALL include every participant of the trip.
 
-#### Scenario: Registro con los valores por defecto
-- **WHEN** un participante registra un gasto "Cena" de 60,00 € sin modificar pagador ni reparto en un viaje con 4 participantes
-- **THEN** el sistema guarda el gasto con tipo `shared`, con él mismo como pagador y con los 4 participantes en el reparto
-- **AND** el gasto aparece de inmediato en el listado del viaje para todos los participantes
+#### Scenario: Recording with the default values
+- **WHEN** a participant records a "Dinner" expense of €60.00 without changing payer or split, in a trip with 4 participants
+- **THEN** the system stores the expense with type `shared`, with themselves as payer and with all 4 participants in the split
+- **AND** the expense appears immediately in the trip list for every participant
 
-#### Scenario: Registro de un gasto pagado por otra persona
-- **WHEN** un participante registra un gasto y selecciona a otro participante como pagador
-- **THEN** el sistema atribuye el pago al participante seleccionado a efectos de saldos
-- **AND** registra en la actividad del viaje que fue otra persona quien dio de alta el gasto
+#### Scenario: Recording an expense paid by someone else
+- **WHEN** a participant records an expense and selects another participant as the payer
+- **THEN** the system attributes the payment to the selected participant for balance purposes
+- **AND** records in the trip activity that a different person created the expense
 
-#### Scenario: Fecha del gasto
-- **WHEN** un participante registra un gasto sin indicar fecha
-- **THEN** el sistema le asigna la fecha actual
-- **AND** si indica una fecha, el sistema guarda la indicada
+#### Scenario: Expense date
+- **WHEN** a participant records an expense without providing a date
+- **THEN** the system assigns it the current date
+- **AND** if they do provide a date, the system stores the one provided
 
-### Requirement: Registro de una contribución no repartida
-El sistema SHALL permitir registrar un gasto de tipo `contribution`: lo paga un participante, suma al total gastado del viaje, y NO SHALL generar deuda alguna para el resto. Una contribución NO SHALL tener conjunto de reparto.
+### Requirement: Recording a contribution that is not split
+The system SHALL allow recording an expense of type `contribution`: it is paid by one participant, adds to the total spent on the trip, and SHALL NOT create any debt for anyone else. A contribution SHALL NOT have a split set.
 
-#### Scenario: Alta de una contribución
-- **WHEN** un participante registra un gasto "Alquiler de la furgoneta" de 300,00 € de tipo `contribution`
-- **THEN** el sistema lo guarda sin conjunto de reparto
-- **AND** el importe se suma al total gastado del viaje
-- **AND** ningún participante, incluido el pagador, ve alterado su saldo por causa de ese gasto
+#### Scenario: Adding a contribution
+- **WHEN** a participant records a "Van rental" expense of €300.00 with type `contribution`
+- **THEN** the system stores it with no split set
+- **AND** the amount adds to the total spent on the trip
+- **AND** no participant, the payer included, sees their balance changed by that expense
 
-#### Scenario: Intento de asignar reparto a una contribución
-- **WHEN** se intenta registrar un gasto de tipo `contribution` indicando un conjunto de participantes para el reparto
-- **THEN** el sistema rechaza la operación e informa de que una contribución no se reparte
+#### Scenario: Attempting to give a contribution a split
+- **WHEN** an expense of type `contribution` is submitted with a set of participants to split among
+- **THEN** the system rejects the operation and reports that a contribution is not split
 
-### Requirement: Reparto entre un subconjunto de participantes
-El sistema SHALL permitir que un gasto de tipo `shared` se reparta solo entre un subconjunto de los participantes del viaje. El reparto SHALL ser siempre a partes iguales entre los participantes incluidos. El conjunto de reparto SHALL contener al menos un participante, y todos sus miembros SHALL pertenecer al viaje.
+### Requirement: Splitting among a subset of participants
+The system SHALL allow an expense of type `shared` to be split among only a subset of the trip participants. The split SHALL always be equal among the included participants. The split set SHALL contain at least one participant, and every member SHALL belong to the trip.
 
-#### Scenario: Cena a la que van tres de cinco
-- **WHEN** un participante de un viaje de 5 registra un gasto "Cena" de 45,00 € seleccionando únicamente a tres participantes en el reparto
-- **THEN** el sistema imputa 15,00 € a cada uno de esos tres participantes
-- **AND** los otros dos participantes no ven alterado su saldo por ese gasto
+#### Scenario: A dinner attended by three out of five
+- **WHEN** a participant of a five-person trip records a "Dinner" expense of €45.00 selecting only three participants in the split
+- **THEN** the system charges €15.00 to each of those three participants
+- **AND** the other two participants see no change to their balance from that expense
 
-#### Scenario: Reparto vacío
-- **WHEN** se intenta registrar un gasto de tipo `shared` sin ningún participante en el reparto
-- **THEN** el sistema rechaza la operación e informa de que debe repartirse al menos entre una persona
+#### Scenario: Empty split
+- **WHEN** an expense of type `shared` is submitted with no participants in the split
+- **THEN** the system rejects the operation and reports that it must be split among at least one person
 
-#### Scenario: Reparto que incluye a alguien ajeno al viaje
-- **WHEN** se intenta registrar un gasto cuyo conjunto de reparto incluye a alguien que no participa en el viaje
-- **THEN** el sistema rechaza la operación
+#### Scenario: Split including someone outside the trip
+- **WHEN** an expense is submitted whose split set includes someone who is not a participant of the trip
+- **THEN** the system rejects the operation
 
-#### Scenario: El pagador puede quedar fuera del reparto
-- **WHEN** un participante registra un gasto de 30,00 € que paga él pero cuyo reparto incluye solo a otras dos personas
-- **THEN** el sistema imputa 15,00 € a cada una de esas dos personas
-- **AND** el pagador queda con un saldo a su favor de 30,00 € por ese gasto
+#### Scenario: The payer may be left out of the split
+- **WHEN** a participant records a €30.00 expense that they paid but whose split includes only two other people
+- **THEN** the system charges €15.00 to each of those two people
+- **AND** the payer is left with a €30.00 credit from that expense
 
-### Requirement: Validación del importe
-El sistema SHALL aceptar únicamente importes estrictamente mayores que cero, con un máximo de dos decimales, y SHALL almacenarlos como un número entero de céntimos para evitar errores de redondeo en coma flotante.
+### Requirement: Amount validation
+The system SHALL accept only amounts strictly greater than zero, with at most two decimal places, and SHALL store them as an integer number of cents to avoid floating-point rounding errors.
 
-#### Scenario: Importe cero o negativo
-- **WHEN** se intenta registrar un gasto con importe 0 o con un importe negativo
-- **THEN** el sistema rechaza la operación e informa de que el importe debe ser mayor que cero
+#### Scenario: Zero or negative amount
+- **WHEN** an expense is submitted with an amount of 0 or a negative amount
+- **THEN** the system rejects the operation and reports that the amount must be greater than zero
 
-#### Scenario: Importe con más de dos decimales
-- **WHEN** se intenta registrar un gasto con importe 10,555
-- **THEN** el sistema rechaza la operación e informa del formato admitido
+#### Scenario: Amount with more than two decimal places
+- **WHEN** an expense is submitted with an amount of 10.555
+- **THEN** the system rejects the operation and reports the accepted format
 
-#### Scenario: Importe válido
-- **WHEN** se registra un gasto de 10,55 €
-- **THEN** el sistema lo almacena como 1055 céntimos y lo muestra como 10,55 €
+#### Scenario: Valid amount
+- **WHEN** an expense of €10.55 is recorded
+- **THEN** the system stores it as 1055 cents and displays it as €10.55
 
-### Requirement: Divisa del gasto
-Cada gasto SHALL almacenar la divisa en la que se expresa su importe. En esta versión el sistema SHALL admitir exclusivamente `EUR`, y SHALL rechazar cualquier otra divisa, de forma que el modelo de datos quede preparado para admitir varias divisas más adelante sin migrar los gastos ya registrados.
+### Requirement: Expense currency
+Every expense SHALL store the currency its amount is expressed in. In this release the system SHALL accept `EUR` exclusively, and SHALL reject any other currency, so that the data model is ready to support several currencies later without migrating the expenses already recorded.
 
-#### Scenario: Gasto en la divisa admitida
-- **WHEN** se registra un gasto sin indicar divisa
-- **THEN** el sistema lo almacena con divisa `EUR`
+#### Scenario: Expense in the accepted currency
+- **WHEN** an expense is recorded without specifying a currency
+- **THEN** the system stores it with currency `EUR`
 
-#### Scenario: Divisa no admitida
-- **WHEN** se intenta registrar un gasto con divisa `USD`
-- **THEN** el sistema rechaza la operación e informa de que esta versión solo opera en euros
+#### Scenario: Unsupported currency
+- **WHEN** an expense is submitted with currency `USD`
+- **THEN** the system rejects the operation and reports that this release operates in euros only
 
-### Requirement: Edición y borrado de gastos
-El sistema SHALL permitir editar y borrar gastos de un viaje en estado `open`. Un participante con rol `participant` SHALL poder modificar o borrar únicamente los gastos que él mismo registró; un `admin` SHALL poder modificar o borrar cualquier gasto del viaje. Toda edición o borrado SHALL recalcular los saldos afectados y quedar reflejado en la actividad del viaje.
+### Requirement: Editing and deleting expenses
+The system SHALL allow editing and deleting expenses of a trip in the `open` state. A participant with the `participant` role SHALL be able to modify or delete only the expenses they recorded; an `admin` SHALL be able to modify or delete any expense of the trip. Every edit or deletion SHALL recalculate the affected balances and SHALL appear in the trip activity.
 
-#### Scenario: Corrección del importe de un gasto propio
-- **WHEN** un participante corrige el importe de un gasto que él registró, de 60,00 € a 65,00 €
-- **THEN** el sistema guarda el nuevo importe y los saldos de los implicados se recalculan
-- **AND** el cambio aparece en la actividad del viaje
+#### Scenario: Correcting the amount of one's own expense
+- **WHEN** a participant corrects the amount of an expense they recorded, from €60.00 to €65.00
+- **THEN** the system stores the new amount and the balances of those involved are recalculated
+- **AND** the change appears in the trip activity
 
-#### Scenario: Borrado de un gasto por su autor
-- **WHEN** un participante borra un gasto que él registró
-- **THEN** el sistema lo elimina del viaje y los saldos vuelven a calcularse sin él
+#### Scenario: Deletion of an expense by its author
+- **WHEN** a participant deletes an expense they recorded
+- **THEN** the system removes it from the trip and the balances are recalculated without it
 
-#### Scenario: Borrado de un gasto ajeno por un participante
-- **WHEN** un participante con rol `participant` intenta borrar un gasto registrado por otra persona
-- **THEN** el sistema rechaza la operación
+#### Scenario: Participant deleting someone else's expense
+- **WHEN** a participant with the `participant` role attempts to delete an expense recorded by someone else
+- **THEN** the system rejects the operation
 
-#### Scenario: Edición en un viaje cerrado
-- **WHEN** cualquier participante intenta editar o borrar un gasto de un viaje en estado `closed`
-- **THEN** el sistema rechaza la operación e informa de que el viaje está cerrado
+#### Scenario: Editing on a closed trip
+- **WHEN** any participant attempts to edit or delete an expense of a trip in the `closed` state
+- **THEN** the system rejects the operation and reports that the trip is closed
 
-### Requirement: Consulta de los gastos del viaje
-El sistema SHALL mostrar a cualquier participante del viaje la lista completa de gastos, ordenada por fecha de forma descendente, indicando para cada uno el concepto, el importe, el pagador, el tipo y entre cuántas personas se reparte.
+### Requirement: Viewing the trip expenses
+The system SHALL show any participant of the trip the complete list of expenses, sorted by date in descending order, stating for each one the description, the amount, the payer, the type and how many people it is split among.
 
-#### Scenario: Listado del viaje
-- **WHEN** un participante abre la pantalla de gastos del viaje
-- **THEN** el sistema muestra todos los gastos del viaje, el más reciente primero, con concepto, importe, pagador, tipo y número de personas en el reparto
+#### Scenario: Trip listing
+- **WHEN** a participant opens the trip expenses screen
+- **THEN** the system shows every expense of the trip, most recent first, with description, amount, payer, type and number of people in the split
 
-#### Scenario: Detalle de un gasto
-- **WHEN** un participante abre un gasto concreto
-- **THEN** el sistema muestra el detalle completo, incluidos los participantes entre los que se reparte y el importe que corresponde a cada uno
+#### Scenario: Expense detail
+- **WHEN** a participant opens a single expense
+- **THEN** the system shows the full detail, including the participants it is split among and the amount charged to each
 
-#### Scenario: Viaje sin gastos
-- **WHEN** un participante abre un viaje que aún no tiene gastos
-- **THEN** el sistema muestra un estado vacío que invita a registrar el primer gasto
+#### Scenario: Trip with no expenses
+- **WHEN** a participant opens a trip that has no expenses yet
+- **THEN** the system shows an empty state inviting them to record the first expense
