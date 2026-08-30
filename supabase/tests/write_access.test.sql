@@ -6,7 +6,7 @@
 
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(22);
+select plan(23);
 
 insert into auth.users (id, instance_id, aud, role, is_anonymous, created_at, updated_at)
 select id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', true, now(), now()
@@ -141,7 +141,11 @@ select is((select description from public.expenses where id = 'eeeeeeee-0000-000
 update public.trips set status = 'open', closed_at = null, summary = null
 where id = 'aaaaaaaa-0000-0000-0000-00000000000a';
 select is((select status from public.trips where id = 'aaaaaaaa-0000-0000-0000-00000000000a'),
-          'open', 'reopening is the one change a closed trip still accepts, from an admin');
+          'closed', 'a closed trip is not reopened by hand either');
+
+select lives_ok(
+    $$select public.reopen_trip('aaaaaaaa-0000-0000-0000-00000000000a')$$,
+    'reopening is the one change a closed trip accepts, and it goes through its own function');
 
 -- ------------------------------------------------------- Carla, an admin, but of another trip
 reset role;
