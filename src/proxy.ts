@@ -4,9 +4,12 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from '@/lib/supabase/env'
 
 /**
- * Signing in happens here rather than in the browser so that a first visit already carries an
- * identity by the time anything renders: no screen has to cope with a moment where `auth.uid()`
- * is null, and every RLS policy has somebody to reason about from the first paint.
+ * Refreshes whatever session the request already carries, and mints none.
+ *
+ * Handing an anonymous identity to every first page view meant every crawler that ever reached the
+ * deployment took one with it, and they accumulate in the auth table for nobody's benefit. An
+ * identity is now issued where one is actually wanted — opening an invitation, or signing in — and
+ * a visit costs nothing.
  *
  * Named `proxy`, not `middleware`: the convention was renamed in Next.js 16.
  */
@@ -33,13 +36,7 @@ export async function proxy(request: NextRequest) {
   // getUser, not getSession: it asks the auth server, which both validates the token and refreshes
   // it when it has expired. A session read from the cookie alone would be whatever was written to
   // it last.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    await supabase.auth.signInAnonymously()
-  }
+  await supabase.auth.getUser()
 
   return response
 }

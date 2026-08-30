@@ -2,14 +2,36 @@ import Link from 'next/link'
 
 import { AppShell } from '@/components/app-shell'
 import { TripList } from '@/components/trip-list'
+import { getViewer } from '@/lib/auth/viewer'
 import { getCopy } from '@/lib/i18n/server'
 import { listTrips } from '@/lib/trips/queries'
 
 export default async function HomePage() {
   const { locale, t } = await getCopy()
+  const viewer = await getViewer()
+
+  // Nobody is asked to identify themselves just to read the entry screen, so a visit costs no
+  // identity at all.
+  if (viewer === null) {
+    return (
+      <AppShell locale={locale} t={t} viewer={null}>
+        <div className="flex max-w-prose flex-col gap-4">
+          <h1 className="text-2xl font-bold">{t('landing.heading')}</h1>
+          <p className="text-ink-soft">{t('landing.body')}</p>
+          <Link
+            href="/sign-in"
+            className="flex min-h-touch w-fit items-center rounded-card bg-accent px-4 font-semibold text-accent-ink"
+          >
+            {t('account.signIn')}
+          </Link>
+        </div>
+      </AppShell>
+    )
+  }
+
   const trips = await listTrips()
 
-  const create = (
+  const create = viewer.isAnonymous ? undefined : (
     <Link
       href="/trips/new"
       className="flex min-h-touch w-full items-center justify-center rounded-card bg-accent px-4 font-semibold text-accent-ink wide:w-fit"
@@ -19,7 +41,7 @@ export default async function HomePage() {
   )
 
   return (
-    <AppShell locale={locale} t={t} bottom={create}>
+    <AppShell locale={locale} t={t} viewer={viewer} bottom={create}>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-1">
           <p className="font-mono text-xs tracking-widest text-ink-faint uppercase">

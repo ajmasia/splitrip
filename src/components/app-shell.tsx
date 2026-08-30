@@ -1,7 +1,35 @@
+import Link from 'next/link'
 import type { ReactNode } from 'react'
 
+import { signOut } from '@/app/actions/auth'
 import { LanguageSwitcher } from '@/components/language-switcher'
+import type { Viewer } from '@/lib/auth/viewer'
 import type { Locale, Translate } from '@/lib/i18n'
+
+function Account({ viewer, t }: { viewer: Viewer | null; t: Translate }) {
+  if (viewer === null || viewer.isAnonymous) {
+    return (
+      <Link
+        href="/sign-in"
+        className="flex min-h-touch items-center rounded-card px-3 text-sm text-ink-soft"
+      >
+        {t('account.signIn')}
+      </Link>
+    )
+  }
+
+  return (
+    <form action={signOut} className="flex items-center gap-2">
+      <span className="hidden text-sm text-ink-soft wide:inline">{viewer.email}</span>
+      <button
+        type="submit"
+        className="min-h-touch cursor-pointer rounded-card px-3 text-sm text-ink-soft"
+      >
+        {t('account.signOut')}
+      </button>
+    </form>
+  )
+}
 
 /**
  * The frame every screen sits in.
@@ -14,22 +42,30 @@ import type { Locale, Translate } from '@/lib/i18n'
 export function AppShell({
   locale,
   t,
+  viewer = null,
   bottom,
   children,
 }: {
   locale: Locale
   t: Translate
+  viewer?: Viewer | null
   bottom?: ReactNode
   children: ReactNode
 }) {
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="border-b border-rule">
-        <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-4 px-4 py-3">
-          <p className="font-display text-xl font-extrabold tracking-tight">
+        <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-3 px-4 py-3">
+          <Link
+            href="/"
+            className="flex min-h-touch items-center font-display text-2xl font-extrabold tracking-tight wide:text-3xl"
+          >
             Split<span className="text-accent">rip</span>
-          </p>
-          <LanguageSwitcher locale={locale} t={t} />
+          </Link>
+          <div className="flex items-center gap-1">
+            <Account viewer={viewer} t={t} />
+            <LanguageSwitcher locale={locale} t={t} />
+          </div>
         </div>
       </header>
 

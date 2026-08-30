@@ -7,6 +7,21 @@ export const en: Catalogue = {
 
   'language.label': 'Language',
 
+  'landing.heading': 'Settle up as the trip happens.',
+  'landing.body':
+    'Open a trip with your account, or come into one through an invitation somebody sent you.',
+
+  'account.signIn': 'Sign in',
+  'account.signOut': 'Sign out',
+
+  'signIn.heading': 'Sign in',
+  'signIn.email.label': 'Email',
+  'signIn.password.label': 'Password',
+  'signIn.submit': 'Sign in',
+  'signIn.pending': 'Signing in…',
+  'signIn.note':
+    'An account is only needed to open trips. To come into one, an invitation is enough.',
+
   'trips.heading': 'Your trips',
   'trips.subtitle': 'The trips you take part in.',
   'trips.create': 'Create a trip',
@@ -47,6 +62,7 @@ export const en: Catalogue = {
   'trip.participants': 'Who is travelling',
   'trip.you': 'you',
 
+  'error.credentials': 'That email address and password do not match.',
   'error.name_required': 'A name is needed.',
   'error.trip_name_required': 'The trip needs a name.',
   'error.trip_dates_out_of_order': 'A trip cannot end before it starts.',

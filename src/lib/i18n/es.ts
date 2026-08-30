@@ -9,6 +9,21 @@ export const es = {
 
   'language.label': 'Idioma',
 
+  'landing.heading': 'Cuadrad las cuentas del viaje sobre la marcha.',
+  'landing.body':
+    'Abre un viaje con tu cuenta, o entra en uno con la invitación que te hayan pasado.',
+
+  'account.signIn': 'Entrar',
+  'account.signOut': 'Salir',
+
+  'signIn.heading': 'Entrar',
+  'signIn.email.label': 'Correo',
+  'signIn.password.label': 'Contraseña',
+  'signIn.submit': 'Entrar',
+  'signIn.pending': 'Entrando…',
+  'signIn.note':
+    'La cuenta solo hace falta para abrir viajes. Para entrar en uno, te basta la invitación.',
+
   'trips.heading': 'Tus viajes',
   'trips.subtitle': 'Los viajes en los que participas.',
   'trips.create': 'Crear un viaje',
@@ -49,6 +64,7 @@ export const es = {
   'trip.participants': 'Quién viaja',
   'trip.you': 'tú',
 
+  'error.credentials': 'El correo o la contraseña no coinciden.',
   'error.name_required': 'Hace falta un nombre.',
   'error.trip_name_required': 'El viaje necesita un nombre.',
   'error.trip_dates_out_of_order': 'Un viaje no puede terminar antes de empezar.',

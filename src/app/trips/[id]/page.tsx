@@ -5,6 +5,7 @@ import { AppShell } from '@/components/app-shell'
 import { Pill } from '@/components/pill'
 import { intlLocale } from '@/lib/i18n'
 import { formatDateRange } from '@/lib/i18n/format'
+import { getViewer } from '@/lib/auth/viewer'
 import { getCopy } from '@/lib/i18n/server'
 import { formatAmount } from '@/lib/money/amount'
 import { getTrip } from '@/lib/trips/queries'
@@ -12,6 +13,7 @@ import { getTrip } from '@/lib/trips/queries'
 export default async function TripPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const { locale, t } = await getCopy()
+  const viewer = await getViewer()
 
   // A trip somebody does not take part in is not hidden by this check but by Row Level Security,
   // which returns no row at all. Reaching here with nothing means exactly that.
@@ -22,7 +24,7 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
   const dates = formatDateRange(trip.startDate, trip.endDate, locale)
 
   return (
-    <AppShell locale={locale} t={t}>
+    <AppShell locale={locale} t={t} viewer={viewer}>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <Link href="/" className="font-mono text-xs tracking-widest text-ink-faint uppercase">
