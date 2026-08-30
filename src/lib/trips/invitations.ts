@@ -67,20 +67,29 @@ export async function listInvitations(
   }))
 }
 
+/** The place a link opens, when it opens one in particular. */
+export type InvitationPlace = {
+  name: string
+  /** True when a device is already answering from it, which the screen has to ask about. */
+  inUse: boolean
+}
+
 /**
- * The name of the place a link opens, when it opens one and nobody is on it yet.
+ * Whose place a link opens, and whether somebody is sitting in it.
  *
  * Readable without a session, because the person about to use it has none: it is the one thing the
  * join screen may say about a trip somebody is not part of, and it says only a name they were
  * given by whoever invited them.
  */
-export async function invitationPlace(token: string): Promise<string | null> {
+export async function invitationPlace(token: string): Promise<InvitationPlace | null> {
   const supabase = await createSupabaseServerClient()
   const { data, error } = await supabase.rpc('invitation_place', { p_token: token })
 
   if (error) return null
 
-  return (data as string | null) ?? null
+  const [place] = (data ?? []) as { display_name: string; in_use: boolean }[]
+
+  return place ? { name: place.display_name, inUse: place.in_use } : null
 }
 
 /** What the join screen may say about a token before anybody has typed a name. */

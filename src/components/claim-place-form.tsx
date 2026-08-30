@@ -4,6 +4,7 @@ import { useActionState } from 'react'
 
 import { joinTrip, type JoinState } from '@/app/actions/join'
 import { translator, type Locale } from '@/lib/i18n'
+import type { InvitationPlace } from '@/lib/trips/invitations'
 
 const EMPTY: JoinState = { error: null, taken: null, unclaimed: false }
 
@@ -16,11 +17,11 @@ const EMPTY: JoinState = { error: null, taken: null, unclaimed: false }
  */
 export function ClaimPlaceForm({
   token,
-  name,
+  place,
   locale,
 }: {
   token: string
-  name: string
+  place: InvitationPlace
   locale: Locale
 }) {
   const t = translator(locale)
@@ -29,7 +30,7 @@ export function ClaimPlaceForm({
   return (
     <form action={action} className="flex max-w-prose flex-col gap-4">
       <input type="hidden" name="token" value={token} />
-      <input type="hidden" name="display_name" value={name} />
+      <input type="hidden" name="display_name" value={place.name} />
 
       {state.error !== null ? (
         <p role="alert" className="rounded-card bg-debt-soft px-3 py-2 text-sm text-debt">
@@ -37,12 +38,23 @@ export function ClaimPlaceForm({
         </p>
       ) : null}
 
+      {/*
+        A place with somebody in it is taken by confirming, never in silence — the same bargain the
+        general link strikes when a name is already on the list. This is what makes "invite again"
+        lead somewhere: losing a phone is exactly what an organiser mints one of these for.
+      */}
       <button
         type="submit"
+        name="continue_as_existing"
+        value={place.inUse ? 'yes' : 'no'}
         disabled={pending}
-        className="min-h-touch w-fit cursor-pointer rounded-card bg-accent px-4 font-semibold text-accent-ink disabled:opacity-50"
+        className={`min-h-touch w-fit cursor-pointer rounded-card px-4 font-semibold disabled:opacity-50 ${
+          place.inUse ? 'border border-debt text-debt' : 'bg-accent text-accent-ink'
+        }`}
       >
-        {pending ? t('join.pending') : t('join.place.submit', { name })}
+        {pending
+          ? t('join.pending')
+          : t(place.inUse ? 'join.place.takeOver' : 'join.place.submit', { name: place.name })}
       </button>
     </form>
   )

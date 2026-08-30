@@ -295,6 +295,9 @@ export const es = {
   'join.place.heading': 'Hola, {name}',
   'join.place.body':
     'Quien organiza el viaje ya te ha apuntado. Este enlace es tu sitio: entra y verás lo que lleva tu nombre.',
+  'join.place.inUse':
+    'Este sitio ya se está usando desde otro móvil. Si eres tú y has cambiado de teléfono, continúa: el otro dejará de tener acceso.',
+  'join.place.takeOver': 'Soy {name}, desde otro móvil',
   'join.place.submit': 'Entrar como {name}',
   'error.place_taken': 'Ese sitio ya lo está usando alguien desde otro móvil.',
   'join.dead.heading': 'Esta invitación ya no sirve',

@@ -53,16 +53,18 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-bold">
-            {place === null ? t('join.heading') : t('join.place.heading', { name: place })}
+            {place === null ? t('join.heading') : t('join.place.heading', { name: place.name })}
           </h1>
           <p className="max-w-prose text-ink-soft">
-            {place === null ? t('join.body') : t('join.place.body', { name: place })}
+            {place === null
+              ? t('join.body')
+              : t(place.inUse ? 'join.place.inUse' : 'join.place.body', { name: place.name })}
           </p>
         </div>
         {place === null ? (
           <JoinForm token={token} locale={locale} />
         ) : (
-          <ClaimPlaceForm token={token} name={place} locale={locale} />
+          <ClaimPlaceForm token={token} place={place} locale={locale} />
         )}
       </div>
     </AppShell>

@@ -6,7 +6,7 @@
 
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(12);
+select plan(14);
 
 insert into auth.users (id, instance_id, aud, role, is_anonymous, created_at, updated_at)
 select id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', true, now(), now()
@@ -64,10 +64,11 @@ select throws_ok(
 
 -- ----------------------------------------------------------- what the screen may say beforehand
 select is(
-    public.invitation_place((select token from public.invitations
-                             where participant_id = 'cccccccc-0000-0000-0000-00000000000c')),
-    'Abuela',
-    'the join screen may read whose place a link opens, and say hello');
+    (select array[display_name, in_use::text] from public.invitation_place(
+        (select token from public.invitations
+         where participant_id = 'cccccccc-0000-0000-0000-00000000000c'))),
+    array['Abuela', 'false'],
+    'the join screen may read whose place a link opens, and that nobody is on it');
 
 -- The token is read here, while somebody who may read it is asking. Row Level Security keeps an
 -- invitation inside its trip, so the person about to use it cannot look it up — which is the whole
@@ -97,9 +98,9 @@ select ok(
 
 reset role;
 select is(
-    public.invitation_place((select token from link)),
-    null,
-    'and the link stops offering a place that now has somebody on it');
+    (select in_use from public.invitation_place((select token from link))),
+    true,
+    'and afterwards it says the place has somebody on it, which is a question, not a refusal');
 
 -- --------------------------------------------------------- and the link is not a way past her
 set local request.jwt.claims = '{"sub":"44444444-4444-4444-4444-444444444444","role":"authenticated"}';
@@ -109,7 +110,21 @@ select throws_ok(
     format($$select public.join_trip(%L)$$, (select token from link)),
     'SP027', null, 'somebody else holding it is refused rather than offered her seat');
 
+-- Which is a question, not a wall. Losing a phone is what an organiser mints one of these for, and
+-- the answer is the same as everywhere else here: the place is taken by saying so.
+select is(
+    (select id from public.join_trip((select token from link), null, true)),
+    'cccccccc-0000-0000-0000-00000000000c'::uuid,
+    'and confirming takes the place, which is how a lost phone is replaced');
+
 reset role;
+
+select is(
+    (select user_id from public.participants
+     where id = 'cccccccc-0000-0000-0000-00000000000c'),
+    '44444444-4444-4444-4444-444444444444'::uuid,
+    'the place answering from the new device, and from no other');
+
 set local request.jwt.claims = '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}';
 set local role authenticated;
 
