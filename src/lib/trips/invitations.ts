@@ -57,3 +57,17 @@ export async function listInvitations(tripId: string): Promise<Invitation[]> {
     url: `${origin}${joinPath(row.token)}`,
   }))
 }
+
+/** What the join screen may say about a token before anybody has typed a name. */
+export type InvitationStatus = 'open' | 'invalid' | 'expired' | 'closed'
+
+export async function invitationStatus(token: string): Promise<InvitationStatus> {
+  const supabase = await createSupabaseServerClient()
+  const { data, error } = await supabase.rpc('invitation_status', { p_token: token })
+
+  // A reader who cannot be told anything is told the invitation is no good, which is true enough:
+  // whatever went wrong, this link is not opening a trip right now.
+  if (error) return 'invalid'
+
+  return data as InvitationStatus
+}

@@ -3,7 +3,7 @@
 
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(22);
+select plan(27);
 
 insert into auth.users (id, instance_id, aud, role, is_anonymous, created_at, updated_at)
 select id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', true, now(), now()
@@ -176,6 +176,22 @@ select ok(
 select throws_ok(
     $$select public.join_trip('Zx8Kq2mB7vN4pR1sT6wY9a', 'Late arrival')$$,
     'SP010', null, 'though nobody else arrives through it again');
+
+-- ---------------------------------------------- what the screen may know before a name is typed
+select is(public.invitation_status('Ad8Kq2mB7vN4pR1sT6wY9a'), 'open',
+          'a live invitation reads as open before anybody types anything');
+
+select is(public.invitation_status('Zx8Kq2mB7vN4pR1sT6wY9a'), 'invalid',
+          'a revoked one says so on arrival, rather than after a name has been sent');
+
+select is(public.invitation_status('not-a-real-token-at-al'), 'invalid',
+          'and a token matching nothing is the same answer: neither confirms it was ever real');
+
+select is(public.invitation_status('Ex8Kq2mB7vN4pR1sT6wY9a'), 'expired',
+          'an expired one is told apart, because there is nothing to hide about a date passing');
+
+select is(public.invitation_status('Cl8Kq2mB7vN4pR1sT6wY9a'), 'closed',
+          'and an invitation to a trip that has ended says that instead');
 
 select * from finish();
 rollback;

@@ -100,6 +100,7 @@ export const en: Catalogue = {
   'join.heading': 'Join the trip',
   'join.body':
     'Somebody sent you an invitation. Type your name and you are in: no account, no password.',
+  'join.dead.heading': 'This invitation no longer works',
   'join.name.label': 'What is your name?',
   'join.name.placeholder': 'Ana',
   'join.name.hint': 'This is how the rest of the group will see you on this trip.',

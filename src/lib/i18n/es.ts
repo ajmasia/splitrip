@@ -102,6 +102,7 @@ export const es = {
   'join.heading': 'Entrar en el viaje',
   'join.body':
     'Te han pasado una invitación. Escribe tu nombre y ya estás dentro: sin cuenta y sin contraseña.',
+  'join.dead.heading': 'Esta invitación ya no sirve',
   'join.name.label': '¿Cómo te llamas?',
   'join.name.placeholder': 'Ana',
   'join.name.hint': 'Así te verá el resto del grupo en este viaje.',

@@ -349,10 +349,17 @@ considered and would stop scanning on half the phones that tried it.
 
 ### Joining
 
-`/join/<token>` asks for a name and says nothing else. It cannot say more: the policy on
-`invitations` serves members only, so whether a token is any good is answered when a name is
-submitted. That is the behaviour wanted anyway — a page that greeted a bad token with the name of a
-trip would be a way of finding out which trips exist.
+`/join/<token>` asks for a name and says nothing about the trip. It cannot: the policy on
+`invitations` serves members only, and a page that greeted a token with the name of a trip would be
+a way of finding out which trips exist.
+
+What it does answer on arrival is whether the link still opens anything. `invitation_status` returns
+one of four words and nothing else — no name, no date, no trip — runs without a session, because
+opening an invitation must cost no identity, and gives revoked and never-existed the same answer, so
+neither confirms that a token was ever real. Whoever holds the token could learn as much by using
+it. Without that check a dead link rendered a form that looked perfectly usable and only refused
+once a name had been sent, which wastes somebody's time and leaves them guessing at what they got
+wrong.
 
 The anonymous identity is minted here, at the moment a name is sent, and not when the page is
 opened. Following an invitation link costs nothing, and an empty name is refused before the identity
