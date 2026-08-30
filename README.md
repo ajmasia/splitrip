@@ -267,11 +267,12 @@ what it describes is gone.
 
 ## Identity
 
-There are no accounts. On its first visit a device is signed in anonymously against Supabase Auth,
-and the participant rows of a trip are bound to that `auth.uid()`. The policies are written against
-it exactly as if there were a real login — there is a genuine JWT and a refresh token — and the door
-stays open: Supabase can later promote an anonymous user to a permanent one while keeping its `uid`,
-and therefore its whole history of trips.
+Two kinds of identity, and the policies cannot tell them apart. A traveller joining a trip is signed
+in anonymously against Supabase Auth; somebody who opens trips signs in with an email address and a
+password. Both are a real `auth.uid()` carrying a genuine JWT and a refresh token, so every policy is
+written once and never asks which kind it is looking at, and the participant rows of a trip are bound
+to that `uid` either way. The door stays open besides: Supabase can later promote an anonymous user
+to a permanent one while keeping its `uid`, and therefore its whole history of trips.
 
 `src/proxy.ts` refreshes whatever session a request already carries — it calls `getUser`, which asks
 the auth server rather than trusting whatever the cookie was last set to — and mints none. Handing an
