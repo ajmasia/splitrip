@@ -202,6 +202,13 @@ transfers are just as frozen. `reopen_trip` puts the trip back to `open` and dro
 it — a trip taking changes again has no final figures to show — and the next close writes them
 afresh.
 
+`create_trip` makes a trip and its first organiser in one go, which is why neither `trips` nor
+`participants` accepts an insert from a client. It asks for two names: the trip's, and the
+creator's, because creating a trip makes you a participant of it and a participant without a name is
+nobody on the list. Reading the list back is the `trip_overview` view, which carries what a list has
+to show — state, dates, what has been spent and by how many people — and, running as the invoker,
+returns the trips the reader takes part in and no others.
+
 A closed trip is read-only, and that is checked on every way there is of writing to one: each
 function refuses it, and the two writes that still go through a policy — renaming the trip and
 revoking one of its invitations — ask whether it is open. Reopening is the single change a closed
@@ -228,6 +235,8 @@ without reading English text:
 | `SP012` | A name is required to join                              |
 | `SP013` | Somebody on the trip already goes by that name          |
 | `SP014` | The trip is already in the state it is being moved to   |
+| `SP015` | A trip needs a name                                     |
+| `SP016` | A trip cannot end before it starts                      |
 
 `npm run db:test` runs the pgTAP tests over all of it. Each one checks both halves of the same
 policy: that the person who belongs can, and that the person who does not cannot.
