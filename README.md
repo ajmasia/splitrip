@@ -30,29 +30,57 @@ The reasoning behind each choice, and the alternatives that were rejected, is in
 ## Requirements
 
 - Node.js 20.9 or newer
-- Docker, for the local Supabase stack
+- Docker, running, for the local Supabase stack
 
 ## Getting started
 
 ```bash
 npm install
+cp .env.example .env.local
+npm run db:start   # first run downloads the Supabase images; it takes a while
 npm run dev
 ```
 
 The application is then served at <http://localhost:3000>.
 
+### Local services
+
+`npm run db:start` brings up the whole Supabase stack in Docker containers:
+
+| Service                   | URL                                                       |
+| ------------------------- | --------------------------------------------------------- |
+| API gateway               | <http://127.0.0.1:54321>                                  |
+| Postgres                  | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
+| Studio                    | <http://127.0.0.1:54323>                                  |
+| Mailpit (captured emails) | <http://127.0.0.1:54324>                                  |
+
+Studio is the fastest way to look at the data: it shows the tables, the RLS policies and the SQL editor.
+
+### Environment variables
+
+Copy `.env.example` to `.env.local`. The values it carries are the local stack defaults — the Supabase CLI generates the same ones on every machine, so they are committed deliberately and are not secrets. Production values are configured in Vercel and never live in the repository.
+
+| Variable                               | What it is                                                                                  |
+| -------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`             | Base URL of the Supabase API                                                                |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Publishable key; safe in the browser because every table is protected by Row Level Security |
+
 ## Available scripts
 
-| Script                 | What it does                                    |
-| ---------------------- | ----------------------------------------------- |
-| `npm run dev`          | Runs the development server with hot reloading  |
-| `npm run build`        | Produces the production build                   |
-| `npm start`            | Serves the production build                     |
-| `npm run lint`         | Runs ESLint; fails on any warning               |
-| `npm run lint:fix`     | Runs ESLint and applies the fixes it can        |
-| `npm run typecheck`    | Type-checks the project without emitting output |
-| `npm run format`       | Formats the project with Prettier               |
-| `npm run format:check` | Checks formatting without writing               |
+| Script                 | What it does                                                      |
+| ---------------------- | ----------------------------------------------------------------- |
+| `npm run dev`          | Runs the development server with hot reloading                    |
+| `npm run build`        | Produces the production build                                     |
+| `npm start`            | Serves the production build                                       |
+| `npm run db:start`     | Starts the local Supabase stack in Docker                         |
+| `npm run db:stop`      | Stops it                                                          |
+| `npm run db:status`    | Shows the service URLs and keys                                   |
+| `npm run db:reset`     | Recreates the database from the migrations, discarding local data |
+| `npm run lint`         | Runs ESLint; fails on any warning                                 |
+| `npm run lint:fix`     | Runs ESLint and applies the fixes it can                          |
+| `npm run typecheck`    | Type-checks the project without emitting output                   |
+| `npm run format`       | Formats the project with Prettier                                 |
+| `npm run format:check` | Checks formatting without writing                                 |
 
 Before opening a pull request, `npm run lint`, `npm run typecheck` and `npm run format:check` should all pass.
 
@@ -69,6 +97,7 @@ TypeScript runs in strict mode with `noUncheckedIndexedAccess` and the unused-sy
 ```
 src/app/            Next.js App Router pages and layouts
 openspec/           Specifications, design and task breakdown
+supabase/           Database migrations and local stack configuration
 ```
 
 ## Contributing
