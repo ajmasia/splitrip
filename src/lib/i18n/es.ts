@@ -9,6 +9,14 @@ export const es = {
 
   'language.label': 'Idioma',
 
+  'error.page.heading': 'Algo se ha torcido',
+  'error.page.body': 'No hemos podido cargar esto. Suele arreglarse volviéndolo a intentar.',
+  'error.page.retry': 'Reintentar',
+  'error.page.home': 'Ir al principio',
+
+  'notFound.heading': 'Aquí no hay nada',
+  'notFound.body': 'El enlace no lleva a ningún sitio, o lleva a un viaje del que no formas parte.',
+
   'landing.heading': 'Cuadrad las cuentas del viaje sobre la marcha.',
   'landing.body':
     'Abre un viaje con tu cuenta, o entra en uno con la invitación que te hayan pasado.',

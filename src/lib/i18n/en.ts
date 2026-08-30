@@ -7,6 +7,14 @@ export const en: Catalogue = {
 
   'language.label': 'Language',
 
+  'error.page.heading': 'Something went wrong',
+  'error.page.body': 'This did not load. Trying again usually settles it.',
+  'error.page.retry': 'Try again',
+  'error.page.home': 'Go to the start',
+
+  'notFound.heading': 'There is nothing here',
+  'notFound.body': 'That link leads nowhere, or to a trip you are not part of.',
+
   'landing.heading': 'Settle up as the trip happens.',
   'landing.body':
     'Open a trip with your account, or come into one through an invitation somebody sent you.',
