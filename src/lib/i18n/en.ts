@@ -324,6 +324,10 @@ export const en: Catalogue = {
     'This person cannot be removed: 1 expense is attached to them.',
   'error.participant_has_expenses.other':
     'This person cannot be removed: {count} expenses are attached to them.',
+  'error.participant_in_splits.one':
+    'You cannot remove them: they are in the split of 1 expense. Take them out of it and you can.',
+  'error.participant_in_splits.other':
+    'You cannot remove them: they are in the split of {count} expenses. Take them out of those and you can.',
   'error.participant_has_payments.one':
     'This person cannot be removed: 1 payment is attached to them.',
   'error.participant_has_payments.other':

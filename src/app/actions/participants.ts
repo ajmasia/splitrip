@@ -24,6 +24,10 @@ const REFUSALS: Record<string, { one: CopyKey; other: CopyKey } | undefined> = {
     one: 'error.participant_has_payments.one',
     other: 'error.participant_has_payments.other',
   },
+  SP028: {
+    one: 'error.participant_in_splits.one',
+    other: 'error.participant_in_splits.other',
+  },
 }
 
 /** The database sends the number of entries in the way as the DETAIL of its refusal. */

@@ -90,7 +90,10 @@ select throws_ok(
 
 select throws_ok(
     $$select public.remove_participant('cccccccc-0000-0000-0000-00000000000e')$$,
-    'SP021', null, 'and neither can somebody who was only in the split');
+    'SP028', null,
+    'and neither can somebody who was only in the split — but it is a different refusal, because
+     an expense of their own is not the same as an expense they are in, and only one of the two
+     leaves them anything to do about it');
 
 select throws_ok(
     $$select public.remove_participant('cccccccc-0000-0000-0000-00000000000d')$$,

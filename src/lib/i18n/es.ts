@@ -329,6 +329,10 @@ export const es = {
     'No puedes quitar a esta persona: tiene 1 gasto a su nombre.',
   'error.participant_has_expenses.other':
     'No puedes quitar a esta persona: tiene {count} gastos a su nombre.',
+  'error.participant_in_splits.one':
+    'No puedes quitar a esta persona: entra en el reparto de 1 gasto. Sácala de ese reparto y podrás.',
+  'error.participant_in_splits.other':
+    'No puedes quitar a esta persona: entra en el reparto de {count} gastos. Sácala de esos repartos y podrás.',
   'error.participant_has_payments.one':
     'No puedes quitar a esta persona: tiene 1 pago a su nombre.',
   'error.participant_has_payments.other':
