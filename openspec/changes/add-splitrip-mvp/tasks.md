@@ -51,7 +51,7 @@
 - [x] 6.3 Implement amount and date formatting with `Intl` according to the active language; verify that 1055 cents render as "10,55 €" in Spanish and with English conventions in English
 - [x] 6.4 Implement the phone base layout with thumb-reachable navigation and touch targets of at least 44 pixels; verify on a 360-pixel-wide screen that there is no horizontal scrolling
 - [x] 6.5 Implement the responsive density layer: a shared breakpoint constant and CSS-driven switching between stacked cards and tables, with content constrained to a readable measure; verify that the same page renders as cards at 360 pixels and as a table at 1280 pixels with no hydration warning in the console
-- [ ] 6.6 Implement the role-and-viewport gate offering the organiser tools only to an `admin` on a desktop viewport; verify that an `admin` sees them at 1280 pixels, does not at 360 pixels, that a `participant` never does, and that the dashboard stays reachable on a phone
+- [x] 6.6 Implement the role-and-viewport gate offering the organiser tools only to an `admin` on a desktop viewport; verify that an `admin` sees them at 1280 pixels, does not at 360 pixels, that a `participant` never does, and that the dashboard stays reachable on a phone
 - [x] 6.7 Add the PWA manifest with icons for iOS and Android, a theme colour and standalone mode; verify by installing the application on an Android device and on an iOS device that it opens without the browser interface
 - [x] 6.8 Add the shell-caching service worker, the offline notice and new-version detection; verify that the second opening does not wait for the network, that the notice appears offline instead of the browser error, and that a new version is applied without reinstalling
 

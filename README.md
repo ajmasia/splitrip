@@ -475,6 +475,14 @@ It checks what is being asked for rather than what the expense ends up with. An 
 attributed somebody's expense elsewhere, and that must not lock its author out of fixing a typo in
 it.
 
+`DeskTools` is the gate those affordances sit behind, and its two halves are deliberately different
+kinds of rule. The role is decided on the server and the children are simply not rendered, because a
+control somebody may not use has no business being in the document at all — a traveller's page does
+not contain it, hidden or otherwise. The width is decided by CSS, because a tree that depends on a
+width measured in JavaScript is a tree the server could not have rendered, and the first paint would
+disagree with itself. The wrapper uses `contents` above the breakpoint so it leaves no box behind
+and its children lay out inside whatever column they were written for.
+
 Entering several in a row is an organiser's job, done at a desk before leaving, so the flow is
 offered to an `admin` above the breakpoint and to nobody else. It is a checkbox rather than a second
 submit button, and that is not a style choice: the first submit button in a form is the one the

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useActionState, useEffect, useRef, useState } from 'react'
 
 import { createExpense, type NewExpenseState } from '@/app/actions/expenses'
+import { DeskTools } from '@/components/desk-tools'
 import { intlLocale, translator, type Locale } from '@/lib/i18n'
 import { formatAmount } from '@/lib/money/amount'
 import type { TripParticipant, TripRole } from '@/lib/trips/queries'
@@ -207,13 +208,11 @@ export function NewExpenseForm({
       )}
 
       {/*
-        Entering several in a row is an organiser's job done at a desk before leaving, so it is
-        offered to an `admin` above the breakpoint and to nobody else. A checkbox rather than a
-        second submit button: the first submit button in a form is the one the Enter key presses,
-        and hiding it with CSS does not stop it being that one.
+        A checkbox rather than a second submit button: the first submit button in a form is the one
+        the Enter key presses, and hiding it with CSS does not stop it being that one.
       */}
-      {yourRole === 'admin' ? (
-        <div className="hidden flex-col gap-1 wide:flex">
+      <DeskTools role={yourRole}>
+        <div className="flex flex-col gap-1">
           <label className="flex min-h-touch cursor-pointer items-center gap-3 text-sm font-medium">
             <input
               type="checkbox"
@@ -235,7 +234,7 @@ export function NewExpenseForm({
             </p>
           ) : null}
         </div>
-      ) : null}
+      </DeskTools>
 
       {state.error ? (
         <p role="alert" className="rounded-card bg-debt-soft px-3 py-2 text-sm text-debt">
