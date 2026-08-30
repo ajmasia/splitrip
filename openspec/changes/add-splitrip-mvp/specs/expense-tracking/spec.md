@@ -5,17 +5,21 @@ Records the money spent during a trip: who paid it, how much, on what, and among
 ## ADDED Requirements
 
 ### Requirement: Recording a shared expense
-The system SHALL allow any participant of a trip in the `open` state to record an expense of type `shared`, providing a description, an amount, a date, a payer and the set of participants it is split among. By default, the payer SHALL be whoever records the expense and the split SHALL include every participant of the trip.
+The system SHALL allow any participant of a trip in the `open` state to record an expense of type `shared`, providing a description, an amount, a date and the set of participants it is split among. The payer SHALL be whoever records the expense; only a participant with the `admin` role SHALL be able to attribute an expense to somebody else. By default the split SHALL include every participant of the trip.
 
 #### Scenario: Recording with the default values
 - **WHEN** a participant records a "Dinner" expense of €60.00 without changing payer or split, in a trip with 4 participants
 - **THEN** the system stores the expense with type `shared`, with themselves as payer and with all 4 participants in the split
 - **AND** the expense appears immediately in the trip list for every participant
 
-#### Scenario: Recording an expense paid by someone else
-- **WHEN** a participant records an expense and selects another participant as the payer
+#### Scenario: Admin records an expense paid by someone else
+- **WHEN** a participant with the `admin` role records an expense and selects another participant as the payer
 - **THEN** the system attributes the payment to the selected participant for balance purposes
 - **AND** records in the trip activity that a different person created the expense
+
+#### Scenario: Participant attempts to name another payer
+- **WHEN** a participant with the `participant` role submits an expense naming somebody else as the payer
+- **THEN** the system rejects the operation and reports that only an organiser can attribute an expense to somebody else
 
 #### Scenario: Expense date
 - **WHEN** a participant records an expense without providing a date
@@ -23,20 +27,24 @@ The system SHALL allow any participant of a trip in the `open` state to record a
 - **AND** if they do provide a date, the system stores the one provided
 
 ### Requirement: Recording a contribution that is not split
-The system SHALL allow recording an expense of type `contribution`: it is paid by one participant, adds to the total spent on the trip, and SHALL NOT create any debt for anyone else. A contribution SHALL NOT have a split set.
+The system SHALL allow a participant with the `admin` role to record an expense of type `contribution`: it is paid by one participant, adds to the total spent on the trip, and SHALL NOT create any debt for anyone else. A contribution SHALL NOT have a split set. Every expense recorded by a participant with the `participant` role SHALL be of type `shared`.
 
 #### Scenario: Adding a contribution
-- **WHEN** a participant records a "Van rental" expense of €300.00 with type `contribution`
+- **WHEN** a participant with the `admin` role records a "Van rental" expense of €300.00 with type `contribution`
 - **THEN** the system stores it with no split set
 - **AND** the amount adds to the total spent on the trip
 - **AND** no participant, the payer included, sees their balance changed by that expense
+
+#### Scenario: Participant attempts to record a contribution
+- **WHEN** a participant with the `participant` role submits an expense of type `contribution`
+- **THEN** the system rejects the operation and reports that only an organiser can record one
 
 #### Scenario: Attempting to give a contribution a split
 - **WHEN** an expense of type `contribution` is submitted with a set of participants to split among
 - **THEN** the system rejects the operation and reports that a contribution is not split
 
 ### Requirement: Splitting among a subset of participants
-The system SHALL allow an expense of type `shared` to be split among only a subset of the trip participants. The split SHALL always be equal among the included participants. The split set SHALL contain at least one participant, and every member SHALL belong to the trip.
+The system SHALL allow an expense of type `shared` to be split among only a subset of the trip participants, and SHALL offer this to every participant regardless of role: whoever paid for a dinner three of them shared is the person who knows who was there. The split SHALL always be equal among the included participants. The split set SHALL contain at least one participant, and every member SHALL belong to the trip.
 
 #### Scenario: A dinner attended by three out of five
 - **WHEN** a participant of a five-person trip records a "Dinner" expense of €45.00 selecting only three participants in the split

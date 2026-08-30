@@ -60,7 +60,7 @@ The system SHALL show each person the list of trips they take part in, and SHALL
 - **THEN** the system shows an empty state offering to create a trip or to join one through an invitation
 
 ### Requirement: Roles and permissions within a trip
-Every participant of a trip SHALL hold exactly one of two roles: `admin` or `participant`. An `admin` SHALL be able to edit the trip data, invite and remove participants, change roles, edit or delete any expense of the trip, and close it. A `participant` SHALL be able to record expenses, and to edit or delete only the expenses they recorded themselves. Both roles SHALL be able to view every expense, balance and settlement of the trip.
+Every participant of a trip SHALL hold exactly one of two roles: `admin` or `participant`. An `admin` SHALL be able to edit the trip data, invite and remove participants, change roles, attribute an expense to a payer other than themselves, record a contribution, edit or delete any expense of the trip, and close it. A `participant` SHALL be able to record expenses they paid themselves, choosing who they are split among, and to edit or delete only the expenses they recorded themselves. Both roles SHALL be able to view every expense, balance and settlement of the trip.
 
 #### Scenario: Participant edits someone else's expense
 - **WHEN** a participant with the `participant` role attempts to edit an expense recorded by someone else
