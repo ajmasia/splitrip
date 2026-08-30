@@ -202,6 +202,12 @@ transfers are just as frozen. `reopen_trip` puts the trip back to `open` and dro
 it — a trip taking changes again has no final figures to show — and the next close writes them
 afresh.
 
+A closed trip is read-only, and that is checked on every way there is of writing to one: each
+function refuses it, and the two writes that still go through a policy — renaming the trip and
+revoking one of its invitations — ask whether it is open. Reopening is the single change a closed
+trip accepts, and `reopen_trip` is what makes it. `closed_trip.test.sql` tries all of them as the
+organiser, on the reasoning that if the strongest hand on the trip cannot, nobody can.
+
 A rejection carries its own `SQLSTATE`, so the bilingual interface maps a broken rule to its copy
 without reading English text:
 
