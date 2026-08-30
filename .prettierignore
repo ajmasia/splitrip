@@ -1,0 +1,10 @@
+.next/
+out/
+build/
+node_modules/
+package-lock.json
+next-env.d.ts
+
+# OpenSpec artifacts have a structure parsed and validated by the openspec CLI.
+# That tool owns their formatting; keep Prettier out of them.
+openspec/
