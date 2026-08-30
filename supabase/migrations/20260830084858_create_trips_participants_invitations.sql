@@ -1,13 +1,4 @@
--- Trips, participants and invitations: the three tables that bound a trip.
---
--- A trip is the scope everything else lives in. Membership is recorded in
--- `participants`, which binds a Supabase auth user to a trip with a role; that
--- binding is what the Row Level Security policies added later reason about.
--- Invitations are the only way into a trip, so they carry the role their user
--- will join with and can expire or be revoked.
---
--- Rules that must never be bypassed live here as constraints rather than in
--- application code: no route can forget to apply a CHECK.
+-- Rules that no application path may bypass live here as constraints rather than in code.
 
 create table public.trips (
     id uuid primary key default gen_random_uuid(),
@@ -33,6 +24,7 @@ create table public.trips (
 comment on column public.trips.currency is
     'Base currency. Only EUR is accepted in this release; the column exists from day one so adding
      conversion later needs no retroactive decision about historical expenses.';
+
 comment on column public.trips.summary is
     'Closing summary frozen when the trip is closed, so it cannot drift while the trip stays closed.';
 
@@ -52,12 +44,9 @@ comment on column public.participants.user_id is
     'The device identity that joined, as an anonymous Supabase auth user. ON DELETE RESTRICT: a
      participant carries balances, so their identity must not disappear from underneath them.';
 
--- Two people on the same trip cannot answer to the same name: the whole interface identifies a
--- participant by it. Case and surrounding whitespace are ignored, as the joining rules require.
 create unique index participants_display_name_unique_per_trip
     on public.participants (trip_id, lower(btrim(display_name)));
 
--- Answers "which trips do I take part in?", the query behind every visit to the trip list.
 create index participants_user_id_idx on public.participants (user_id);
 
 create table public.invitations (
@@ -77,7 +66,5 @@ create table public.invitations (
 comment on column public.invitations.token is
     'Unguessable identifier carried in the invitation URL. At least 128 bits of entropy from a
      cryptographically secure generator, which is 22 characters once base64url-encoded.';
-comment on column public.invitations.role is
-    'Role whoever uses this invitation joins with.';
 
 create index invitations_trip_id_idx on public.invitations (trip_id);

@@ -1,24 +1,10 @@
--- Expenses, their shares and the payments that settle them: the money.
+-- Two rules that span tables and are therefore enforced with composite foreign keys rather than
+-- trusted to the caller: a `contribution` creates no debt so it can have no shares, and money only
+-- moves between participants of the same trip.
 --
--- Every amount is an integer number of cents. No floating-point type ever touches money, so the
--- sum of the shares equals the expense to the cent, always and reproducibly.
---
--- Two rules that no application path may bypass are enforced here rather than in code:
---
---   * A `contribution` adds to the trip total but creates no debt, so it has no shares. Because
---     that spans two tables, it is enforced with a composite foreign key against `(id, type)` of
---     the expense plus a CHECK pinning the referenced type to `shared`: attaching a share to a
---     contribution is rejected, and so is turning an expense with shares into a contribution.
---   * Money only moves between participants of the same trip. The composite foreign keys against
---     `(id, trip_id)` of `participants` make a payer, a payee or an author from another trip
---     impossible to record, without the tables having to trust the caller.
---
--- Participant references neither cascade nor restrict: a participant carrying expenses or
--- payments simply cannot be deleted, which is the rule the trip requires — their money would be
--- left dangling. They are declared DEFERRABLE INITIALLY IMMEDIATE, so they are checked at every
--- statement as usual, and deleting a whole trip is still possible by asking for them to be
--- deferred first (SET CONSTRAINTS ALL DEFERRED): the cascade then reaches participants, expenses
--- and payments in whatever order it likes, and by commit there is nothing left pointing anywhere.
+-- The references to participants are DEFERRABLE so that deleting a whole trip can cascade in any
+-- order; checked at every statement otherwise, which is what refuses to delete a participant who
+-- still carries money.
 
 alter table public.participants
     add constraint participants_id_trip_id_key unique (id, trip_id);
@@ -45,18 +31,12 @@ create table public.expenses (
     constraint expenses_id_type_key unique (id, type)
 );
 
-comment on column public.expenses.amount_cents is
-    'Amount in integer cents. Always strictly positive: an expense of nothing is not an expense.';
 comment on column public.expenses.spent_on is
     'The day of the trip the money was spent, as a civil date with no time and no zone, so a
      dinner does not move to the next day because of the destination time difference.';
-comment on column public.expenses.paid_by is
-    'Who fronted the money, which is not necessarily who recorded the expense.';
 
--- The trip screen lists expenses most recent first; this is that query.
 create index expenses_trip_id_spent_on_idx on public.expenses (trip_id, spent_on desc);
 
--- Answers "what has this participant paid?", for balances and for the removal check.
 create index expenses_paid_by_idx on public.expenses (paid_by);
 
 create table public.expense_shares (
@@ -76,11 +56,7 @@ create table public.expense_shares (
 comment on column public.expense_shares.expense_type is
     'Mirrors the type of the referenced expense so the foreign key can pin it to `shared`. It is
      what makes "a contribution has no shares" a guarantee of the database rather than a habit.';
-comment on column public.expense_shares.amount_cents is
-    'What this participant is charged for this expense. Zero is legitimate: one cent split three
-     ways charges 1, 0 and 0.';
 
--- Answers "what has this participant been charged?", the other half of every balance.
 create index expense_shares_participant_id_idx on public.expense_shares (participant_id);
 
 create table public.payments (

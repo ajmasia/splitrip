@@ -1,10 +1,3 @@
-/**
- * Turning balances into an answer somebody can act on.
- *
- * Knowing that Virginia is 38.85 short is not useful on its own; knowing that she should hand
- * 38.85 to Marta is. This module does that conversion, and nothing else.
- */
-
 export type Balance = {
   participantId: string
   /** Positive means the group owes them; negative, that they owe the group. */
@@ -18,23 +11,13 @@ export type Transfer = {
 }
 
 /**
- * Proposes the transfers that bring every balance to zero.
+ * Greedy: whoever owes the most hands money to whoever is owed the most, as much as clears one of
+ * the two. Every step settles somebody, so the proposal never holds more than one transfer fewer
+ * than the number of people with something outstanding. Not always the shortest possible list —
+ * that problem is NP-hard — but for a group of this size the difference is imperceptible.
  *
- * Greedy: the person who owes the most hands money to the person who is owed the most, as much as
- * clears one of the two, and so on. Every step settles somebody completely, so the proposal never
- * holds more than one transfer fewer than the number of people with something outstanding.
- *
- * This is not guaranteed to be the shortest possible list — finding that is NP-hard — but for a
- * group of this size it is optimal or within a transfer of it, and nobody can perceive the
- * difference between four transfers and the four transfers that a slower algorithm would find.
- *
- * Ties are broken by identifier so that the same balances always produce the same proposal. The
- * closing summary freezes this list, and a proposal that reshuffled itself between two readings
- * would be worse than useless.
- *
- * Balances must add up to zero, which is what the data guarantees: every shared expense is charged
- * in full to somebody and every payment is both sent and received. A set that does not add up is a
- * bug somewhere upstream, and it is reported here rather than quietly settled into nonsense.
+ * Ties go by identifier: the closing summary freezes this list, and it must not reshuffle itself
+ * between two readings.
  */
 export function settle(balances: readonly Balance[]): Transfer[] {
   for (const balance of balances) {
@@ -70,10 +53,6 @@ export function settle(balances: readonly Balance[]): Transfer[] {
   return transfers
 }
 
-/**
- * The largest outstanding balance on one side, `1` for the creditors and `-1` for the debtors.
- * Ties go to the lowest identifier, so the choice never depends on iteration order.
- */
 function furthestFromZero(owed: Map<string, number>, sign: 1 | -1): string | undefined {
   let found: string | undefined
   let bestAmount = 0

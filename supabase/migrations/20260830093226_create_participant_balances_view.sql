@@ -1,20 +1,9 @@
--- What each participant put in, what they were charged, and where that leaves them.
---
--- A balance is derived, never stored. A counter that gets updated on every write is a counter that
--- can drift away from the rows it claims to summarise; a view is the sum of what is actually there,
--- so it cannot be wrong about it.
---
--- The net figure reads: what I paid, minus what the splits charged me, plus what I have handed over
--- in settlements, minus what I have collected. Positive means the group owes me. Every shared
--- expense is charged in full to somebody, and every payment is both sent and received, so the net
--- figures of a trip always sum to exactly zero.
---
--- Contributions are counted apart. They add to what the trip cost but create no debt for anyone,
--- their payer included, so they stay out of the balance and are reported in their own column.
+-- A balance is derived, never stored: a counter that gets updated can drift away from the rows it
+-- claims to summarise. Contributions stay out of it — they add to what the trip cost but put
+-- nobody in debt — and are reported in their own column.
 --
 -- SECURITY INVOKER is not a detail: a Postgres view runs with the permissions of its owner unless
--- it says otherwise, which would let anybody read every trip's money through it. Declared this way
--- the view sees exactly what the person querying it is allowed to see.
+-- it says otherwise, which here would hand every trip's money to anybody who queried it.
 
 create view public.participant_balances
 with (security_invoker = true) as

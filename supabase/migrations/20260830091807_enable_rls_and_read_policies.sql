@@ -1,16 +1,10 @@
--- Row Level Security: a trip is only visible to the people who take part in it.
+-- A trip is readable only by the people who take part in it.
 --
--- This is the gravest risk in the design. A bug here does not show up as a broken screen, it shows
--- up as one group reading another group's money. So isolation lives next to the data, where no
--- application route can bypass it by oversight, and every table is covered — including the ones
--- that carry no `trip_id` of their own.
+-- Membership is resolved by SECURITY DEFINER helpers because a policy on `participants` that
+-- queried `participants` under RLS would recurse forever.
 --
--- Membership is resolved by SECURITY DEFINER helpers on purpose. A policy on `participants` that
--- queried `participants` under RLS would recurse forever; a helper that runs as its owner reads the
--- membership once and answers a plain yes or no, which is all the policy needs to know.
---
--- Reads only. Writes stay denied — RLS with no policy for a command refuses it — until the write
--- policies distinguishing an admin from a participant land in the next migration.
+-- Reads only: RLS with no policy for a command refuses it, so writes stay denied until the next
+-- migration.
 
 create function public.is_trip_member(p_trip_id uuid)
 returns boolean
@@ -24,10 +18,6 @@ as $$
         where p.trip_id = p_trip_id and p.user_id = auth.uid()
     );
 $$;
-
-comment on function public.is_trip_member(uuid) is
-    'Does the current session take part in this trip? SECURITY DEFINER so that policies on
-     `participants` can ask it without the question recursing into the policy that asked.';
 
 -- `expense_shares` is reached through its expense: it carries no trip of its own.
 create function public.is_trip_member_of_expense(p_expense_id uuid)

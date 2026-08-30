@@ -1,16 +1,9 @@
--- The trip activity feed, written by triggers rather than by application code.
+-- The feed is written by triggers, not by application code: an audit trail that depends on every
+-- function remembering to write it ends up with gaps.
 --
--- The feed is an audit trail, and one that depends on every function remembering to write it ends
--- up with gaps. In triggers it is impossible to touch an expense without leaving a trace. As a
--- side effect the feed travels over the same realtime channel as the tables it watches.
---
--- Who performed the action is `auth.uid()` resolved to their participant in the trip, so when an
--- admin corrects somebody else's expense the entry names the admin, not the original author. When
--- there is no session — a fixture, a repair run by hand — it falls back to the participant the row
--- itself points at, and the feed still says something true.
---
--- The author's name is copied into the entry. A participant who leaves can be deleted, and the
--- trace of what they did must stay readable afterwards.
+-- The author is `auth.uid()` resolved to their participant, so correcting somebody else's expense
+-- is attributed to whoever corrected it, falling back to the row's own author when there is no
+-- session to attribute it to.
 
 create table public.activity (
     id uuid primary key default gen_random_uuid(),
@@ -34,16 +27,14 @@ create table public.activity (
 comment on column public.activity.occurred_at is
     'clock_timestamp(), not now(): several entries can be written by one transaction, and a
      chronological feed must not leave their order to chance by giving them the same instant.';
+
 comment on column public.activity.actor_name is
     'The author name as it stood when the action happened, so the entry survives their departure.';
+
 comment on column public.activity.subject_id is
     'The expense, payment or participant the entry is about. Not a foreign key: the entry outlives
      what it describes, which is the whole point of keeping a trace.';
-comment on column public.activity.details is
-    'What the feed needs to render the entry without reading rows that may no longer exist, such as
-     the description and amount of a deleted expense.';
 
--- The feed is read most recent first, always for one trip.
 create index activity_trip_id_occurred_at_idx on public.activity (trip_id, occurred_at desc);
 
 -- Resolves the current session to its participant in the trip, falling back to the row's own
