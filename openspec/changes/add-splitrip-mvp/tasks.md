@@ -34,7 +34,7 @@
 
 ## 5. Identity and access
 
-- [ ] 5.1 Integrate the Supabase client with an automatic anonymous session on first visit and token refresh; verify that a fresh browser gets a stable `auth.uid()` that survives reloads
+- [x] 5.1 Integrate the Supabase client with an automatic anonymous session on first visit and token refresh; verify that a fresh browser gets a stable `auth.uid()` that survives reloads
 - [ ] 5.2 Implement trip creation and the participant's trip list; verify in the application that the creator appears as `admin` and only sees the trips they take part in
 - [ ] 5.3 Implement invitation generation with a 128-bit identifier, an attached role and an expiry; verify that the identifier comes from a cryptographically secure generator and that the invitation is recorded as active
 - [ ] 5.4 Implement the invitation screen with a copyable link and a QR code; verify by scanning the QR with a phone that it lands on the join screen of the right trip
