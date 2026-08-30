@@ -88,6 +88,7 @@ covers the tables that bound a trip and the money spent on it:
 | `expenses`       | What was spent: description, amount, day, payer, and `shared` or `contribution`           |
 | `expense_shares` | What each participant is charged for a `shared` expense                                   |
 | `payments`       | Settlement payments from one participant to another                                       |
+| `activity`       | The trip feed: who did what and when                                                      |
 
 Rules that must never be bypassed are database constraints rather than application checks, so no
 route can forget one: a trip only accepts `EUR` and cannot end before it starts, a summary exists
@@ -105,6 +106,13 @@ cannot move between people from different trips.
 A participant carrying expenses or payments cannot be deleted, and neither can the auth identity
 behind them: their money would be left dangling. Those checks are `DEFERRABLE`, so deleting a whole
 trip is still possible inside a transaction that asks for them to be deferred first.
+
+The activity feed is written by database triggers, not by application code: an audit trail that
+depends on every function remembering to write it ends up with gaps, whereas in a trigger it is
+impossible to touch an expense without leaving a trace. The author of an entry is the current
+session resolved to its participant, so correcting somebody else's expense is attributed to whoever
+made the correction. Each entry keeps the author's name and enough detail to stay readable after
+what it describes is gone.
 
 ## Available scripts
 
