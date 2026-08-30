@@ -91,7 +91,12 @@ export const en: Catalogue = {
   'newExpense.date.label': 'Which day?',
   'newExpense.submit': 'Record the expense',
   'newExpense.pending': 'Recording…',
-  'newExpense.cancel': 'Cancel',
+  'newExpense.many.label': 'Keep recording',
+  'newExpense.many.hint': 'The form stays open, keeping the date, the payer and the split.',
+  'newExpense.many.submit': 'Record and carry on',
+  'newExpense.session.one': '1 expense in this run · {total}',
+  'newExpense.session.other': '{count} expenses in this run · {total}',
+  'newExpense.back': 'Back to the trip',
 
   'expenses.heading': 'Expenses',
   'expenses.empty.title': 'No expenses yet',

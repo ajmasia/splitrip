@@ -4,10 +4,11 @@ import Link from 'next/link'
 import { useActionState, useEffect, useRef, useState } from 'react'
 
 import { createExpense, type NewExpenseState } from '@/app/actions/expenses'
-import { translator, type Locale } from '@/lib/i18n'
+import { intlLocale, translator, type Locale } from '@/lib/i18n'
+import { formatAmount } from '@/lib/money/amount'
 import type { TripParticipant, TripRole } from '@/lib/trips/queries'
 
-const EMPTY: NewExpenseState = { error: null }
+const EMPTY: NewExpenseState = { error: null, recorded: null, at: 0 }
 
 export function NewExpenseForm({
   tripId,
@@ -33,6 +34,31 @@ export function NewExpenseForm({
   // starts on the rare answer asks everybody to correct it.
   const [type, setType] = useState<'shared' | 'contribution'>('shared')
 
+  // Controlled, so a refusal keeps what was typed and a save can empty the two fields that change
+  // from one expense to the next while the date, the payer and the split stay where they are.
+  const [description, setDescription] = useState('')
+  const [amount, setAmount] = useState('')
+
+  const [staying, setStaying] = useState(false)
+  const [session, setSession] = useState({ count: 0, totalCents: 0 })
+  const descriptionField = useRef<HTMLInputElement>(null)
+  const lastRecorded = useRef(0)
+
+  // One expense went in and the form is staying open. Clear what changes, keep what repeats, and
+  // put the cursor back where the next entry starts — no reaching for a pointer between expenses.
+  useEffect(() => {
+    if (state.recorded === null || state.at === lastRecorded.current) return
+    lastRecorded.current = state.at
+
+    setSession((sofar) => ({
+      count: sofar.count + 1,
+      totalCents: sofar.totalCents + (state.recorded ?? 0),
+    }))
+    setDescription('')
+    setAmount('')
+    descriptionField.current?.focus()
+  }, [state])
+
   // The day of an expense is the day where the person spending it is, not where the server is
   // hosted. The browser's date can only be read after hydration, so the server's stands in until
   // then; the two differ for a couple of hours a day and the field is corrected before it is used.
@@ -56,8 +82,11 @@ export function NewExpenseForm({
           {t('newExpense.description.label')}
         </label>
         <input
+          ref={descriptionField}
           id="description"
           name="description"
+          value={description}
+          onChange={(event) => setDescription(event.currentTarget.value)}
           required
           autoFocus
           placeholder={t('newExpense.description.placeholder')}
@@ -72,6 +101,8 @@ export function NewExpenseForm({
         <input
           id="amount"
           name="amount"
+          value={amount}
+          onChange={(event) => setAmount(event.currentTarget.value)}
           required
           // Not type="number": it brings a spinner nobody wants on a price, and its own idea of
           // which decimal separator is valid. This asks the phone for the numeric keypad and lets
@@ -175,6 +206,37 @@ export function NewExpenseForm({
         </fieldset>
       )}
 
+      {/*
+        Entering several in a row is an organiser's job done at a desk before leaving, so it is
+        offered to an `admin` above the breakpoint and to nobody else. A checkbox rather than a
+        second submit button: the first submit button in a form is the one the Enter key presses,
+        and hiding it with CSS does not stop it being that one.
+      */}
+      {yourRole === 'admin' ? (
+        <div className="hidden flex-col gap-1 wide:flex">
+          <label className="flex min-h-touch cursor-pointer items-center gap-3 text-sm font-medium">
+            <input
+              type="checkbox"
+              name="mode"
+              value="many"
+              checked={staying}
+              onChange={(event) => setStaying(event.currentTarget.checked)}
+              className="size-5 accent-accent"
+            />
+            {t('newExpense.many.label')}
+          </label>
+          <span className="text-sm text-ink-soft">{t('newExpense.many.hint')}</span>
+          {session.count > 0 ? (
+            <p role="status" className="tabular pt-1 text-sm font-medium text-accent">
+              {t(session.count === 1 ? 'newExpense.session.one' : 'newExpense.session.other', {
+                count: session.count,
+                total: formatAmount(session.totalCents, intlLocale(locale)),
+              })}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
       {state.error ? (
         <p role="alert" className="rounded-card bg-debt-soft px-3 py-2 text-sm text-debt">
           {t(state.error)}
@@ -187,13 +249,15 @@ export function NewExpenseForm({
           disabled={pending}
           className="min-h-touch cursor-pointer rounded-card bg-accent px-4 font-semibold text-accent-ink disabled:opacity-50"
         >
-          {pending ? t('newExpense.pending') : t('newExpense.submit')}
+          {pending
+            ? t('newExpense.pending')
+            : t(staying ? 'newExpense.many.submit' : 'newExpense.submit')}
         </button>
         <Link
           href={`/trips/${tripId}`}
           className="flex min-h-touch items-center rounded-card border border-rule px-4 text-ink-soft"
         >
-          {t('newExpense.cancel')}
+          {t('newExpense.back')}
         </Link>
       </div>
     </form>

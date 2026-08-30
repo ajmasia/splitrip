@@ -8,7 +8,16 @@ import type { CopyKey } from '@/lib/i18n'
 import { parseAmount, type ParsedAmount } from '@/lib/money/amount'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
-export type NewExpenseState = { error: CopyKey | null }
+export type NewExpenseState = {
+  error: CopyKey | null
+  /** The cents just recorded, when the form is staying open for the next one. */
+  recorded: number | null
+  /**
+   * When it was recorded. Two identical expenses in a row would otherwise produce two identical
+   * results, and the form would have no way of telling that the second one happened.
+   */
+  at: number
+}
 
 const text = (value: FormDataEntryValue | null) => (typeof value === 'string' ? value : '')
 
@@ -32,10 +41,13 @@ export async function createExpense(
   // The constraint on the table is still the authority on a blank description. This only catches it
   // before the round trip, because a check violation arrives as a code with no message worth
   // showing, and a field of spaces satisfies `required` in the browser.
-  if (description === '') return { error: 'error.description_required' }
+  const stay = text(formData.get('mode')) === 'many'
+  const refused = (error: CopyKey): NewExpenseState => ({ error, recorded: null, at: 0 })
+
+  if (description === '') return refused('error.description_required')
 
   const amount = parseAmount(text(formData.get('amount')))
-  if (!amount.ok) return { error: WHY[amount.reason] }
+  if (!amount.ok) return refused(WHY[amount.reason])
 
   const supabase = await createSupabaseServerClient()
 
@@ -63,8 +75,13 @@ export async function createExpense(
     p_split_participant_ids: type === 'contribution' ? null : split,
   })
 
-  if (error) return { error: errorCopyKey(error.code) }
+  if (error) return refused(errorCopyKey(error.code))
 
   revalidatePath(`/trips/${tripId}`)
+
+  // Entering several in a row means never leaving the form. The list behind it is revalidated all
+  // the same, so whatever was recorded is already there when the last one is done.
+  if (stay) return { error: null, recorded: amount.amountCents, at: Date.now() }
+
   redirect(`/trips/${tripId}`)
 }

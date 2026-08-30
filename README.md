@@ -475,6 +475,19 @@ It checks what is being asked for rather than what the expense ends up with. An 
 attributed somebody's expense elsewhere, and that must not lock its author out of fixing a typo in
 it.
 
+Entering several in a row is an organiser's job, done at a desk before leaving, so the flow is
+offered to an `admin` above the breakpoint and to nobody else. It is a checkbox rather than a second
+submit button, and that is not a style choice: the first submit button in a form is the one the
+Enter key presses, and hiding one with CSS does not stop it being that one. With a single button,
+Enter submits, the description and the amount are emptied, the date and the payer and the split stay
+where they are, and the cursor goes back to the description — ten expenses without reaching for a
+pointer. The run keeps its own count and total, which is the only way to know whether the pile of
+receipts on the desk is finished.
+
+A refusal empties nothing. Both fields are controlled for exactly that reason: React resets a form
+once its action returns, and losing what somebody typed because they wrote three decimal places is a
+way to make them stop trusting the form.
+
 The form starts on `shared`, always: an expense nobody shares is the rare one, and a form that opens
 on the rare answer asks everybody to correct it. Picking the other option takes the split checkboxes
 out of the document rather than merely hiding them — a hidden checkbox is still submitted, and the

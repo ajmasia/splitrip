@@ -93,7 +93,13 @@ export const es = {
   'newExpense.date.label': '¿Qué día?',
   'newExpense.submit': 'Apuntar el gasto',
   'newExpense.pending': 'Apuntando…',
-  'newExpense.cancel': 'Cancelar',
+  'newExpense.many.label': 'Seguir apuntando',
+  'newExpense.many.hint':
+    'El formulario se queda abierto, conservando la fecha, quién pagó y el reparto.',
+  'newExpense.many.submit': 'Apuntar y seguir',
+  'newExpense.session.one': '1 gasto en esta tanda · {total}',
+  'newExpense.session.other': '{count} gastos en esta tanda · {total}',
+  'newExpense.back': 'Volver al viaje',
 
   'expenses.heading': 'Gastos',
   'expenses.empty.title': 'Todavía no hay gastos',
