@@ -107,6 +107,11 @@ A participant carrying expenses or payments cannot be deleted, and neither can t
 behind them: their money would be left dangling. Those checks are `DEFERRABLE`, so deleting a whole
 trip is still possible inside a transaction that asks for them to be deferred first.
 
+Isolation between trips is enforced by Row Level Security, so a route cannot leak one group's
+money to another by oversight: every table is readable only by the people who take part in the
+trip, resolved through `auth.uid()`. `npm run db:test` runs the pgTAP tests that check both halves
+of every policy — that the participant sees their data, and that an outsider sees nothing.
+
 The activity feed is written by database triggers, not by application code: an audit trail that
 depends on every function remembering to write it ends up with gaps, whereas in a trigger it is
 impossible to touch an expense without leaving a trace. The author of an entry is the current
@@ -127,6 +132,7 @@ what it describes is gone.
 | `npm run db:status`    | Shows the service URLs and keys                                   |
 | `npm run db:reset`     | Recreates the database from the migrations, discarding local data |
 | `npm run db:check`     | Checks that the app environment reaches the Supabase API          |
+| `npm run db:test`      | Runs the pgTAP database tests in `supabase/tests/`                |
 | `npm run lint`         | Runs ESLint; fails on any warning                                 |
 | `npm run lint:fix`     | Runs ESLint and applies the fixes it can                          |
 | `npm run typecheck`    | Type-checks the project without emitting output                   |
