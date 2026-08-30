@@ -109,9 +109,8 @@ select isnt_empty(
     'nobody is removed from it, not even somebody owing nothing');
 
 select throws_ok(
-    $$insert into public.invitations (trip_id, token) values
-      ('aaaaaaaa-0000-0000-0000-00000000000a', 'Nq8Kq2mB7vN4pR1sT6wY9a')$$,
-    '42501', null, 'no new invitation is issued');
+    $$select public.create_invitation('aaaaaaaa-0000-0000-0000-00000000000a')$$,
+    'SP001', null, 'no new invitation is issued');
 
 update public.invitations set revoked_at = now()
 where id = 'bbbbbbbb-0000-0000-0000-00000000000a';

@@ -70,9 +70,8 @@ select isnt_empty($$select 1 from public.participants where id = 'cccccccc-0000-
           'a participant cannot remove anybody from the trip');
 
 select throws_ok(
-    $$insert into public.invitations (trip_id, token) values
-      ('aaaaaaaa-0000-0000-0000-00000000000a', 'Nq8Kq2mB7vN4pR1sT6wY9a')$$,
-    '42501', null, 'a participant cannot generate an invitation');
+    $$select public.create_invitation('aaaaaaaa-0000-0000-0000-00000000000a')$$,
+    'SP018', null, 'a participant cannot generate an invitation');
 
 select throws_ok(
     $$insert into public.expenses (trip_id, description, amount_cents, paid_by, created_by) values
@@ -107,9 +106,9 @@ update public.trips set name = 'Iceland 2027' where id = 'aaaaaaaa-0000-0000-000
 select is((select name from public.trips where id = 'aaaaaaaa-0000-0000-0000-00000000000a'),
           'Iceland 2027', 'an admin renames the trip');
 
-insert into public.invitations (trip_id, token, role) values
-    ('aaaaaaaa-0000-0000-0000-00000000000a', 'Nq8Kq2mB7vN4pR1sT6wY9a', 'participant');
-select is((select count(*) from public.invitations), 2::bigint, 'an admin generates an invitation');
+select lives_ok(
+    $$select public.create_invitation('aaaaaaaa-0000-0000-0000-00000000000a')$$,
+    'an admin generates an invitation');
 
 update public.invitations set revoked_at = now() where id = 'bbbbbbbb-0000-0000-0000-00000000000a';
 select isnt((select revoked_at from public.invitations where id = 'bbbbbbbb-0000-0000-0000-00000000000a'),

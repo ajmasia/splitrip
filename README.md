@@ -180,6 +180,16 @@ voiding it, which leaves the entry and its trace in place while it stops countin
 balances. Nothing in either function knows what anybody owes, which is what makes a partial payment
 an ordinary payment — the balances simply absorb whatever amount changed hands.
 
+`create_invitation` mints the link an organiser shares. An invitation is a bearer token — whoever
+holds it gets into the trip — so its only real protection is that it cannot be guessed, and the
+token is therefore not something a client is trusted to choose: `invitations` has no `INSERT` policy
+at all, and the function draws 128 bits from pgcrypto's cryptographically secure generator and
+encodes them for a URL. Each invitation carries the role its user will join with, so handing over
+the organising of a trip is a matter of which link you send, and expires — thirty days by default,
+long enough to outlast a trip being planned, short enough that a link left in a chat stops working
+before the next one. Only an organiser of an open trip may mint one; a mere participant and a
+complete outsider are refused in the same words, so neither learns whether the trip exists.
+
 `join_trip` brings somebody in. It reads an invitation that the person joining cannot read — the
 policy on `invitations` serves members only, so an outsider cannot learn that a trip exists by
 guessing at tokens — and hands back the participant they became, with the role the invitation
@@ -240,6 +250,10 @@ without reading English text:
 | `SP014` | The trip is already in the state it is being moved to   |
 | `SP015` | A trip needs a name                                     |
 | `SP016` | A trip cannot end before it starts                      |
+| `SP017` | Opening a trip needs an account the instance allows     |
+| `SP018` | Inviting somebody needs admin permissions               |
+| `SP019` | An invitation carries a role that does not exist        |
+| `SP020` | An invitation cannot last that long, or that briefly    |
 
 `npm run db:test` runs the pgTAP tests over all of it. Each one checks both halves of the same
 policy: that the person who belongs can, and that the person who does not cannot.
