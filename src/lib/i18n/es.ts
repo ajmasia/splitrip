@@ -72,6 +72,28 @@ export const es = {
   'trip.participants': 'Quién viaja',
   'trip.you': 'tú',
 
+  'trip.invite': 'Invitar',
+
+  'invite.heading': 'Invitar al viaje',
+  'invite.body':
+    'Comparte el enlace o enseña el QR. Quien lo abra entra escribiendo solo su nombre, sin cuenta ni contraseña.',
+  'invite.role.label': '¿Con qué papel entra?',
+  'invite.role.participant': 'Participa',
+  'invite.role.admin': 'Organiza',
+  'invite.role.hint':
+    'Quien organiza puede invitar, corregir cualquier gasto y cerrar el viaje. Quien participa, apunta los suyos.',
+  'invite.create': 'Crear una invitación',
+  'invite.pending': 'Creando…',
+  'invite.live': 'Invitaciones activas',
+  'invite.empty.title': 'Todavía no hay invitaciones',
+  'invite.empty.body': 'Crea una y pásasela a quien viaje contigo.',
+  'invite.expires': 'Caduca el {date}',
+  'invite.link.label': 'Enlace de invitación',
+  'invite.qr.label': 'Código QR de la invitación',
+  'invite.copy': 'Copiar',
+  'invite.copied': 'Copiado',
+  'invite.closed': 'El viaje está cerrado: ya no entra nadie más.',
+
   'error.credentials': 'El correo o la contraseña no coinciden.',
   'error.name_required': 'Hace falta un nombre.',
   'error.trip_name_required': 'El viaje necesita un nombre.',
@@ -79,5 +101,7 @@ export const es = {
   'error.needs_an_account':
     'Para abrir un viaje hace falta una cuenta autorizada. Entrar en uno por invitación no.',
   'error.not_allowed': 'No tienes permiso para hacer eso.',
+  'error.needs_admin': 'Para eso hay que organizar el viaje.',
+  'error.trip_closed': 'El viaje está cerrado.',
   'error.unexpected': 'Algo ha fallado. Inténtalo otra vez.',
 } as const

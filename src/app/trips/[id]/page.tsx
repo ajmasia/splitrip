@@ -38,6 +38,14 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
             </Pill>
             {trip.yourRole === 'admin' ? <Pill tone="accent">{t('trips.role.admin')}</Pill> : null}
           </div>
+          {trip.yourRole === 'admin' && trip.status === 'open' ? (
+            <Link
+              href={`/trips/${id}/invite`}
+              className="flex min-h-touch w-fit items-center rounded-card border border-rule px-4 text-sm font-semibold"
+            >
+              {t('trip.invite')}
+            </Link>
+          ) : null}
         </div>
 
         <div className="flex flex-col gap-1 rounded-card border border-rule bg-surface p-4">

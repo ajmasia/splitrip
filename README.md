@@ -304,6 +304,25 @@ The accepted consequence is that clearing browser data means losing access. The 
 regenerates an invitation, and rejoining under the same name recovers the participant. Attaching an
 email address, which would fix it properly, is out of scope for this release.
 
+### Inviting
+
+`/trips/<id>/invite` is where an organiser mints one. A participant asking for it is given the same
+404 as a stranger: who runs a trip is not something a screen should confirm to somebody who cannot
+act on it. The screen offers the two roles an invitation can carry, and lists the ones still live —
+a revoked or expired invitation is not shown at all, a list of dead links being a list of things to
+mistake for working ones.
+
+Each one comes with its link and its QR code, both pointing at `/join/<token>`. The link is
+absolute, and its origin is read from the request rather than from a setting, so a laptop, a preview
+deployment and production each hand out a link back to themselves with nothing to configure. It sits
+in a read-only field that selects itself on focus, because the clipboard API needs a secure context
+and a phone reading a deployment over plain HTTP would otherwise be left with a button that does
+nothing.
+
+The QR is drawn on the server as a single SVG path — one element rather than a thousand rectangles —
+and stays dark ink on white whatever the palette is doing. Inverting it in the dark theme would look
+considered and would stop scanning on half the phones that tried it.
+
 ## Look and feel
 
 The interface is composed the way a printed bill is composed: figures that align themselves in a

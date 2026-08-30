@@ -70,6 +70,28 @@ export const en: Catalogue = {
   'trip.participants': 'Who is travelling',
   'trip.you': 'you',
 
+  'trip.invite': 'Invite',
+
+  'invite.heading': 'Invite to the trip',
+  'invite.body':
+    'Share the link or show the QR code. Whoever opens it joins by typing only their name, with no account and no password.',
+  'invite.role.label': 'What will they be?',
+  'invite.role.participant': 'A traveller',
+  'invite.role.admin': 'An organiser',
+  'invite.role.hint':
+    'An organiser can invite, correct any expense and close the trip. A traveller records their own.',
+  'invite.create': 'Create an invitation',
+  'invite.pending': 'Creating…',
+  'invite.live': 'Live invitations',
+  'invite.empty.title': 'No invitations yet',
+  'invite.empty.body': 'Create one and pass it to whoever is travelling with you.',
+  'invite.expires': 'Expires on {date}',
+  'invite.link.label': 'Invitation link',
+  'invite.qr.label': 'Invitation QR code',
+  'invite.copy': 'Copy',
+  'invite.copied': 'Copied',
+  'invite.closed': 'The trip is closed: nobody else comes in.',
+
   'error.credentials': 'That email address and password do not match.',
   'error.name_required': 'A name is needed.',
   'error.trip_name_required': 'The trip needs a name.',
@@ -77,5 +99,7 @@ export const en: Catalogue = {
   'error.needs_an_account':
     'Opening a trip needs an allowed account. Joining one through an invitation does not.',
   'error.not_allowed': 'You are not allowed to do that.',
+  'error.needs_admin': 'That is for an organiser of the trip.',
+  'error.trip_closed': 'The trip is closed.',
   'error.unexpected': 'Something went wrong. Try again.',
 }
