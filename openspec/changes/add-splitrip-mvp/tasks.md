@@ -27,7 +27,7 @@
 
 - [x] 4.1 Implement the create-expense RPC function inserting the expense and its shares atomically, applying the split rule; verify with integration tests the full-split case, the subset case and the contribution-without-shares case
 - [x] 4.2 Implement the edit- and delete-expense RPC functions regenerating the shares and honouring the per-role permissions; verify with tests that the balances are correct after editing the amount and after changing the split set
-- [ ] 4.3 Implement the record- and void-payment RPC functions with their validations; verify with tests that they reject payments to oneself, non-positive amounts and participants from another trip
+- [x] 4.3 Implement the record- and void-payment RPC functions with their validations; verify with tests that they reject payments to oneself, non-positive amounts and participants from another trip
 - [ ] 4.4 Implement the join-by-invitation RPC function, including the duplicate-name check and rejoining from a second device; verify with tests the valid, revoked, expired and closed-trip invitation cases
 - [ ] 4.5 Implement the close- and reopen-trip RPC functions, generating the JSONB summary snapshot on close; verify with tests that the summary does not change between two reads and that it is regenerated on reopening and closing again
 - [ ] 4.6 Add the closed-trip check to every write function; verify with tests that any write against a `closed` trip is rejected
