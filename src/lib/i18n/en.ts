@@ -7,6 +7,14 @@ export const en: Catalogue = {
 
   'language.label': 'Language',
 
+  'connection.offline':
+    'No connection. You are seeing what was last loaded, and nothing can be recorded.',
+  'update.available': 'A new version is ready.',
+  'update.apply': 'Update',
+
+  'offline.heading': 'No connection',
+  'offline.body': 'This screen could not be loaded. Try again once the connection is back.',
+
   'error.page.heading': 'Something went wrong',
   'error.page.body': 'This did not load. Trying again usually settles it.',
   'error.page.retry': 'Try again',

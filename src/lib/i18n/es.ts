@@ -9,6 +9,14 @@ export const es = {
 
   'language.label': 'Idioma',
 
+  'connection.offline': 'Sin conexión. Ves lo último que se cargó, y no se puede apuntar nada.',
+  'update.available': 'Hay una versión nueva.',
+  'update.apply': 'Actualizar',
+
+  'offline.heading': 'Sin conexión',
+  'offline.body':
+    'No hemos podido cargar esta pantalla. En cuanto vuelva la conexión, vuelve a intentarlo.',
+
   'error.page.heading': 'Algo se ha torcido',
   'error.page.body': 'No hemos podido cargar esto. Suele arreglarse volviéndolo a intentar.',
   'error.page.retry': 'Reintentar',

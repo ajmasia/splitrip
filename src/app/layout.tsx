@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Archivo, Bricolage_Grotesque, IBM_Plex_Mono } from 'next/font/google'
 import type { ReactNode } from 'react'
 
+import { ConnectionBar } from '@/components/connection-bar'
 import { getLocale } from '@/lib/i18n/server'
 
 import './globals.css'
@@ -55,7 +56,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       lang={locale}
       className={`${archivo.variable} ${bricolage.variable} ${plexMono.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <ConnectionBar />
+        {children}
+      </body>
     </html>
   )
 }

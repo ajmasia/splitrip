@@ -452,6 +452,30 @@ would drift the first time somebody adjusted the drawing. Three of them differ i
 - the Apple one is filled too, because iOS masks a square it expects to be opaque, and a transparent
   corner there comes out black.
 
+### Starting fast, and losing the network
+
+`src/app/sw.js/route.ts` serves the service worker from a route rather than from `public/`, so its
+cache name carries the application version. That is what makes a release an update: the new worker
+invalidates every cache the previous one filled, and nobody has to remember to bump a constant by
+hand.
+
+It is deliberately small, because most of what this application serves is not cacheable. Every page
+is built for the person reading it, so a cached page would eventually show somebody another person's
+trip list — pages are never served from cache, only their failure is handled. What is cacheable is
+the build output, which is hashed and therefore immutable: the worker answers those from cache
+first, which is what makes the second opening not wait for the network. The one page it keeps whole
+is `/offline`, which a navigation falls back to instead of the browser's error page, and which
+carries no account state for the same reason.
+
+An update never applies itself. The waiting worker sits there and the reader is told there is a new
+version; swapping the code under somebody half-way through typing an expense is not an improvement.
+Pressing the button posts to the worker, which steps forward, and the page reloads once.
+
+The worker is registered only in a production build. One caching `/_next/static` while the
+development server is hot-reloading serves yesterday's modules, which looks like a bug in whatever
+you were working on rather than a bug in the worker. That also means the offline behaviour is tried
+with `npm run build && npm start`, not with `npm run dev`.
+
 ### When something breaks
 
 A trip's numbers come from a database over a network, and a screen that throws when that fails once
