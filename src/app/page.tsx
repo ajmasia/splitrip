@@ -1,38 +1,41 @@
+import Link from 'next/link'
+
 import { AppShell } from '@/components/app-shell'
+import { TripList } from '@/components/trip-list'
 import { getCopy } from '@/lib/i18n/server'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
-import { APP_VERSION } from '@/lib/version'
+import { listTrips } from '@/lib/trips/queries'
 
 export default async function HomePage() {
   const { locale, t } = await getCopy()
-  const supabase = await createSupabaseServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const trips = await listTrips()
+
+  const create = (
+    <Link
+      href="/trips/new"
+      className="flex min-h-touch w-full items-center justify-center rounded-card bg-accent px-4 font-semibold text-accent-ink wide:w-fit"
+    >
+      {t('trips.create')}
+    </Link>
+  )
 
   return (
-    <AppShell locale={locale} t={t}>
+    <AppShell locale={locale} t={t} bottom={create}>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-1">
-          <p className="font-mono text-xs tracking-widest uppercase text-ink-faint">
-            {t('app.name')}
+          <p className="font-mono text-xs tracking-widest text-ink-faint uppercase">
+            {t('trips.heading')}
           </p>
-          <h1 className="text-2xl font-bold">{t('app.tagline')}</h1>
+          <h1 className="text-2xl font-bold">{t('trips.subtitle')}</h1>
         </div>
 
-        <div className="rounded-card border border-rule bg-surface p-4">
-          {user ? (
-            <p className="text-sm text-ink-soft">
-              {t('identity.known')} <code className="font-mono break-all text-ink">{user.id}</code>
-            </p>
-          ) : (
-            <p className="text-sm text-ink-soft">{t('identity.unknown')}</p>
-          )}
-        </div>
-
-        <footer className="font-mono text-xs text-ink-faint">
-          {t('app.version', { version: APP_VERSION })}
-        </footer>
+        {trips.length === 0 ? (
+          <div className="flex max-w-prose flex-col gap-2 rounded-card border border-rule bg-surface p-5">
+            <h2 className="text-lg font-semibold">{t('trips.empty.title')}</h2>
+            <p className="text-ink-soft">{t('trips.empty.body')}</p>
+          </div>
+        ) : (
+          <TripList trips={trips} locale={locale} t={t} />
+        )}
       </div>
     </AppShell>
   )

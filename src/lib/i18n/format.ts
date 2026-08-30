@@ -17,3 +17,20 @@ export function formatDate(day: string, locale: Locale): string {
     timeZone: 'UTC',
   }).format(date)
 }
+
+/** A trip may carry both dates, one of them, or neither. */
+export function formatDateRange(
+  start: string | null,
+  end: string | null,
+  locale: Locale,
+): string | null {
+  if (start === null && end === null) return null
+  if (start === null) return formatDate(end as string, locale)
+  if (end === null) return formatDate(start, locale)
+  if (start === end) return formatDate(start, locale)
+
+  return new Intl.DateTimeFormat(intlLocale(locale), {
+    dateStyle: 'long',
+    timeZone: 'UTC',
+  }).formatRange(new Date(`${start}T00:00:00Z`), new Date(`${end}T00:00:00Z`))
+}

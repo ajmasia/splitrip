@@ -33,14 +33,19 @@ export function AppShell({
         </div>
       </header>
 
+      {/*
+        `flex-1` is what pins the bar to the bottom edge on a phone, and what has to stop doing so
+        above the breakpoint: with the bar back in the flow, a stretched main would push it to the
+        bottom of the window anyway, which is the one place a pointer never is.
+      */}
       <main
-        className={`mx-auto w-full max-w-3xl flex-1 px-4 py-6 ${bottom ? 'pb-28 wide:pb-6' : ''}`}
+        className={`mx-auto w-full max-w-3xl flex-1 px-4 py-6 ${bottom ? 'pb-28 wide:flex-none wide:pb-6' : ''}`}
       >
         {children}
       </main>
 
       {bottom ? (
-        <div className="fixed inset-x-0 bottom-0 border-t border-rule bg-surface-2 pb-[env(safe-area-inset-bottom)] wide:static wide:bg-transparent">
+        <div className="fixed inset-x-0 bottom-0 border-t border-rule bg-surface-2 pb-[env(safe-area-inset-bottom)] wide:static wide:border-t-0 wide:bg-transparent">
           <div className="mx-auto w-full max-w-3xl px-4 py-2">{bottom}</div>
         </div>
       ) : null}
