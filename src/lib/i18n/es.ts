@@ -76,6 +76,19 @@ export const es = {
   'newTrip.pending': 'Creando…',
   'newTrip.cancel': 'Cancelar',
 
+  'expenses.record': 'Apuntar un gasto',
+
+  'newExpense.heading': 'Apuntar un gasto',
+  'newExpense.description.label': '¿En qué?',
+  'newExpense.description.placeholder': 'Cena en Estrasburgo',
+  'newExpense.amount.label': '¿Cuánto?',
+  'newExpense.amount.hint': 'En euros. Sirve la coma o el punto.',
+  'newExpense.date.label': '¿Qué día?',
+  'newExpense.defaults': 'Lo pagas tú y se reparte entre todo el grupo.',
+  'newExpense.submit': 'Apuntar el gasto',
+  'newExpense.pending': 'Apuntando…',
+  'newExpense.cancel': 'Cancelar',
+
   'expenses.heading': 'Gastos',
   'expenses.empty.title': 'Todavía no hay gastos',
   'expenses.empty.body': 'Apunta el primero y el reparto se calcula solo.',
@@ -158,6 +171,11 @@ export const es = {
   'error.participant_has_payments.other':
     'No puedes quitar a esta persona: tiene {count} pagos a su nombre.',
   'error.trip_needs_an_admin': 'El viaje tiene que quedarse con alguien organizando.',
+  'error.description_required': 'Hace falta decir en qué.',
+  'error.amount_required': 'Hace falta un importe.',
+  'error.amount_malformed': 'Ese importe no se entiende. Escríbelo como 24,50.',
+  'error.amount_too_precise': 'Como mucho dos decimales.',
+  'error.amount_not_positive': 'El importe tiene que ser mayor que cero.',
   'error.not_allowed': 'No tienes permiso para hacer eso.',
   'error.needs_admin': 'Para eso hay que organizar el viaje.',
   'error.trip_closed': 'El viaje está cerrado.',

@@ -74,6 +74,19 @@ export const en: Catalogue = {
   'newTrip.pending': 'Creating…',
   'newTrip.cancel': 'Cancel',
 
+  'expenses.record': 'Record an expense',
+
+  'newExpense.heading': 'Record an expense',
+  'newExpense.description.label': 'What for?',
+  'newExpense.description.placeholder': 'Dinner in Strasbourg',
+  'newExpense.amount.label': 'How much?',
+  'newExpense.amount.hint': 'In euros. A comma or a point both work.',
+  'newExpense.date.label': 'Which day?',
+  'newExpense.defaults': 'You paid, and it is split among everybody.',
+  'newExpense.submit': 'Record the expense',
+  'newExpense.pending': 'Recording…',
+  'newExpense.cancel': 'Cancel',
+
   'expenses.heading': 'Expenses',
   'expenses.empty.title': 'No expenses yet',
   'expenses.empty.body': 'Record the first one and the split works itself out.',
@@ -154,6 +167,11 @@ export const en: Catalogue = {
   'error.participant_has_payments.other':
     'This person cannot be removed: {count} payments are attached to them.',
   'error.trip_needs_an_admin': 'The trip has to keep somebody organising it.',
+  'error.description_required': 'This needs to say what it was for.',
+  'error.amount_required': 'An amount is needed.',
+  'error.amount_malformed': 'That amount does not read as a number. Write it like 24.50.',
+  'error.amount_too_precise': 'Two decimal places at most.',
+  'error.amount_not_positive': 'The amount has to be greater than zero.',
   'error.not_allowed': 'You are not allowed to do that.',
   'error.needs_admin': 'That is for an organiser of the trip.',
   'error.trip_closed': 'The trip is closed.',

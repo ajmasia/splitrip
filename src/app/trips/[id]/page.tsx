@@ -27,10 +27,22 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
   const expenses = await listExpenses(id)
   // Stepping down is a role change like any other, so this one appears beside yourself too.
   const organising = trip.yourRole === 'admin' && trip.status === 'open'
+
+  // Pinned to the bottom edge on a phone by the shell, which is where a thumb reaches: recording an
+  // expense is the one thing somebody does while the trip is happening.
+  const record =
+    trip.yourRole !== null && trip.status === 'open' ? (
+      <Link
+        href={`/trips/${id}/expenses/new`}
+        className="flex min-h-touch w-full items-center justify-center rounded-card bg-accent px-4 font-semibold text-accent-ink wide:w-fit"
+      >
+        {t('expenses.record')}
+      </Link>
+    ) : undefined
   const dates = formatDateRange(trip.startDate, trip.endDate, locale)
 
   return (
-    <AppShell locale={locale} t={t} viewer={viewer}>
+    <AppShell locale={locale} t={t} viewer={viewer} bottom={record}>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <Link
@@ -74,6 +86,14 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
             <div className="flex max-w-prose flex-col gap-2 rounded-card border border-rule bg-surface p-5">
               <h3 className="text-lg font-semibold">{t('expenses.empty.title')}</h3>
               <p className="text-ink-soft">{t('expenses.empty.body')}</p>
+              {trip.status === 'open' ? (
+                <Link
+                  href={`/trips/${id}/expenses/new`}
+                  className="flex min-h-touch w-fit items-center rounded-card border border-rule px-4 font-semibold"
+                >
+                  {t('expenses.record')}
+                </Link>
+              ) : null}
             </div>
           ) : (
             <ExpenseList expenses={expenses} locale={locale} t={t} />

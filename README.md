@@ -485,6 +485,23 @@ development server is hot-reloading serves yesterday's modules, which looks like
 you were working on rather than a bug in the worker. That also means the offline behaviour is tried
 with `npm run build && npm start`, not with `npm run dev`.
 
+### Recording an expense
+
+The form asks for three things and defaults the rest. Payer and split are not sent at all: the
+database reads their absence as "whoever is recording this" and "everybody on the trip", so the
+defaults live in one place instead of being restated by every screen that records an expense.
+
+The amount field is not `type="number"`. That control brings a spinner nobody wants on a price and
+its own opinion about which decimal separator is valid; `inputMode="decimal"` asks a phone for the
+numeric keypad and leaves the question of what a number is to `parseAmount`, which takes a comma or
+a point and reads the digits into cents without ever multiplying a decimal by a hundred.
+
+The date is the day where the person spending the money is, not where the server happens to be
+hosted, and the browser's date can only be read after hydration. So the server's date is rendered
+first and the field corrects itself once the form is running: the two differ for a couple of hours a
+day, and the correction lands long before anybody submits. Clearing the field is not an error — the
+database reads a missing date as today.
+
 ### When something breaks
 
 A trip's numbers come from a database over a network, and a screen that throws when that fails once
