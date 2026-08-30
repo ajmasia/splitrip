@@ -239,6 +239,26 @@ session resolved to its participant, so correcting somebody else's expense is at
 made the correction. Each entry keeps the author's name and enough detail to stay readable after
 what it describes is gone.
 
+## Identity
+
+There are no accounts. On its first visit a device is signed in anonymously against Supabase Auth,
+and the participant rows of a trip are bound to that `auth.uid()`. The policies are written against
+it exactly as if there were a real login — there is a genuine JWT and a refresh token — and the door
+stays open: Supabase can later promote an anonymous user to a permanent one while keeping its `uid`,
+and therefore its whole history of trips.
+
+Signing in happens in `src/proxy.ts`, on the server, before anything renders. Doing it in the
+browser instead would leave a first paint where `auth.uid()` is null, which every screen would then
+have to cope with. The proxy also refreshes the token on each request: it calls `getUser`, which
+asks the auth server rather than trusting whatever the cookie was last set to.
+
+That file is named `proxy.ts` and exports `proxy`. In Next.js 16 the `middleware` convention was
+renamed; the behaviour is the same, the name is not.
+
+The accepted consequence is that clearing browser data means losing access. The organiser
+regenerates an invitation, and rejoining under the same name recovers the participant. Attaching an
+email address, which would fix it properly, is out of scope for this release.
+
 ## Available scripts
 
 | Script                 | What it does                                                      |
