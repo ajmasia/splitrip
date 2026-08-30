@@ -42,11 +42,11 @@ npm run dev:all
 
 `npm run dev:all` starts the Supabase stack in Docker and then the Next.js dev server. The first run downloads the Supabase images and takes several minutes; later runs take seconds. The application is served at <http://localhost:3000>.
 
-To check the wiring before anything else, run `npm run db:check`. It reads the same environment variables the application reads and calls the Supabase API with them, which is the failure `supabase status` cannot catch: a stack that is perfectly healthy while `.env.local` points somewhere else.
+`npm run db:check` verifies that the application environment actually reaches the Supabase API, using the same variables the app reads.
 
 ### How local development is put together
 
-The backend runs in Docker; the application runs on your machine.
+The backend runs in Docker; the application runs on your machine. There is no `Dockerfile` and no `docker compose` — see [`design.md`](openspec/changes/add-splitrip-mvp/design.md) for the reasoning behind that and every other technical decision.
 
 `npm run db:start` brings up the whole Supabase stack in containers through the Supabase CLI, which is pinned as a dev dependency so every clone runs the same version:
 
@@ -59,20 +59,6 @@ The backend runs in Docker; the application runs on your machine.
 
 Studio is the fastest way to look at the data: it shows the tables, the RLS policies and the SQL editor.
 
-The point of running the database in Docker is not isolating Node, it is having the same Postgres, with the same RLS policies and the same triggers, on your laptop. RLS is the kind of thing that can only be tested against a real database.
-
-#### Why the application itself is not containerised
-
-There is no `Dockerfile` and no `docker compose`, on purpose. Containerising the app would buy either production parity or reproducibility, and it buys neither here:
-
-- **Production is Vercel**, which builds Next.js natively and never reads a Dockerfile. An app container would be parity with nothing — infrastructure nobody runs, quietly rotting.
-- **On macOS a dev server behind a bind mount** has slow file watching and unreliable hot reload. It would trade a good developer experience for a worse one.
-- **The Node version is already pinned** by `engines` and the lockfile, which is the reproducibility that actually matters.
-
-The Supabase CLI also orchestrates its own containers rather than exposing a compose file to extend, so a single compose file for everything was never really available: it would have meant reimplementing the stack by hand and then owning its upgrades.
-
-This is worth revisiting if self-hosting becomes a goal. The AGPL makes it plausible that someone will want to deploy a modified Splitrip outside Vercel, and that is when a production Dockerfile earns its place — built and tested against a target that actually exists.
-
 ### Environment variables
 
 Copy `.env.example` to `.env.local`. The values it carries are the local stack defaults: the Supabase CLI generates the same ones on every machine, so they are committed deliberately and are not secrets. Production values are configured in Vercel and never live in the repository.
@@ -84,7 +70,7 @@ Copy `.env.example` to `.env.local`. The values it carries are the local stack d
 
 ### Resetting the database
 
-`npm run db:reset` recreates the database from the migrations in `supabase/migrations/`, discarding whatever local data you had. It is the fastest way back to a known state, and it is also how you verify that the migrations really do build the schema from nothing.
+`npm run db:reset` recreates the database from the migrations in `supabase/migrations/`, discarding whatever local data you had.
 
 ## Available scripts
 
@@ -109,11 +95,11 @@ Before opening a pull request, `npm run lint`, `npm run typecheck` and `npm run 
 
 ## Code quality
 
-ESLint uses `eslint-config-next/core-web-vitals` plus its TypeScript rules, and runs with `--max-warnings 0`: everything the Next.js config reports as a warning — accessibility issues among them — fails the check. A lint that cannot fail is not a safety net.
+ESLint uses `eslint-config-next/core-web-vitals` plus its TypeScript rules and runs with `--max-warnings 0`, so anything the Next.js config reports as a warning fails the check.
 
-Prettier owns formatting, and `eslint-config-prettier` disables the ESLint rules that would fight it. Prettier deliberately ignores `openspec/`: those artifacts have a structure the `openspec` CLI parses and validates, so that tool owns their formatting.
+Prettier owns formatting; `eslint-config-prettier` disables the ESLint rules that would conflict with it. Prettier ignores `openspec/`, whose formatting belongs to the `openspec` CLI.
 
-TypeScript runs in strict mode with `noUncheckedIndexedAccess` and the unused-symbol checks enabled. The balance and settlement code indexes participant arrays heavily, and an `undefined` slipping through there would corrupt money rather than raise a visible error.
+TypeScript runs in strict mode with `noUncheckedIndexedAccess` and the unused-symbol checks enabled.
 
 ## Project layout
 
