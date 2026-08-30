@@ -9,6 +9,10 @@ out/
 build/
 dist/
 
+# Next.js generated types (managed by next, must not be tracked)
+next-env.d.ts
+*.tsbuildinfo
+
 # Environment variables
 .env
 .env*.local
