@@ -15,6 +15,7 @@ export const es = {
   'language.label': 'Idioma',
 
   'connection.offline': 'Sin conexión. Ves lo último que se cargó, y no se puede apuntar nada.',
+  'connection.stale': 'Se ha cortado la conexión en directo. Esto puede no estar al día.',
   'update.available': 'Hay una versión nueva.',
   'update.apply': 'Actualizar',
 

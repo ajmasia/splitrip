@@ -14,6 +14,7 @@ export const en: Catalogue = {
 
   'connection.offline':
     'No connection. You are seeing what was last loaded, and nothing can be recorded.',
+  'connection.stale': 'The live connection dropped. This may not be up to date.',
   'update.available': 'A new version is ready.',
   'update.apply': 'Update',
 

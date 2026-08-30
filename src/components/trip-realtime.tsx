@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
+import { setLiveConnection } from '@/lib/realtime/status'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 
 /** The trip's own row is keyed by `id`; everything else about it carries a `trip_id`. */
@@ -38,6 +39,21 @@ export function TripRealtime({ tripId }: { tripId: string }) {
       timer = setTimeout(() => router.refresh(), 250)
     }
 
+    // A subscription that comes back has been away, and everything that happened in between arrived
+    // nowhere. Re-reading on the way back is the whole of the recovery: the events are gone, but
+    // the state they described is still in the database, and that is what the screen asks for.
+    let away = false
+    const restored = () => {
+      setLiveConnection(true)
+      if (!away) return
+      away = false
+      refresh()
+    }
+    const lost = () => {
+      away = true
+      setLiveConnection(false)
+    }
+
     const channel = supabase.channel(`trip:${tripId}`)
     for (const { table, column } of WATCHED) {
       channel.on(
@@ -54,12 +70,30 @@ export function TripRealtime({ tripId }: { tripId: string }) {
     void supabase.auth.getSession().then(({ data }) => {
       if (cancelled) return
       if (data.session) supabase.realtime.setAuth(data.session.access_token)
-      channel.subscribe()
+      channel.subscribe((status) => {
+        if (status === 'SUBSCRIBED') restored()
+        else lost()
+      })
     })
+
+    // The socket can die without saying so — a laptop lid, a tunnel — and the browser's own signal
+    // is the one that arrives promptly. Coming back this way still goes through the same door, so a
+    // recovery is a recovery however it was noticed.
+    const onOffline = () => lost()
+    const onOnline = () => {
+      if (channel.state === 'joined') restored()
+    }
+    window.addEventListener('offline', onOffline)
+    window.addEventListener('online', onOnline)
 
     return () => {
       cancelled = true
       clearTimeout(timer)
+      window.removeEventListener('offline', onOffline)
+      window.removeEventListener('online', onOnline)
+      // Leaving the trip is not losing the connection, and the notice belongs to the screen that
+      // had one.
+      setLiveConnection(true)
       void supabase.removeChannel(channel)
     }
   }, [tripId, router])

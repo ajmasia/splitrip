@@ -223,6 +223,12 @@ Isolation between trips is not the `trip_id` filter the client subscribes with, 
 simply omit: it is Row Level Security, which Realtime evaluates against each subscriber before
 delivering.
 
+A subscription that comes back has been away, and everything that happened in between arrived
+nowhere — so returning re-reads. The events are gone; the state they described is still in the
+database. While it is away the shell says so, which is not the same notice as being offline: a
+socket dies without the browser noticing, and `navigator.onLine` goes on saying everything is
+fine.
+
 ## Code quality
 
 ESLint uses `eslint-config-next/core-web-vitals` plus its TypeScript rules and runs with
