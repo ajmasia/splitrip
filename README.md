@@ -109,8 +109,16 @@ trip is still possible inside a transaction that asks for them to be deferred fi
 
 Isolation between trips is enforced by Row Level Security, so a route cannot leak one group's
 money to another by oversight: every table is readable only by the people who take part in the
-trip, resolved through `auth.uid()`. `npm run db:test` runs the pgTAP tests that check both halves
-of every policy — that the participant sees their data, and that an outsider sees nothing.
+trip, resolved through `auth.uid()`. Writing follows the roles — an admin edits the trip, invites,
+removes participants and corrects anybody's expense, while a participant may only touch what they
+recorded themselves — and a closed trip accepts no change but being reopened.
+
+What no policy allows stays denied, which is deliberate for anything spanning more than one row.
+An expense and its shares, or a trip and its first admin, are created together or not at all, so
+they go through database functions rather than being writable by hand from a client.
+
+`npm run db:test` runs the pgTAP tests over all of it. Each one checks both halves of the same
+policy: that the person who belongs can, and that the person who does not cannot.
 
 The activity feed is written by database triggers, not by application code: an audit trail that
 depends on every function remembering to write it ends up with gaps, whereas in a trigger it is
