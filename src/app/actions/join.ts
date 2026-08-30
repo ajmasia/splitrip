@@ -11,6 +11,8 @@ export type JoinState = {
   error: CopyKey | null
   /** The name that was already on the trip, when the answer is to offer continuing as them. */
   taken: string | null
+  /** Whether that name is a place nobody is on, rather than a seat a device is answering from. */
+  unclaimed: boolean
 }
 
 const text = (value: FormDataEntryValue | null) => (typeof value === 'string' ? value : '')
@@ -21,7 +23,7 @@ export async function joinTrip(_previous: JoinState, formData: FormData): Promis
 
   // The database is the authority on an empty name; this only refuses one before minting an
   // identity, so an empty submission does not leave a stray user behind.
-  if (displayName === '') return { error: 'error.name_required', taken: null }
+  if (displayName === '') return { error: 'error.name_required', taken: null, unclaimed: false }
 
   const supabase = await createSupabaseServerClient()
   const {
@@ -32,7 +34,7 @@ export async function joinTrip(_previous: JoinState, formData: FormData): Promis
   // does not type a name takes no identity with them.
   if (user === null) {
     const { error } = await supabase.auth.signInAnonymously()
-    if (error) return { error: 'error.unexpected', taken: null }
+    if (error) return { error: 'error.unexpected', taken: null, unclaimed: false }
   }
 
   const { data, error } = await supabase.rpc('join_trip', {
@@ -41,13 +43,19 @@ export async function joinTrip(_previous: JoinState, formData: FormData): Promis
     p_continue_as_existing: continueAsExisting,
   })
 
-  // A name already on the trip has two readings the database cannot tell apart, so the screen asks
-  // which it is rather than deciding: a second traveller picks another name, and the same one
-  // arriving from a new phone confirms and is rebound to it.
+  // A name already on the trip is never simply refused: the screen asks which of the three it is.
+  // A second traveller who happens to share it picks another; the same traveller arriving from a
+  // new phone confirms and is rebound; and somebody the organiser added by name claims the place
+  // waiting for them, which the database tells apart from the other two.
   if (error) {
+    const known = error.code === 'SP013' || error.code === 'SP026'
+
     return {
       error: errorCopyKey(error.code),
-      taken: error.code === 'SP013' ? displayName : null,
+      // The database sends the name as it stands on the list as the DETAIL of its refusal, which is
+      // how it is spelled back to the reader rather than however they happened to type it.
+      taken: known ? (error.details ?? displayName) : null,
+      unclaimed: error.code === 'SP026',
     }
   }
 

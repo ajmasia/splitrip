@@ -290,10 +290,14 @@ export const es = {
   'join.taken.body':
     'Ya hay alguien en este viaje que se llama {name}. Si eres tú desde otro móvil, continúa como esa persona; si no, entra con otro nombre.',
   'join.taken.confirm': 'Soy yo, desde otro móvil',
+  'join.unclaimed.body':
+    'En el viaje ya hay un sitio a nombre de {name}, todavía sin móvil: te lo apuntó quien organiza. Si eres tú, quédatelo y conservarás todo lo que ya lleva tu nombre.',
+  'join.unclaimed.confirm': 'Sí, ese sitio es mío',
 
   'error.credentials': 'El correo o la contraseña no coinciden.',
   'error.name_required': 'Hace falta un nombre.',
   'error.name_taken': 'Ese nombre ya está cogido en este viaje.',
+  'error.name_unclaimed': 'Ese nombre es el de alguien del viaje que todavía no tiene móvil.',
   'error.invitation_invalid':
     'Esa invitación no vale. Pídele al organizador que te pase una nueva.',
   'error.invitation_expired':

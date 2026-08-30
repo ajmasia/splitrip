@@ -287,10 +287,14 @@ export const en: Catalogue = {
   'join.taken.body':
     'Somebody on this trip already goes by {name}. If that is you on another phone, carry on as them; otherwise join under a different name.',
   'join.taken.confirm': 'That is me, on another phone',
+  'join.unclaimed.body':
+    'There is already a place on the trip under the name {name}, with no device on it: the organiser put you there. If that is you, take it and everything already in your name stays yours.',
+  'join.unclaimed.confirm': 'Yes, that place is mine',
 
   'error.credentials': 'That email address and password do not match.',
   'error.name_required': 'A name is needed.',
   'error.name_taken': 'That name is already taken on this trip.',
+  'error.name_unclaimed': 'That name belongs to somebody on the trip with no device yet.',
   'error.invitation_invalid': 'That invitation is not valid. Ask the organiser for a new one.',
   'error.invitation_expired': 'That invitation has expired. Ask the organiser for a new one.',
   'error.trip_name_required': 'The trip needs a name.',

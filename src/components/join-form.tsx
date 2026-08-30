@@ -5,7 +5,7 @@ import { useActionState } from 'react'
 import { joinTrip, type JoinState } from '@/app/actions/join'
 import { translator, type Locale } from '@/lib/i18n'
 
-const EMPTY: JoinState = { error: null, taken: null }
+const EMPTY: JoinState = { error: null, taken: null, unclaimed: false }
 
 export function JoinForm({ token, locale }: { token: string; locale: Locale }) {
   const t = translator(locale)
@@ -44,17 +44,33 @@ export function JoinForm({ token, locale }: { token: string; locale: Locale }) {
         </p>
       ) : null}
 
+      {/*
+        Claiming a place nobody is on is not the same news as finding a name in use, and it does not
+        read in the same colour: one is somebody arriving where they were expected, the other is a
+        warning that confirming will put another device out of the trip.
+      */}
       {state.taken !== null ? (
-        <div role="alert" className="flex flex-col gap-3 rounded-card bg-debt-soft px-3 py-3">
-          <p className="text-sm text-debt">{t('join.taken.body', { name: state.taken })}</p>
+        <div
+          role="alert"
+          className={`flex flex-col gap-3 rounded-card px-3 py-3 ${
+            state.unclaimed ? 'bg-accent-soft' : 'bg-debt-soft'
+          }`}
+        >
+          <p className={`text-sm ${state.unclaimed ? 'text-accent' : 'text-debt'}`}>
+            {t(state.unclaimed ? 'join.unclaimed.body' : 'join.taken.body', {
+              name: state.taken,
+            })}
+          </p>
           <button
             type="submit"
             name="continue_as_existing"
             value="yes"
             disabled={pending}
-            className="min-h-touch w-fit cursor-pointer rounded-card border border-debt px-4 text-sm font-semibold text-debt disabled:opacity-50"
+            className={`min-h-touch w-fit cursor-pointer rounded-card border px-4 text-sm font-semibold disabled:opacity-50 ${
+              state.unclaimed ? 'border-accent text-accent' : 'border-debt text-debt'
+            }`}
           >
-            {t('join.taken.confirm')}
+            {t(state.unclaimed ? 'join.unclaimed.confirm' : 'join.taken.confirm')}
           </button>
         </div>
       ) : null}
