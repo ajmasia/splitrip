@@ -5,7 +5,7 @@
 - [x] 1.3 Add the Conventional Commits setup (commitlint and a commit hook) and the SemVer version file; verify that a non-conforming message is rejected and a valid one passes
 - [x] 1.4 Initialise the local Supabase project with the CLI; verify that `supabase start` brings the containers up and that Studio responds on its port
 - [x] 1.5 Add the single-command development environment that starts the Supabase stack and the application together, plus a connectivity check that reads the app's own environment variables; verify that from a clean clone one command brings everything up and the check confirms the app reaches the local Supabase API
-- [ ] 1.6 Document in the README the local start-up, the required environment variables and the day-to-day commands; verify by following the README from scratch in a clean directory
+- [x] 1.6 Document in the README the local start-up, the required environment variables and the day-to-day commands; verify by following the README from scratch in a clean directory
 
 ## 2. Data schema and authorisation
 
