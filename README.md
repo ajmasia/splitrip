@@ -320,6 +320,12 @@ in a read-only field that selects itself on focus, because the clipboard API nee
 and a phone reading a deployment over plain HTTP would otherwise be left with a button that does
 nothing.
 
+Which is also what to do when trying it from a phone: `next dev` listens on the whole network and
+prints a `Network:` address next to the local one. Open the application at that address rather than
+at `localhost`, and the invitation it hands out carries it, so a phone on the same network reaches
+the same server. Nothing else has to be exposed today — every read and write goes through the server,
+and the browser never talks to Supabase itself.
+
 The QR is drawn on the server as a single SVG path — one element rather than a thousand rectangles —
 and stays dark ink on white whatever the palette is doing. Inverting it in the dark theme would look
 considered and would stop scanning on half the phones that tried it.
