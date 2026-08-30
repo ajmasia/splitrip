@@ -73,6 +73,9 @@ export const es = {
   'trip.you': 'tú',
 
   'trip.invite': 'Invitar',
+  'trip.remove': 'Quitar',
+  'trip.removing': 'Quitando…',
+  'trip.remove.label': 'Quitar a {name} del viaje',
 
   'invite.heading': 'Invitar al viaje',
   'invite.body':
@@ -92,6 +95,8 @@ export const es = {
   'invite.qr.label': 'Código QR de la invitación',
   'invite.copy': 'Copiar',
   'invite.copied': 'Copiado',
+  'invite.revoke': 'Revocar',
+  'invite.revoking': 'Revocando…',
   'invite.closed': 'El viaje está cerrado: ya no entra nadie más.',
 
   'join.heading': 'Entrar en el viaje',
@@ -117,6 +122,14 @@ export const es = {
   'error.trip_dates_out_of_order': 'Un viaje no puede terminar antes de empezar.',
   'error.needs_an_account':
     'Para abrir un viaje hace falta una cuenta autorizada. Entrar en uno por invitación no.',
+  'error.participant_has_expenses.one':
+    'No puedes quitar a esta persona: tiene 1 gasto a su nombre.',
+  'error.participant_has_expenses.other':
+    'No puedes quitar a esta persona: tiene {count} gastos a su nombre.',
+  'error.participant_has_payments.one':
+    'No puedes quitar a esta persona: tiene 1 pago a su nombre.',
+  'error.participant_has_payments.other':
+    'No puedes quitar a esta persona: tiene {count} pagos a su nombre.',
   'error.not_allowed': 'No tienes permiso para hacer eso.',
   'error.needs_admin': 'Para eso hay que organizar el viaje.',
   'error.trip_closed': 'El viaje está cerrado.',

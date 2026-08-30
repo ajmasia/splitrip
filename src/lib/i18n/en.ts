@@ -71,6 +71,9 @@ export const en: Catalogue = {
   'trip.you': 'you',
 
   'trip.invite': 'Invite',
+  'trip.remove': 'Remove',
+  'trip.removing': 'Removing…',
+  'trip.remove.label': 'Remove {name} from the trip',
 
   'invite.heading': 'Invite to the trip',
   'invite.body':
@@ -90,6 +93,8 @@ export const en: Catalogue = {
   'invite.qr.label': 'Invitation QR code',
   'invite.copy': 'Copy',
   'invite.copied': 'Copied',
+  'invite.revoke': 'Revoke',
+  'invite.revoking': 'Revoking…',
   'invite.closed': 'The trip is closed: nobody else comes in.',
 
   'join.heading': 'Join the trip',
@@ -113,6 +118,14 @@ export const en: Catalogue = {
   'error.trip_dates_out_of_order': 'A trip cannot end before it starts.',
   'error.needs_an_account':
     'Opening a trip needs an allowed account. Joining one through an invitation does not.',
+  'error.participant_has_expenses.one':
+    'This person cannot be removed: 1 expense is attached to them.',
+  'error.participant_has_expenses.other':
+    'This person cannot be removed: {count} expenses are attached to them.',
+  'error.participant_has_payments.one':
+    'This person cannot be removed: 1 payment is attached to them.',
+  'error.participant_has_payments.other':
+    'This person cannot be removed: {count} payments are attached to them.',
   'error.not_allowed': 'You are not allowed to do that.',
   'error.needs_admin': 'That is for an organiser of the trip.',
   'error.trip_closed': 'The trip is closed.',

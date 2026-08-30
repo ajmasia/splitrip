@@ -110,9 +110,9 @@ select lives_ok(
     $$select public.create_invitation('aaaaaaaa-0000-0000-0000-00000000000a')$$,
     'an admin generates an invitation');
 
-update public.invitations set revoked_at = now() where id = 'bbbbbbbb-0000-0000-0000-00000000000a';
-select isnt((select revoked_at from public.invitations where id = 'bbbbbbbb-0000-0000-0000-00000000000a'),
-          null, 'an admin revokes an invitation');
+select isnt(
+    (select revoked_at from public.revoke_invitation('bbbbbbbb-0000-0000-0000-00000000000a')),
+    null, 'an admin revokes an invitation');
 
 update public.participants set role = 'admin' where id = 'cccccccc-0000-0000-0000-00000000000b';
 select is((select role from public.participants where id = 'cccccccc-0000-0000-0000-00000000000b'),
@@ -122,7 +122,7 @@ delete from public.expenses where id = 'eeeeeeee-0000-0000-0000-00000000000a';
 select isnt_empty($$select 1 from public.expenses where id = 'eeeeeeee-0000-0000-0000-00000000000a'$$,
           'nor is one deleted by hand, so that a refusal is reported rather than passing in silence');
 
-delete from public.participants where id = 'cccccccc-0000-0000-0000-00000000000d';
+select public.remove_participant('cccccccc-0000-0000-0000-00000000000d');
 select is_empty($$select 1 from public.participants where id = 'cccccccc-0000-0000-0000-00000000000d'$$,
           'an admin removes a participant who owes and is owed nothing');
 

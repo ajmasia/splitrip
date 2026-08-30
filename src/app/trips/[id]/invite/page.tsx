@@ -6,6 +6,7 @@ import { CopyLink } from '@/components/copy-link'
 import { NewInvitationForm } from '@/components/new-invitation-form'
 import { Pill } from '@/components/pill'
 import { QrCode } from '@/components/qr-code'
+import { RevokeInvitationButton } from '@/components/revoke-invitation-button'
 import { getViewer } from '@/lib/auth/viewer'
 import { formatDate } from '@/lib/i18n/format'
 import { getCopy } from '@/lib/i18n/server'
@@ -82,6 +83,13 @@ export default async function InvitePage({ params }: { params: Promise<{ id: str
                       </span>
                     </div>
                     <CopyLink url={invitation.url} locale={locale} />
+                    {trip.status === 'open' ? (
+                      <RevokeInvitationButton
+                        invitationId={invitation.id}
+                        tripId={id}
+                        locale={locale}
+                      />
+                    ) : null}
                   </div>
                 </li>
               ))}

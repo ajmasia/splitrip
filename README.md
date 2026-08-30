@@ -202,6 +202,19 @@ phone. The interface asks which it is and comes back confirming, at which point 
 rebound to the new device. So anybody holding an invitation can claim any name on that trip — the
 price of joining without an account, and the reason invitations expire and can be revoked.
 
+`revoke_invitation` and `remove_participant` withdraw access, and they are functions for the same
+reason the expense writes are: a refusal by policy touches no row and says nothing, and both of
+these have to explain themselves. Revoking is idempotent — two organisers tapping the same button is
+not an error — and it touches the invitation and nothing else, so whoever came in through it stays.
+
+Removing somebody refuses whenever money points at them: an expense they paid, a share they are in,
+a payment they made or received, or any of those they recorded. An expense whose payer has vanished
+is a balance that no longer adds up, and there is no undo for that. The refusal carries the number
+of entries in the way as its `DETAIL`, so the interface can say how much is in the way rather than
+just that something is. Whoever recorded an entry counts as attached to it too — not because they
+owe anything, but because the row points at them, and leaving them out would swap a sentence
+somebody can read for a foreign key violation they cannot.
+
 `close_trip` ends the trip and freezes it into a summary stored as JSON on the trip itself: what it
 cost in all, how much of that was shared and how much was somebody's treat, the cost per person, the
 final balance of each traveller, the contributions nobody was asked to share, and every payment
@@ -223,8 +236,8 @@ to show — state, dates, what has been spent and by how many people — and, ru
 returns the trips the reader takes part in and no others.
 
 A closed trip is read-only, and that is checked on every way there is of writing to one: each
-function refuses it, and the two writes that still go through a policy — renaming the trip and
-revoking one of its invitations — ask whether it is open. Reopening is the single change a closed
+function refuses it, and the one write that still goes through a policy — renaming the trip — asks
+whether it is open. Reopening is the single change a closed
 trip accepts, and `reopen_trip` is what makes it. `closed_trip.test.sql` tries all of them as the
 organiser, on the reasoning that if the strongest hand on the trip cannot, nobody can.
 
@@ -254,6 +267,8 @@ without reading English text:
 | `SP018` | Inviting somebody needs admin permissions               |
 | `SP019` | An invitation carries a role that does not exist        |
 | `SP020` | An invitation cannot last that long, or that briefly    |
+| `SP021` | The participant has expenses attached to them           |
+| `SP022` | The participant has payments attached to them           |
 
 `npm run db:test` runs the pgTAP tests over all of it. Each one checks both halves of the same
 policy: that the person who belongs can, and that the person who does not cannot.
@@ -313,7 +328,9 @@ act on it. The screen offers the two roles an invitation can carry, and lists th
 a revoked or expired invitation is not shown at all, a list of dead links being a list of things to
 mistake for working ones.
 
-Each one comes with its link and its QR code, both pointing at `/join/<token>`. The link is
+Each one comes with its link and its QR code, both pointing at `/join/<token>`, and with the
+button that takes it back: revoking one stops it letting anybody else in and leaves the people
+who already came through it exactly where they are. The link is
 absolute, and its origin is read from the request rather than from a setting, so a laptop, a preview
 deployment and production each hand out a link back to themselves with nothing to configure. It sits
 in a read-only field that selects itself on focus, because the clipboard API needs a secure context

@@ -103,21 +103,17 @@ select is(
     'participant',
     'no role changes hands');
 
-delete from public.participants where id = 'cccccccc-0000-0000-0000-00000000000c';
-select isnt_empty(
-    $$select 1 from public.participants where id = 'cccccccc-0000-0000-0000-00000000000c'$$,
-    'nobody is removed from it, not even somebody owing nothing');
+select throws_ok(
+    $$select public.remove_participant('cccccccc-0000-0000-0000-00000000000c')$$,
+    'SP001', null, 'nobody is removed from it, not even somebody owing nothing');
 
 select throws_ok(
     $$select public.create_invitation('aaaaaaaa-0000-0000-0000-00000000000a')$$,
     'SP001', null, 'no new invitation is issued');
 
-update public.invitations set revoked_at = now()
-where id = 'bbbbbbbb-0000-0000-0000-00000000000a';
-select is(
-    (select revoked_at from public.invitations where id = 'bbbbbbbb-0000-0000-0000-00000000000a'),
-    null,
-    'and the ones it has are not revoked either');
+select throws_ok(
+    $$select public.revoke_invitation('bbbbbbbb-0000-0000-0000-00000000000a')$$,
+    'SP001', null, 'and the ones it has are not revoked either');
 
 -- ------------------------------------------------------------------- what a closed trip accepts
 select lives_ok(

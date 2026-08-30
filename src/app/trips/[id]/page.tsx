@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 
 import { AppShell } from '@/components/app-shell'
 import { Pill } from '@/components/pill'
+import { RemoveParticipantButton } from '@/components/remove-participant-button'
 import { intlLocale } from '@/lib/i18n'
 import { formatDateRange } from '@/lib/i18n/format'
 import { getViewer } from '@/lib/auth/viewer'
@@ -73,11 +74,21 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
                     <span className="text-ink-soft"> ({t('trip.you')})</span>
                   ) : null}
                 </span>
-                {participant.role === 'admin' ? (
-                  <Pill tone="accent">{t('trips.role.admin')}</Pill>
-                ) : (
-                  <Pill>{t('trips.role.participant')}</Pill>
-                )}
+                <div className="flex items-center gap-2">
+                  {participant.role === 'admin' ? (
+                    <Pill tone="accent">{t('trips.role.admin')}</Pill>
+                  ) : (
+                    <Pill>{t('trips.role.participant')}</Pill>
+                  )}
+                  {trip.yourRole === 'admin' && trip.status === 'open' && !participant.isYou ? (
+                    <RemoveParticipantButton
+                      participantId={participant.id}
+                      tripId={id}
+                      name={participant.displayName}
+                      locale={locale}
+                    />
+                  ) : null}
+                </div>
               </li>
             ))}
           </ul>
