@@ -5,12 +5,17 @@ Defines the life cycle of a shared trip: how it is created, the data that descri
 ## ADDED Requirements
 
 ### Requirement: Trip creation
-The system SHALL allow any person to create a trip by providing a name. The person who creates it SHALL be recorded as a participant of the trip with the `admin` role. The trip SHALL start in the `open` state with `EUR` as its base currency.
+The system SHALL allow a person signed in with an account to create a trip by providing a name. A person who holds only a device identity SHALL NOT be able to create one. The person who creates it SHALL be recorded as a participant of the trip with the `admin` role. The trip SHALL start in the `open` state with `EUR` as its base currency.
 
 #### Scenario: Creation with the minimum data
-- **WHEN** a person creates a trip providing only the name "Iceland 2026"
+- **WHEN** a signed-in person creates a trip providing only the name "Iceland 2026"
 - **THEN** the system creates the trip in the `open` state, with `EUR` as base currency, and records that person as a participant with the `admin` role
 - **AND** redirects them to the screen of the newly created trip
+
+#### Scenario: Attempt to create a trip without an account
+- **WHEN** somebody holding only a device identity attempts to create a trip
+- **THEN** the system rejects the creation, reports that creating a trip needs an account, and offers them the sign-in screen
+- **AND** their access to the trips they already take part in is unaffected
 
 #### Scenario: Empty trip name
 - **WHEN** a person attempts to create a trip with no name, or with a name containing only whitespace
@@ -20,6 +25,26 @@ The system SHALL allow any person to create a trip by providing a name. The pers
 - **WHEN** a person creates a trip providing a start date and an end date
 - **THEN** the system stores both dates with the trip
 - **AND** if the end date precedes the start date, it rejects the creation and reports the error
+
+### Requirement: Signing in to organise
+The system SHALL allow a person to sign in with an email address and a password, and to sign out. The system SHALL NOT offer public sign-up: accounts are created out of band, so that the number of people who can open new trips stays bounded. Signing in SHALL NOT be required to take part in a trip.
+
+#### Scenario: Signing in
+- **WHEN** a person enters the email address and password of an existing account
+- **THEN** the system signs them in and they can create trips
+
+#### Scenario: Wrong credentials
+- **WHEN** a person enters an email address or password that does not match an account
+- **THEN** the system rejects the attempt and reports that the credentials do not match, without disclosing which of the two was wrong
+
+#### Scenario: No public sign-up
+- **WHEN** a person looks for a way to create an account from the application
+- **THEN** the system offers none, and states that accounts are arranged with whoever runs the instance
+
+#### Scenario: Signing out
+- **WHEN** a signed-in person signs out
+- **THEN** the system ends their session and they can no longer create trips
+- **AND** they keep reaching the trips they take part in, through the device identity that succeeds their session
 
 ### Requirement: A participant's trip list
 The system SHALL show each person the list of trips they take part in, and SHALL exclude from that list any trip they do not take part in.

@@ -41,6 +41,8 @@
 - [ ] 5.5 Implement the join screen with name entry and its validations; verify the empty-name, duplicate-name and invalid-invitation cases
 - [ ] 5.6 Implement invitation revocation and participant removal with its financial-activity check; verify that removing someone with expenses is rejected with the corresponding message
 - [ ] 5.7 Implement role management with the guarantee that an `admin` always remains; verify that the only organiser cannot demote themselves and that they can once there is another
+- [ ] 5.8 Put the account barrier in front of creating a trip and turn off public sign-up; verify with tests that a session holding only a device identity is refused, that a signed-in one succeeds, and that joining by invitation and being an `admin` through one are unaffected
+- [ ] 5.9 Implement signing in and out with an email address and a password, and issue the anonymous session only where one is needed rather than on any first page view; verify that wrong credentials are refused without saying which half was wrong, that signing out leaves the trips already joined reachable, and that visiting the public entry page mints no identity
 
 ## 6. Interface foundation: PWA and languages
 
@@ -93,3 +95,4 @@
 - [ ] 11.3 Create the production Supabase project and apply the repository migrations to it; verify that the deployed schema matches the local one and that RLS is enabled on every table
 - [ ] 11.4 Deploy on Vercel with its environment variables; verify the complete run from a real phone, including installation as a PWA on iOS and on Android
 - [ ] 11.5 Verify behaviour with a group of five participants on separate devices: check that the amounts reconcile to the cent, that real time reaches everyone and that the final settlement is correct
+- [ ] 11.6 Harden the deployed instance against the open door to anonymous sessions: tune the rate limits per address and add the periodic sweep of anonymous users belonging to no trip; verify that the sweep removes an unused identity and leaves every participant of a trip untouched

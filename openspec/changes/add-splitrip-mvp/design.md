@@ -4,7 +4,7 @@ New project, no prior code. The motivation and scope are in `proposal.md`; the b
 
 Four constraints shape the design:
 
-1. **No accounts.** A traveller gets in through a QR code and types their name. There is no password and no email, but there still has to be a stable per-device identity for authorisation to rest on.
+1. **No accounts for travellers.** A traveller gets in through a QR code and types their name, with no password and no email, but there still has to be a stable per-device identity for authorisation to rest on. Opening a trip is the one thing that does need an account, so that a public deployment cannot be used as free hosting by whoever finds it.
 2. **Real time.** Several phones with the same screen open must see the same numbers within seconds.
 3. **Money.** Amounts have to add up to the cent, always, and reproducibly.
 4. **Minimal operations.** One developer, free tiers, a complete local environment in Docker and deployment on Vercel.
@@ -34,15 +34,27 @@ Four constraints shape the design:
 
 **Alternatives considered:** *Convex*, which gives reactivity by default and would have simplified real time, but with a proprietary data model and no SQL, precisely where this problem is strongest. *Postgres directly (Neon) with Drizzle*, which would have required building both authentication and real time by hand — disproportionate work for a first release.
 
-### Identity: Supabase anonymous sessions
+### Identity: two kinds of session over one `auth.uid()`
 
-**Chosen:** each device gets an anonymous Supabase Auth user (`signInAnonymously`) on its first visit. A trip's `participants` row is bound to that `auth.uid()`. RLS policies are written against `auth.uid()`, exactly as if there were a real login.
+**Chosen:** Supabase Auth, used two ways. Somebody joining a trip gets an anonymous user (`signInAnonymously`) bound to their device. Somebody who opens trips signs in with an email address and a password. Both are a real `auth.uid()` with a genuine JWT and token refresh, so every RLS policy is written once and never asks which kind it is looking at.
 
-**Why:** it turns "no accounts" into a problem the platform has already solved. There is a genuine JWT, token refresh, and RLS can reason about identity without tricks. It also leaves the door open: when email or OAuth is wanted, Supabase allows promoting an anonymous user to a permanent one while keeping its `uid` and therefore its whole trip history.
+**Why:** it turns "no accounts for travellers" into a problem the platform has already solved, without giving up accounts where they earn their keep. The two forms differ in exactly one place — the barrier in front of creating a trip — and nowhere else in the schema, the policies or the queries.
 
 **Alternatives considered:** an opaque token of our own stored in `localStorage` and validated on every server route — it works, but it leaves RLS without an identity and forces all authorisation into application code, which is precisely what we want to avoid. A server-signed cookie: same problem, more ceremony.
 
-**Accepted consequence:** clearing browser data means losing access. The mitigation is organisational (the organiser regenerates an invitation) and is stated as a risk.
+**Accepted consequence:** a participant who clears their browser data loses access, and rejoins through an invitation under the name they are registered with. Whoever holds an account simply signs in again.
+
+### Creating a trip needs an account
+
+**Chosen:** only a session that is not anonymous may create a trip. The check lives in the `create_trip` function — `auth.jwt() ->> 'is_anonymous'` — and public sign-up is turned off, so accounts exist only because somebody made them out of band. Joining by invitation is untouched, and an invitation carrying the `admin` role still makes an account-less traveller an organiser of that trip.
+
+**Why:** a personal deployment reachable from the public internet, that hands an identity to whoever asks and lets that identity create data, is somebody else's free hosting waiting to be discovered. The barrier is where it is because a check in the interface is a suggestion: `create_trip` is the only door into `trips`, and neither table accepts an insert from a client.
+
+**Why it is not the whole answer:** the barrier stops stray identities from creating data, not from existing. Three more things bound that, in order of how much they buy: an anonymous session is issued only where one is genuinely needed — opening an invitation, or being inside the application — rather than on any first page view, which by itself removes the crawlers that would otherwise take an identity each; rate limits per address; and a periodic sweep of anonymous users belonging to no trip.
+
+**Why not a CAPTCHA first:** its widget needs a person to interact with it, and the anonymous sign-in happens on the server, in the proxy, where there is nobody to show it to. Moving sign-in to the browser to accommodate one would reintroduce a first paint with no identity and put a puzzle in front of every visitor of a product whose whole premise is that getting in costs nothing. It stays available as an escalation, hung off the invitation flow, which is the one place a person is actually interacting.
+
+**Two powers, deliberately separate:** administering a trip you were invited to, and opening new trips. Conflating them would mean an organiser could not delegate the running of a trip to somebody in the group without also handing them the ability to create trips on the instance.
 
 ### Writes through RPC, reads through RLS
 
@@ -153,6 +165,7 @@ Three levels, chosen by what can actually break:
 - **With no push, a participant may not learn about a change until they open the app** → Accepted and stated in the proposal. The activity feed keeps the complete trace, so opening the app shows what has happened.
 - **The expense date depends on the device time zone** → It is stored as a civil date (`DATE`), with no time and no zone, because what matters is "the day of the trip" and not the exact instant. This prevents a dinner expense from showing up on the following day because of the destination's time difference.
 - **Free tiers have limits** → With small groups the volume is trivial; the first limit that would be reached is the Supabase project's inactivity pause, which affects availability, not data.
+- **An open door to anonymous sessions on a public deployment** → Anyone reaching the site can be handed an identity. It buys them nothing — creating a trip needs an account, and every other write checks membership — but the identities themselves accumulate and count against a free tier's quota. Bounded by issuing a session only where one is needed, by rate limits per address, and by sweeping anonymous users who belong to no trip. Escalates to a CAPTCHA on the invitation flow if that proves insufficient.
 
 ## Migration Plan
 
