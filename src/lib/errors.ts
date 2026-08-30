@@ -11,7 +11,10 @@ import type { CopyKey } from './i18n'
 const COPY_BY_CODE: Record<string, CopyKey> = {
   '42501': 'error.not_allowed',
   SP001: 'error.trip_closed',
+  SP010: 'error.invitation_invalid',
+  SP011: 'error.invitation_expired',
   SP012: 'error.name_required',
+  SP013: 'error.name_taken',
   SP015: 'error.trip_name_required',
   SP016: 'error.trip_dates_out_of_order',
   SP017: 'error.needs_an_account',

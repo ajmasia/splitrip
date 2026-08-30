@@ -94,8 +94,25 @@ export const es = {
   'invite.copied': 'Copiado',
   'invite.closed': 'El viaje está cerrado: ya no entra nadie más.',
 
+  'join.heading': 'Entrar en el viaje',
+  'join.body':
+    'Te han pasado una invitación. Escribe tu nombre y ya estás dentro: sin cuenta y sin contraseña.',
+  'join.name.label': '¿Cómo te llamas?',
+  'join.name.placeholder': 'Ana',
+  'join.name.hint': 'Así te verá el resto del grupo en este viaje.',
+  'join.submit': 'Entrar en el viaje',
+  'join.pending': 'Entrando…',
+  'join.taken.body':
+    'Ya hay alguien en este viaje que se llama {name}. Si eres tú desde otro móvil, continúa como esa persona; si no, entra con otro nombre.',
+  'join.taken.confirm': 'Soy yo, desde otro móvil',
+
   'error.credentials': 'El correo o la contraseña no coinciden.',
   'error.name_required': 'Hace falta un nombre.',
+  'error.name_taken': 'Ese nombre ya está cogido en este viaje.',
+  'error.invitation_invalid':
+    'Esa invitación no vale. Pídele al organizador que te pase una nueva.',
+  'error.invitation_expired':
+    'Esa invitación ha caducado. Pídele al organizador que te pase una nueva.',
   'error.trip_name_required': 'El viaje necesita un nombre.',
   'error.trip_dates_out_of_order': 'Un viaje no puede terminar antes de empezar.',
   'error.needs_an_account':

@@ -324,6 +324,25 @@ The QR is drawn on the server as a single SVG path — one element rather than a
 and stays dark ink on white whatever the palette is doing. Inverting it in the dark theme would look
 considered and would stop scanning on half the phones that tried it.
 
+### Joining
+
+`/join/<token>` asks for a name and says nothing else. It cannot say more: the policy on
+`invitations` serves members only, so whether a token is any good is answered when a name is
+submitted. That is the behaviour wanted anyway — a page that greeted a bad token with the name of a
+trip would be a way of finding out which trips exist.
+
+The anonymous identity is minted here, at the moment a name is sent, and not when the page is
+opened. Following an invitation link costs nothing, and an empty name is refused before the identity
+is drawn, so a blank submission leaves no stray user behind either. The database remains the
+authority on all of it; the check in front is only about the order things happen in.
+
+A name already on the trip has two readings the database cannot tell apart, so the screen asks
+rather than deciding: it reports the clash and offers to carry on as that person, which is how the
+same traveller arrives from a second phone. Confirming rebinds the existing participant to the new
+device, keeping their role and their history rather than making a second one. The name comes back
+from the server and the field is remounted around it, because React empties a form once its action
+returns and an offer to continue as somebody would otherwise sit above an empty box.
+
 ## Look and feel
 
 The interface is composed the way a printed bill is composed: figures that align themselves in a

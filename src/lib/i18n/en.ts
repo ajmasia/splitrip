@@ -92,8 +92,23 @@ export const en: Catalogue = {
   'invite.copied': 'Copied',
   'invite.closed': 'The trip is closed: nobody else comes in.',
 
+  'join.heading': 'Join the trip',
+  'join.body':
+    'Somebody sent you an invitation. Type your name and you are in: no account, no password.',
+  'join.name.label': 'What is your name?',
+  'join.name.placeholder': 'Ana',
+  'join.name.hint': 'This is how the rest of the group will see you on this trip.',
+  'join.submit': 'Join the trip',
+  'join.pending': 'Joining…',
+  'join.taken.body':
+    'Somebody on this trip already goes by {name}. If that is you on another phone, carry on as them; otherwise join under a different name.',
+  'join.taken.confirm': 'That is me, on another phone',
+
   'error.credentials': 'That email address and password do not match.',
   'error.name_required': 'A name is needed.',
+  'error.name_taken': 'That name is already taken on this trip.',
+  'error.invitation_invalid': 'That invitation is not valid. Ask the organiser for a new one.',
+  'error.invitation_expired': 'That invitation has expired. Ask the organiser for a new one.',
   'error.trip_name_required': 'The trip needs a name.',
   'error.trip_dates_out_of_order': 'A trip cannot end before it starts.',
   'error.needs_an_account':
