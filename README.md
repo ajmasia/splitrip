@@ -143,7 +143,8 @@ Isolation between trips is enforced by Row Level Security, so a route cannot lea
 money to another by oversight: every table is readable only by the people who take part in the
 trip, resolved through `auth.uid()`. Writing follows the roles — an admin edits the trip, invites,
 removes participants and corrects anybody's expense, while a participant may only touch what they
-recorded themselves — and a closed trip accepts no change but being reopened.
+recorded themselves — and a closed trip accepts no change but being reopened. Where the rule spans
+more than one row, it is a function rather than a policy that enforces it.
 
 What no policy allows stays denied, which is deliberate for anything spanning more than one row.
 An expense and its shares, or a trip and its first admin, are created together or not at all, so
@@ -159,6 +160,15 @@ executable only by the `authenticated` role.
 description and an amount it splits among everybody, attributes the payment to whoever recorded it
 and dates it today; a payer, a date, a subset to split among and the `contribution` type can all be
 given instead.
+
+`update_expense` and `delete_expense` are the only way to correct or remove one — `expenses` has no
+`UPDATE` or `DELETE` policy at all. Two things come out of that. An amount can no longer be changed
+while its shares still hold the old one, which is the single way the balances could come to lie:
+every edit throws the shares away and computes them again from the amount and the split. And the
+refusal is audible, where a denial by policy is not: an `UPDATE` that Row Level Security rejects
+touches no row and says nothing, so the interface would have no way to tell the reader that they
+may only correct their own expenses. On `update_expense` every argument left out means "leave it as
+it is", so fixing an amount does not quietly reassign the payer or reset who was in the split.
 
 A rejection carries its own `SQLSTATE`, so the bilingual interface maps a broken rule to its copy
 without reading English text:
