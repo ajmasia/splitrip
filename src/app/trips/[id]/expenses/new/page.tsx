@@ -18,14 +18,26 @@ export default async function NewExpensePage({ params }: { params: Promise<{ id:
   const viewer = await getViewer()
 
   const found = await getTrip(id)
+  if (!found) notFound()
+
+  const { trip, participants } = found
+  const you = participants.find((participant) => participant.isYou)
+
   // Not a member, or the trip has ended: neither is a screen with a form on it.
-  if (!found || found.trip.status !== 'open') notFound()
+  if (trip.status !== 'open' || trip.yourRole === null || you === undefined) notFound()
 
   return (
     <AppShell locale={locale} t={t} viewer={viewer}>
       <div className="flex flex-col gap-6">
         <h1 className="text-2xl font-bold">{t('newExpense.heading')}</h1>
-        <NewExpenseForm tripId={id} today={serverToday()} locale={locale} />
+        <NewExpenseForm
+          tripId={id}
+          today={serverToday()}
+          participants={participants}
+          yourRole={trip.yourRole}
+          yourParticipantId={you.id}
+          locale={locale}
+        />
       </div>
     </AppShell>
   )

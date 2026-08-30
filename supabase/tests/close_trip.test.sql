@@ -35,13 +35,17 @@ select public.create_expense(
     p_trip_id => 'aaaaaaaa-0000-0000-0000-00000000000a',
     p_description => 'Dinner', p_amount_cents => 12000, p_spent_on => '2026-07-01') \g /dev/null
 
-reset role;
-set local request.jwt.claims = '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}';
-set local role authenticated;
+-- The treat is recorded by Ana and attributed to Beto: marking an expense as one nobody shares is
+-- an organiser's to make, and so is saying that somebody else paid for it.
 select public.create_expense(
     p_trip_id => 'aaaaaaaa-0000-0000-0000-00000000000a',
     p_description => 'Van rental', p_amount_cents => 30000, p_type => 'contribution',
+    p_paid_by => 'cccccccc-0000-0000-0000-00000000000b',
     p_spent_on => '2026-07-02') \g /dev/null
+
+reset role;
+set local request.jwt.claims = '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}';
+set local role authenticated;
 select public.record_payment(
     p_trip_id => 'aaaaaaaa-0000-0000-0000-00000000000a',
     p_from_participant_id => 'cccccccc-0000-0000-0000-00000000000b',

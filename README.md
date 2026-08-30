@@ -291,6 +291,8 @@ without reading English text:
 | `SP021` | The participant has expenses attached to them           |
 | `SP022` | The participant has payments attached to them           |
 | `SP023` | The trip would be left with nobody organising it        |
+| `SP024` | Only an organiser records what somebody else paid       |
+| `SP025` | Only an organiser records something nobody shares       |
 
 `npm run db:test` runs the pgTAP tests over all of it. Each one checks both halves of the same
 policy: that the person who belongs can, and that the person who does not cannot.
@@ -460,6 +462,24 @@ would drift the first time somebody adjusted the drawing. Three of them differ i
   shape the launcher uses and anything outside the middle circle may not survive it;
 - the Apple one is filled too, because iOS masks a square it expects to be opaque, and a transparent
   corner there comes out black.
+
+### Who may say what about an expense
+
+Two halves of the form belong to whoever organises the trip: saying that somebody else paid, and
+marking an expense as one nobody shares. Both are claims about other people's money, and a claim
+anybody can make is not a rule — so `assert_role_may_set` refuses them in `create_expense` and again
+in `update_expense`, rather than the interface merely not drawing the control. A rule that only
+exists as a hidden button is one crafted request away from not existing.
+
+It checks what is being asked for rather than what the expense ends up with. An organiser may have
+attributed somebody's expense elsewhere, and that must not lock its author out of fixing a typo in
+it.
+
+Choosing who a shared expense is split among stays with everybody. Whoever paid for a dinner three
+of them had is the person who knows who was there, and sending them to find an organiser is exactly
+the friction this application exists to remove. The split is sent as the people who were on screen
+rather than left out, so somebody joining between opening the form and sending it does not silently
+end up in a dinner they missed.
 
 ### Starting fast, and losing the network
 

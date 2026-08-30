@@ -6,7 +6,7 @@
 
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(31);
+select plan(34);
 
 insert into auth.users (id, instance_id, aud, role, is_anonymous, created_at, updated_at)
 select id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', true, now(), now()
@@ -242,6 +242,37 @@ select throws_ok(
 select throws_ok(
     $$select public.delete_expense('eeeeeeee-0000-0000-0000-00000000000f')$$,
     'SP001', null, 'and no deletion');
+
+-- ------------------------------------------- the same limits apply to correcting one afterwards
+-- The trip was closed a few lines up, and a closed one refuses every edit for its own reasons.
+reset role;
+set local request.jwt.claims = '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}';
+set local role authenticated;
+select public.reopen_trip('aaaaaaaa-0000-0000-0000-00000000000a') \g /dev/null
+
+reset role;
+set local request.jwt.claims = '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}';
+set local role authenticated;
+
+select public.create_expense(
+    p_trip_id => 'aaaaaaaa-0000-0000-0000-00000000000a',
+    p_description => 'Mine to correct', p_amount_cents => 2000) \g /dev/null
+
+select throws_ok(
+    format($$select public.update_expense(%L, p_paid_by => %L)$$,
+        (select id from public.expenses where description = 'Mine to correct'),
+        'cccccccc-0000-0000-0000-00000000000c'),
+    'SP024', null, 'an expense cannot be handed to another payer by editing it either');
+
+select throws_ok(
+    format($$select public.update_expense(%L, p_type => 'contribution')$$,
+        (select id from public.expenses where description = 'Mine to correct')),
+    'SP025', null, 'nor turned into something nobody shares');
+
+select lives_ok(
+    format($$select public.update_expense(%L, p_description => 'Corrected all the same')$$,
+        (select id from public.expenses where description = 'Mine to correct')),
+    'while fixing the wording of their own expense is still theirs to do');
 
 select * from finish();
 rollback;

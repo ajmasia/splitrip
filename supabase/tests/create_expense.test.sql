@@ -5,7 +5,7 @@
 
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(26);
+select plan(32);
 
 insert into auth.users (id, instance_id, aud, role, is_anonymous, created_at, updated_at)
 select id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', true, now(), now()
@@ -242,6 +242,62 @@ select throws_ok(
         p_description => 'Too late',
         p_amount_cents => 1000)$$,
     'SP001', null, 'a closed trip accepts no new expense, not even from its organiser');
+
+-- ------------------------------------------------------ what belongs to whoever organises the trip
+-- The trip was closed a few lines up, and a closed one refuses everything for its own reasons.
+reset role;
+set local request.jwt.claims = '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}';
+set local role authenticated;
+select public.reopen_trip('aaaaaaaa-0000-0000-0000-00000000000a') \g /dev/null
+
+reset role;
+set local request.jwt.claims = '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}';
+set local role authenticated;
+
+select throws_ok(
+    $$select public.create_expense(
+        p_trip_id => 'aaaaaaaa-0000-0000-0000-00000000000a',
+        p_description => 'Somebody else paid', p_amount_cents => 1000,
+        p_paid_by => 'cccccccc-0000-0000-0000-00000000000c')$$,
+    'SP024', null, 'a traveller cannot record what somebody else paid');
+
+select throws_ok(
+    $$select public.create_expense(
+        p_trip_id => 'aaaaaaaa-0000-0000-0000-00000000000a',
+        p_description => 'My treat', p_amount_cents => 1000, p_type => 'contribution')$$,
+    'SP025', null, 'nor mark an expense as one nobody shares');
+
+select lives_ok(
+    $$select public.create_expense(
+        p_trip_id => 'aaaaaaaa-0000-0000-0000-00000000000a',
+        p_description => 'Naming myself is not naming somebody else', p_amount_cents => 1000,
+        p_paid_by => 'cccccccc-0000-0000-0000-00000000000b')$$,
+    'but saying out loud that they paid for it themselves is no claim at all');
+
+select lives_ok(
+    $$select public.create_expense(
+        p_trip_id => 'aaaaaaaa-0000-0000-0000-00000000000a',
+        p_description => 'Dinner for two', p_amount_cents => 3000,
+        p_split_participant_ids => array['cccccccc-0000-0000-0000-00000000000b',
+                                         'cccccccc-0000-0000-0000-00000000000c']::uuid[])$$,
+    'and choosing who a dinner is split among stays with whoever paid for it');
+
+reset role;
+set local request.jwt.claims = '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}';
+set local role authenticated;
+
+select lives_ok(
+    $$select public.create_expense(
+        p_trip_id => 'aaaaaaaa-0000-0000-0000-00000000000a',
+        p_description => 'Beto paid for this one', p_amount_cents => 1000,
+        p_paid_by => 'cccccccc-0000-0000-0000-00000000000b')$$,
+    'an organiser records what somebody else paid');
+
+select lives_ok(
+    $$select public.create_expense(
+        p_trip_id => 'aaaaaaaa-0000-0000-0000-00000000000a',
+        p_description => 'On the house', p_amount_cents => 1000, p_type => 'contribution')$$,
+    'and marks an expense as one nobody shares');
 
 select * from finish();
 rollback;

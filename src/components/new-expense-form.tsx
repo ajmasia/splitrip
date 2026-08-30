@@ -5,17 +5,24 @@ import { useActionState, useEffect, useRef } from 'react'
 
 import { createExpense, type NewExpenseState } from '@/app/actions/expenses'
 import { translator, type Locale } from '@/lib/i18n'
+import type { TripParticipant, TripRole } from '@/lib/trips/queries'
 
 const EMPTY: NewExpenseState = { error: null }
 
 export function NewExpenseForm({
   tripId,
   today,
+  participants,
+  yourRole,
+  yourParticipantId,
   locale,
 }: {
   tripId: string
   /** The server's date, which is what the first paint can agree on. */
   today: string
+  participants: TripParticipant[]
+  yourRole: TripRole
+  yourParticipantId: string
   locale: Locale
 }) {
   const t = translator(locale)
@@ -87,9 +94,51 @@ export function NewExpenseForm({
         />
       </div>
 
-      <p className="rounded-card border border-rule bg-surface-2 px-3 py-2 text-sm text-ink-soft">
-        {t('newExpense.defaults')}
-      </p>
+      {/*
+        Saying that somebody else paid is a claim about their money, so the choice is an organiser's
+        and the database refuses it from anybody else. Choosing who a dinner is split among is not:
+        whoever paid for it is the person who knows who was there.
+      */}
+      {yourRole === 'admin' ? (
+        <div className="flex flex-col gap-1">
+          <label htmlFor="paid_by" className="text-sm font-medium">
+            {t('newExpense.payer.label')}
+          </label>
+          <select id="paid_by" name="paid_by" defaultValue={yourParticipantId} className={field}>
+            {participants.map((participant) => (
+              <option key={participant.id} value={participant.id}>
+                {participant.displayName}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : (
+        <p className="rounded-card border border-rule bg-surface-2 px-3 py-2 text-sm text-ink-soft">
+          {t('newExpense.payer.you')}
+        </p>
+      )}
+
+      <fieldset className="flex flex-col gap-1">
+        <legend className="pb-1 text-sm font-medium">{t('newExpense.split.label')}</legend>
+        <div className="flex flex-col">
+          {participants.map((participant) => (
+            <label
+              key={participant.id}
+              className="flex min-h-touch cursor-pointer items-center gap-3 border-b border-rule last:border-b-0"
+            >
+              <input
+                type="checkbox"
+                name="split"
+                value={participant.id}
+                defaultChecked
+                className="size-5 accent-accent"
+              />
+              {participant.displayName}
+            </label>
+          ))}
+        </div>
+        <span className="pt-1 text-sm text-ink-soft">{t('newExpense.split.hint')}</span>
+      </fieldset>
 
       {state.error ? (
         <p role="alert" className="rounded-card bg-debt-soft px-3 py-2 text-sm text-debt">

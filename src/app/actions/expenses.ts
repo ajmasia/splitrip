@@ -39,13 +39,22 @@ export async function createExpense(
 
   const supabase = await createSupabaseServerClient()
 
-  // Payer and split are left out on purpose: the database reads their absence as "whoever is
-  // recording this" and "everybody on the trip", so the defaults live in one place.
+  // The split is sent as the people who were on screen, rather than left out: somebody joining
+  // between opening the form and sending it should not silently end up in a dinner they missed.
+  const split = formData.getAll('split').filter((id): id is string => typeof id === 'string')
+
+  // The payer is left out unless one was chosen, and the database reads its absence as "whoever is
+  // recording this". A form that offers no choice therefore sends nothing, and a forged one is
+  // refused there rather than here.
+  const paidBy = text(formData.get('paid_by')).trim()
+
   const { error } = await supabase.rpc('create_expense', {
     p_trip_id: tripId,
     p_description: description,
     p_amount_cents: amount.amountCents,
     p_spent_on: dateOrNull(formData.get('spent_on')),
+    p_paid_by: paidBy === '' ? null : paidBy,
+    p_split_participant_ids: split,
   })
 
   if (error) return { error: errorCopyKey(error.code) }

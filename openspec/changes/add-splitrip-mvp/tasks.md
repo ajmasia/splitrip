@@ -59,7 +59,7 @@
 
 - [x] 7.1 Implement the main trip screen with the expense list sorted by date descending and the empty state; verify that it shows description, amount, payer, type and the number of people in the split
 - [x] 7.2 Implement the add-expense form with its default values (payer is whoever records it, split among everyone, today's date); verify that an expense can be recorded providing only a description and an amount
-- [ ] 7.3 Add payer selection for an `admin` and split-subset selection for every participant to the form; verify that a €45.00 expense split among three of five charges €15.00 to each and leaves the other two unchanged, and that a `participant` naming somebody else as the payer is rejected
+- [x] 7.3 Add payer selection for an `admin` and split-subset selection for every participant to the form; verify that a €45.00 expense split among three of five charges €15.00 to each and leaves the other two unchanged, and that a `participant` naming somebody else as the payer is rejected
 - [ ] 7.4 Add the `contribution` expense type to the form for an `admin`, hiding the split when selected; verify that a €300.00 contribution adds to the trip total and changes no balance, and that a `participant` cannot record one
 - [ ] 7.5 Implement the successive expense entry flow for an `admin` on a desktop viewport, keeping date, payer and split between entries and reporting the session count and total; verify that ten expenses can be entered from the keyboard alone and that a rejected entry keeps what was typed
 - [ ] 7.6 Implement the expense detail, edit and delete with the per-role permissions; verify that a `participant` cannot edit someone else's expense and an `admin` can, and that the numeric keypad appears on tapping the amount field
