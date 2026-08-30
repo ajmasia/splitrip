@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useActionState } from 'react'
 
 import { joinTrip, type JoinState } from '@/app/actions/join'
@@ -46,6 +47,15 @@ export function ClaimPlaceForm({
         A place held by an account is not offered at all. Its holder has a way in of their own, and
         a button that would be refused is worse than the sentence explaining why.
       */}
+      {place.takeable ? null : (
+        <Link
+          href="/sign-in"
+          className="flex min-h-touch w-fit items-center rounded-card bg-accent px-4 font-semibold text-accent-ink"
+        >
+          {t('join.place.signIn')}
+        </Link>
+      )}
+
       {place.takeable ? (
         <button
           type="submit"

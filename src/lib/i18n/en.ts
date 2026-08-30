@@ -297,6 +297,7 @@ export const en: Catalogue = {
   'join.place.inUse':
     'This place is already being used from another device. If that is you on a new phone, carry on: the other one loses access.',
   'join.place.takeOver': 'I am {name}, on another phone',
+  'join.place.signIn': 'Sign in with that account',
   'join.place.submit': 'Come in as {name}',
   'error.place_taken': 'That place is already being used from another device.',
   'error.place_taken_by_account': 'That place belongs to an account: it is entered by signing in.',

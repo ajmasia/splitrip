@@ -300,6 +300,7 @@ export const es = {
   'join.place.inUse':
     'Este sitio ya se está usando desde otro móvil. Si eres tú y has cambiado de teléfono, continúa: el otro dejará de tener acceso.',
   'join.place.takeOver': 'Soy {name}, desde otro móvil',
+  'join.place.signIn': 'Entrar con esa cuenta',
   'join.place.submit': 'Entrar como {name}',
   'error.place_taken': 'Ese sitio ya lo está usando alguien desde otro móvil.',
   'error.place_taken_by_account': 'Ese sitio es de una cuenta: se entra en él iniciando sesión.',
