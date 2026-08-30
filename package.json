@@ -16,6 +16,7 @@
     "db:check": "node --env-file=.env.local scripts/check-supabase.mjs",
     "db:test": "supabase test db",
     "check:viewport": "node scripts/check-viewport.mjs",
+    "icons": "node scripts/make-icons.mjs",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

@@ -428,6 +428,30 @@ browser's own error page — and measuring that reports nothing about the applic
 can be answered from the markup — both are results of layout — and both are easy to break without
 noticing.
 
+### Installing it
+
+`src/app/manifest.ts` is what makes a browser offer to add this to a home screen: a name, a scope, a
+set of icons and `display: 'standalone'`, which is the line that drops the address bar. Its colours
+are the paper of the light palette rather than the brand green — they paint the window chrome and
+the launch screen, and a green frame around a page that is not green reads as a mistake rather than
+as branding.
+
+iOS does not read the manifest at all. It takes its own route through the `apple-mobile-web-app-*`
+meta tags, and it labels the icon from the title in those rather than from the manifest's name. The
+tag that makes it open full screen was renamed to `mobile-web-app-capable`, which Safari has only
+read since 16.4, so both names are emitted and an older iPhone keeps working.
+
+The artwork lives once, in `src/app/icon.svg`, and `npm run icons` rasterises it into the four sizes
+the home screens want, using the Chrome that `check:viewport` already needs. Four hand-made bitmaps
+would drift the first time somebody adjusted the drawing. Three of them differ in more than size:
+
+- the plain 192 and 512 leave the square behind the drawing empty, so their rounded corners are
+  transparent and a launcher's own background shows through;
+- the maskable one is inset to 72% on a filled ground, because Android crops an icon to whatever
+  shape the launcher uses and anything outside the middle circle may not survive it;
+- the Apple one is filled too, because iOS masks a square it expects to be opaque, and a transparent
+  corner there comes out black.
+
 ### When something breaks
 
 A trip's numbers come from a database over a network, and a screen that throws when that fails once
@@ -477,6 +501,7 @@ and it is a mistake that only shows once it is everywhere.
 | `npm run db:check`       | Checks that the app environment reaches the Supabase API          |
 | `npm run db:test`        | Runs the pgTAP database tests in `supabase/tests/`                |
 | `npm run check:viewport` | Checks a running page for overflow and small touch targets        |
+| `npm run icons`          | Rasterises `src/app/icon.svg` into the home-screen PNG sizes      |
 | `npm test`               | Runs the unit tests once                                          |
 | `npm run test:watch`     | Runs the unit tests and re-runs them on change                    |
 | `npm run lint`           | Runs ESLint; fails on any warning                                 |
