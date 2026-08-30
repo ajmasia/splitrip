@@ -51,7 +51,7 @@ export default async function BalancesPage({ params }: { params: Promise<{ id: s
           Everything else on this screen is the group's; this is the reader's own position, which is
           the one figure they came for. It says the direction in words before the amount, so the
           colour is a second reading of it rather than the only one, and it names the person on the
-          other side: "you owe 9.95" is an answer, "pay Yvonne 9.95" is an instruction.
+          other side: "you owe 9.95" is an answer, "pay Brienne 9.95" is an instruction.
         */}
         {yours ? (
           <div

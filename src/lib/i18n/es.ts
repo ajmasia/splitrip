@@ -70,7 +70,7 @@ export const es = {
 
   'newTrip.heading': 'Crear un viaje',
   'newTrip.name.label': 'Nombre del viaje',
-  'newTrip.name.placeholder': 'Viaje a la Alsacia',
+  'newTrip.name.placeholder': 'Puente de mayo en Lisboa',
   'newTrip.you.label': '¿Cómo te llamas?',
   'newTrip.you.placeholder': 'Sonia',
   'newTrip.you.hint': 'Así te verá el resto del grupo en este viaje.',

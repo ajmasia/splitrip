@@ -87,15 +87,16 @@ whatever local data you had.
 
 ### Sample data
 
-`supabase/seed.sql` loads a trip to play with on every reset — five friends in Alsace over four days
-of Christmas markets — and the account that organises it:
+`supabase/seed.sql` loads a trip to play with on every reset — five of Westeros driving the filming
+locations that are really in the north of Spain, five days from Gaztelugatxe to the Bardenas — and
+the account that organises it:
 
-**sonia@splitrip.test / unViajeALaAlsacia**
+**tyrion@splitrip.test / unViajeAPoniente**
 
 That is also the only account allowed to open new trips locally. The other four travellers have just
-the identity their phone was given. The trip carries the awkward cases on purpose: a flat one of them
-paid for alone and asked nobody to share, expenses split among only some of the group, amounts that
-leave cents over, and settlement payments already made. Its balances sum to exactly zero, so it
+the identity their phone was given. The trip carries the awkward cases on purpose: a house one of
+them paid for alone and asked nobody to share, expenses split among only some of the group, amounts
+that leave cents over, and settlement payments already made. Its balances sum to exactly zero, so it
 doubles as a quick check that nothing is off.
 
 The trip screen opens on it with **1702,65 € spent, 161,53 € per person and 895,00 € not split**:
@@ -104,26 +105,26 @@ contributions charge nobody.
 
 These are the figures the balances screen must show for it, worked out from the seed by hand:
 
-| Who       | Fronted  | Charged  | Balance    |
-| --------- | -------- | -------- | ---------- |
-| Francisca | 43,72 €  | 169,23 € | −275,51 €  |
-| Marta     | 219,73 € | 151,20 € | +168,53 €  |
-| Sonia     | 81,50 €  | 141,45 € | −9,95 €    |
-| Virginia  | 137,70 € | 176,55 € | −38,85 €   |
-| Yvonne    | 325,00 € | 169,22 € | +155,78 €  |
-| **Sum**   |          |          | **0,00 €** |
+| Who      | Fronted  | Charged  | Balance    |
+| -------- | -------- | -------- | ---------- |
+| Arya     | 219,73 € | 151,20 € | +168,53 €  |
+| Brienne  | 325,00 € | 169,22 € | +155,78 €  |
+| Daenerys | 43,72 €  | 169,23 € | −275,51 €  |
+| Jon      | 137,70 € | 176,55 € | −38,85 €   |
+| Tyrion   | 81,50 €  | 141,45 € | −9,95 €    |
+| **Sum**  |          |          | **0,00 €** |
 
-Francisca is deepest in the red despite paying for the flat: those 800 € are a contribution, which
+Daenerys is deepest in the red despite paying for the house: those 800 € are a contribution, which
 counts towards what the trip cost and puts nobody in debt.
 
 And this is the settlement it must propose — four transfers, one fewer than the five people with
 something outstanding:
 
 ```
-Francisca pays Marta    168,53 €
-Francisca pays Yvonne   106,98 €
-Virginia pays Yvonne     38,85 €
-Sonia pays Yvonne         9,95 €
+Daenerys pays Arya      168,53 €
+Daenerys pays Brienne   106,98 €
+Jon pays Brienne         38,85 €
+Tyrion pays Brienne       9,95 €
 ```
 
 ### Trying it from a phone

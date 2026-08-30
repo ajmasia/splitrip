@@ -57,23 +57,23 @@ describe('settle', () => {
     ).toEqual([{ fromParticipantId: 'beto', toParticipantId: 'ana', amountCents: 4000 }])
   })
 
-  it('settles the trip to Alsace', () => {
+  it('settles the sample trip', () => {
     // The balances the sample trip in `supabase/seed.sql` produces.
     const balances: Balance[] = [
-      { participantId: 'marta', netCents: 16853 },
-      { participantId: 'yvonne', netCents: 15578 },
-      { participantId: 'sonia', netCents: -995 },
-      { participantId: 'virginia', netCents: -3885 },
-      { participantId: 'francisca', netCents: -27551 },
+      { participantId: 'arya', netCents: 16853 },
+      { participantId: 'brienne', netCents: 15578 },
+      { participantId: 'tyrion', netCents: -995 },
+      { participantId: 'jon', netCents: -3885 },
+      { participantId: 'daenerys', netCents: -27551 },
     ]
 
     const transfers = settle(balances)
 
     expect(transfers).toEqual([
-      { fromParticipantId: 'francisca', toParticipantId: 'marta', amountCents: 16853 },
-      { fromParticipantId: 'francisca', toParticipantId: 'yvonne', amountCents: 10698 },
-      { fromParticipantId: 'virginia', toParticipantId: 'yvonne', amountCents: 3885 },
-      { fromParticipantId: 'sonia', toParticipantId: 'yvonne', amountCents: 995 },
+      { fromParticipantId: 'daenerys', toParticipantId: 'arya', amountCents: 16853 },
+      { fromParticipantId: 'daenerys', toParticipantId: 'brienne', amountCents: 10698 },
+      { fromParticipantId: 'jon', toParticipantId: 'brienne', amountCents: 3885 },
+      { fromParticipantId: 'tyrion', toParticipantId: 'brienne', amountCents: 995 },
     ])
     expect(transfers.length).toBeLessThanOrEqual(outstanding(balances) - 1)
     expect(apply(balances, transfers).every((balance) => balance.netCents === 0)).toBe(true)

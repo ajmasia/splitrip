@@ -68,7 +68,7 @@ export const en: Catalogue = {
 
   'newTrip.heading': 'Create a trip',
   'newTrip.name.label': 'Name of the trip',
-  'newTrip.name.placeholder': 'Alsace at Christmas',
+  'newTrip.name.placeholder': 'A long weekend in Lisbon',
   'newTrip.you.label': 'What is your name?',
   'newTrip.you.placeholder': 'Sonia',
   'newTrip.you.hint': 'This is how the rest of the group will see you on this trip.',
