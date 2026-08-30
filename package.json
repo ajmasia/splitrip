@@ -16,6 +16,7 @@
     "db:reset": "supabase db reset",
     "db:check": "node --env-file=.env.local scripts/check-supabase.mjs",
     "db:test": "supabase test db",
+    "test:realtime": "node scripts/test-realtime-isolation.mjs",
     "check:viewport": "node scripts/check-viewport.mjs",
     "icons": "node scripts/make-icons.mjs",
     "lint": "eslint . --max-warnings 0",

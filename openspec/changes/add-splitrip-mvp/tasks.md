@@ -79,7 +79,7 @@
 - [x] 9.2 Implement the connection-lost indicator and resynchronisation on recovery; verify by cutting the network that the notice appears and that on restoring it the screen reflects the changes made while disconnected
 - [x] 9.3 Implement the trip activity feed with author, action and timestamp; verify that a new expense generates the corresponding entry and that an edit made by an `admin` identifies them as the author
 - [x] 9.4 Implement the new-activity indicator for when the user is on another screen; verify that it appears without interrupting what they are doing
-- [ ] 9.5 Verify real-time isolation: check with tests that a client subscribed to trip A receives no event from trip B and that a removed participant stops receiving them
+- [x] 9.5 Verify real-time isolation: check with tests that a client subscribed to trip A receives no event from trip B and that a removed participant stops receiving them
 
 ## 10. Organiser dashboard, closing and export
 

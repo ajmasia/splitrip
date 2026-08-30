@@ -158,6 +158,7 @@ immutable only in production. On its own port it can be left running without eve
 | `npm run db:reset`       | Recreates the database from the migrations, discarding local data |
 | `npm run db:check`       | Checks that the app environment reaches the Supabase API          |
 | `npm run db:test`        | Runs the pgTAP database tests in `supabase/tests/`                |
+| `npm run test:realtime`  | Checks that real time is isolated per trip, against the stack     |
 | `npm run check:viewport` | Checks a running page for overflow and small touch targets        |
 | `npm run icons`          | Rasterises `src/app/icon.svg` into the home-screen PNG sizes      |
 | `npm test`               | Runs the unit tests once                                          |
@@ -221,7 +222,9 @@ screen a fresh visitor would get.
 The tables it carries are published in a migration, since Supabase creates the publication empty.
 Isolation between trips is not the `trip_id` filter the client subscribes with, which it could
 simply omit: it is Row Level Security, which Realtime evaluates against each subscriber before
-delivering.
+delivering. `npm run test:realtime` proves it the only way it can be proved — a real socket, a real
+session and a real write — by subscribing to somebody else's trip on purpose and waiting for the
+silence, and by watching a participant stop receiving one the moment they are removed from it.
 
 While the reader is elsewhere in the trip, the count of what they have not looked at rides on the
 link to the feed — not a dialogue, not a strip that moves the page under a thumb halfway through
@@ -278,9 +281,9 @@ history. The accepted types are `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `
 `revert`, `style` and `test`.
 
 A `pre-commit` hook runs the linter, the type-checker and the unit tests first, so a commit that
-breaks any of them never happens. The pgTAP database tests are deliberately left out: they need the
-Docker stack running, and a commit should not depend on that. They run in continuous integration, and
-locally with `npm run db:test`.
+breaks any of them never happens. The pgTAP database tests and the real-time isolation test are
+deliberately left out: they need the Docker stack running, and a commit should not depend on that.
+They run in continuous integration, and locally with `npm run db:test` and `npm run test:realtime`.
 
 The hook is installed by husky through the `prepare` script, which npm runs automatically after
 `npm install`. If hooks ever stop firing, `npm run prepare` reinstalls them.
