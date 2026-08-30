@@ -61,9 +61,9 @@ update public.trips set name = 'Beto''s trip' where id = 'aaaaaaaa-0000-0000-000
 select is((select name from public.trips where id = 'aaaaaaaa-0000-0000-0000-00000000000a'),
           'Iceland 2026', 'a participant cannot rename the trip');
 
-update public.participants set role = 'admin' where id = 'cccccccc-0000-0000-0000-00000000000b';
-select is((select role from public.participants where id = 'cccccccc-0000-0000-0000-00000000000b'),
-          'participant', 'a participant cannot promote themselves');
+select throws_ok(
+    $$select public.set_participant_role('cccccccc-0000-0000-0000-00000000000b', 'admin')$$,
+    'SP018', null, 'a participant cannot promote themselves');
 
 delete from public.participants where id = 'cccccccc-0000-0000-0000-00000000000d';
 select isnt_empty($$select 1 from public.participants where id = 'cccccccc-0000-0000-0000-00000000000d'$$,
@@ -114,9 +114,9 @@ select isnt(
     (select revoked_at from public.revoke_invitation('bbbbbbbb-0000-0000-0000-00000000000a')),
     null, 'an admin revokes an invitation');
 
-update public.participants set role = 'admin' where id = 'cccccccc-0000-0000-0000-00000000000b';
-select is((select role from public.participants where id = 'cccccccc-0000-0000-0000-00000000000b'),
-          'admin', 'an admin promotes a participant');
+select is(
+    (select role from public.set_participant_role('cccccccc-0000-0000-0000-00000000000b', 'admin')),
+    'admin', 'an admin promotes a participant');
 
 delete from public.expenses where id = 'eeeeeeee-0000-0000-0000-00000000000a';
 select isnt_empty($$select 1 from public.expenses where id = 'eeeeeeee-0000-0000-0000-00000000000a'$$,

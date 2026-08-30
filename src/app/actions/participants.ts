@@ -54,3 +54,23 @@ export async function removeParticipant(
   revalidatePath(`/trips/${tripId}`)
   return { error: null, count: 0 }
 }
+
+export type ChangeRoleState = { error: CopyKey | null }
+
+export async function setParticipantRole(
+  _previous: ChangeRoleState,
+  formData: FormData,
+): Promise<ChangeRoleState> {
+  const tripId = text(formData.get('trip_id'))
+  const supabase = await createSupabaseServerClient()
+
+  const { error } = await supabase.rpc('set_participant_role', {
+    p_participant_id: text(formData.get('participant_id')),
+    p_role: text(formData.get('role')),
+  })
+
+  if (error) return { error: errorCopyKey(error.code) }
+
+  revalidatePath(`/trips/${tripId}`)
+  return { error: null }
+}

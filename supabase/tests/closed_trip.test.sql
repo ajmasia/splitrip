@@ -96,12 +96,9 @@ select is(
     'Iceland 2026',
     'a closed trip is not renamed');
 
-update public.participants set role = 'admin'
-where id = 'cccccccc-0000-0000-0000-00000000000b';
-select is(
-    (select role from public.participants where id = 'cccccccc-0000-0000-0000-00000000000b'),
-    'participant',
-    'no role changes hands');
+select throws_ok(
+    $$select public.set_participant_role('cccccccc-0000-0000-0000-00000000000b', 'admin')$$,
+    'SP001', null, 'no role changes hands');
 
 select throws_ok(
     $$select public.remove_participant('cccccccc-0000-0000-0000-00000000000c')$$,

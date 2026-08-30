@@ -71,6 +71,11 @@ export const en: Catalogue = {
   'trip.you': 'you',
 
   'trip.invite': 'Invite',
+  'trip.role.promote': 'Make organiser',
+  'trip.role.promote.label': 'Make {name} an organiser of the trip',
+  'trip.role.demote': 'Make traveller',
+  'trip.role.demote.label': 'Make {name} a traveller',
+  'trip.role.changing': 'Changing…',
   'trip.remove': 'Remove',
   'trip.removing': 'Removing…',
   'trip.remove.label': 'Remove {name} from the trip',
@@ -127,6 +132,7 @@ export const en: Catalogue = {
     'This person cannot be removed: 1 payment is attached to them.',
   'error.participant_has_payments.other':
     'This person cannot be removed: {count} payments are attached to them.',
+  'error.trip_needs_an_admin': 'The trip has to keep somebody organising it.',
   'error.not_allowed': 'You are not allowed to do that.',
   'error.needs_admin': 'That is for an organiser of the trip.',
   'error.trip_closed': 'The trip is closed.',

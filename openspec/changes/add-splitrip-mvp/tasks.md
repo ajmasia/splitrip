@@ -40,7 +40,7 @@
 - [x] 5.4 Implement the invitation screen with a copyable link and a QR code; verify by scanning the QR with a phone that it lands on the join screen of the right trip
 - [x] 5.5 Implement the join screen with name entry and its validations; verify the empty-name, duplicate-name and invalid-invitation cases
 - [x] 5.6 Implement invitation revocation and participant removal with its financial-activity check; verify that removing someone with expenses is rejected with the corresponding message
-- [ ] 5.7 Implement role management with the guarantee that an `admin` always remains; verify that the only organiser cannot demote themselves and that they can once there is another
+- [x] 5.7 Implement role management with the guarantee that an `admin` always remains; verify that the only organiser cannot demote themselves and that they can once there is another
 - [x] 5.8 Put the account barrier in front of creating a trip, limited to the addresses the instance allows; verify with tests that a session holding only a device identity is refused, that a signed-in one succeeds, and that joining by invitation and being an `admin` through one are unaffected
 - [x] 5.9 Implement signing in and out with an email address and a password, and issue the anonymous session only where one is needed rather than on any first page view; verify that wrong credentials are refused without saying which half was wrong, that signing out leaves the trips already joined reachable, and that visiting the public entry page mints no identity
 

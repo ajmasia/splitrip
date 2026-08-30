@@ -215,6 +215,18 @@ just that something is. Whoever recorded an entry counts as attached to it too �
 owe anything, but because the row points at them, and leaving them out would swap a sentence
 somebody can read for a foreign key violation they cannot.
 
+`set_participant_role` moves somebody between the two roles, and carries the rule the whole trip
+depends on: it has to keep somebody organising it. The only organiser cannot step down, and cannot
+walk out either — those are two routes to the same empty chair, so the check lives in one function
+that both of them call rather than being written out twice and drifting apart. Handing over a trip is
+therefore promote-then-step-down, in that order. Asking for the role somebody already holds changes
+nothing and is not an error, so a double tap is harmless.
+
+In `remove_participant` that check comes last, after the money. A refusal about expenses is final —
+no promotion makes it possible — while the empty chair only asks for somebody else to be given the
+keys first, and the more useful sentence is the one that closes the door rather than the one that
+suggests a door.
+
 `close_trip` ends the trip and freezes it into a summary stored as JSON on the trip itself: what it
 cost in all, how much of that was shared and how much was somebody's treat, the cost per person, the
 final balance of each traveller, the contributions nobody was asked to share, and every payment
@@ -269,6 +281,7 @@ without reading English text:
 | `SP020` | An invitation cannot last that long, or that briefly    |
 | `SP021` | The participant has expenses attached to them           |
 | `SP022` | The participant has payments attached to them           |
+| `SP023` | The trip would be left with nobody organising it        |
 
 `npm run db:test` runs the pgTAP tests over all of it. Each one checks both halves of the same
 policy: that the person who belongs can, and that the person who does not cannot.

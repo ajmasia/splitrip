@@ -73,6 +73,11 @@ export const es = {
   'trip.you': 'tú',
 
   'trip.invite': 'Invitar',
+  'trip.role.promote': 'Hacer organizador',
+  'trip.role.promote.label': 'Hacer a {name} organizador del viaje',
+  'trip.role.demote': 'Pasar a participante',
+  'trip.role.demote.label': 'Pasar a {name} a participante',
+  'trip.role.changing': 'Cambiando…',
   'trip.remove': 'Quitar',
   'trip.removing': 'Quitando…',
   'trip.remove.label': 'Quitar a {name} del viaje',
@@ -131,6 +136,7 @@ export const es = {
     'No puedes quitar a esta persona: tiene 1 pago a su nombre.',
   'error.participant_has_payments.other':
     'No puedes quitar a esta persona: tiene {count} pagos a su nombre.',
+  'error.trip_needs_an_admin': 'El viaje tiene que quedarse con alguien organizando.',
   'error.not_allowed': 'No tienes permiso para hacer eso.',
   'error.needs_admin': 'Para eso hay que organizar el viaje.',
   'error.trip_closed': 'El viaje está cerrado.',

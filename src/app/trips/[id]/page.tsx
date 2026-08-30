@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { AppShell } from '@/components/app-shell'
+import { ChangeRoleButton } from '@/components/change-role-button'
 import { Pill } from '@/components/pill'
 import { RemoveParticipantButton } from '@/components/remove-participant-button'
 import { intlLocale } from '@/lib/i18n'
@@ -22,6 +23,8 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
   if (!found) notFound()
 
   const { trip, participants } = found
+  // Stepping down is a role change like any other, so this one appears beside yourself too.
+  const organising = trip.yourRole === 'admin' && trip.status === 'open'
   const dates = formatDateRange(trip.startDate, trip.endDate, locale)
 
   return (
@@ -66,7 +69,7 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
             {participants.map((participant) => (
               <li
                 key={participant.id}
-                className="flex min-h-touch items-center justify-between gap-3 border-b border-rule py-2 last:border-b-0"
+                className="flex flex-col gap-2 border-b border-rule py-3 last:border-b-0 wide:flex-row wide:items-center wide:justify-between"
               >
                 <span>
                   {participant.displayName}
@@ -74,13 +77,22 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
                     <span className="text-ink-soft"> ({t('trip.you')})</span>
                   ) : null}
                 </span>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {participant.role === 'admin' ? (
                     <Pill tone="accent">{t('trips.role.admin')}</Pill>
                   ) : (
                     <Pill>{t('trips.role.participant')}</Pill>
                   )}
-                  {trip.yourRole === 'admin' && trip.status === 'open' && !participant.isYou ? (
+                  {organising ? (
+                    <ChangeRoleButton
+                      participantId={participant.id}
+                      tripId={id}
+                      role={participant.role}
+                      name={participant.displayName}
+                      locale={locale}
+                    />
+                  ) : null}
+                  {organising && !participant.isYou ? (
                     <RemoveParticipantButton
                       participantId={participant.id}
                       tripId={id}
