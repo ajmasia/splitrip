@@ -74,6 +74,14 @@ Copy `.env.example` to `.env.local`. The values it carries are the local stack d
 
 `npm run db:reset` recreates the database from the migrations in `supabase/migrations/`, discarding whatever local data you had.
 
+### Sample data
+
+`supabase/seed.sql` loads a trip to play with on every reset: five friends in Alsace over four days
+of Christmas markets, with the awkward cases already in it — a flat one of them paid for on her own
+and asked nobody to share, expenses split among only some of the group, amounts that leave cents
+over, and settlement payments already made. The balances it produces sum to exactly zero, so it
+doubles as a quick check that nothing is off.
+
 ## Data model
 
 The schema lives as versioned SQL migrations in `supabase/migrations/`, applied identically to the
