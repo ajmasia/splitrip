@@ -259,6 +259,31 @@ The accepted consequence is that clearing browser data means losing access. The 
 regenerates an invitation, and rejoining under the same name recovers the participant. Attaching an
 email address, which would fix it properly, is out of scope for this release.
 
+## Interface language
+
+The interface is Spanish and English, defaulting to Spanish. The copy lives in two catalogues under
+`src/lib/i18n/`, with no i18n library: with two languages and a small interface, one would weigh
+more than it is worth, and `Intl` is already in every browser this targets.
+
+The Spanish catalogue is the source of truth, and its keys define the type the English one has to
+satisfy. So a phrase added in Spanish and forgotten in English does not compile, and neither does an
+English key that Spanish never had — the check runs in both directions, in `npm run typecheck`.
+
+Which language a reader gets is decided on the server, in this order: the preference they stored,
+then the `Accept-Language` the browser sent (honouring its quality values, since a browser writing
+`en;q=0.7, es;q=0.9` is stating an order rather than a list), then Spanish. The switcher is a plain
+form with a server function behind it, so it works before any JavaScript has loaded, and the choice
+is a cookie the server reads on every request.
+
+Amounts and dates are formatted with `Intl` in the active language: 1055 cents read as `10,55 €` in
+Spanish and `€10.55` in English. Dates are formatted in UTC, deliberately — a trip date is a civil
+date with no time and no zone, and formatting it locally would move a dinner in Reykjavik to the
+following day for a reader sitting west of the meridian.
+
+No visible copy is written inline in a component; it all goes through the catalogue from the first
+screen. Retranslating an interface that is already built costs far more than building it translated,
+and it is a mistake that only shows once it is everywhere.
+
 ## Available scripts
 
 | Script                 | What it does                                                      |
@@ -294,9 +319,14 @@ TypeScript runs in strict mode with `noUncheckedIndexedAccess` and the unused-sy
 ## Project layout
 
 ```
-src/app/            Next.js App Router pages and layouts
+src/app/            Next.js App Router pages, layouts and server functions
+src/components/     Components shared between pages
+src/lib/i18n/       Copy catalogues, language resolution and formatting
+src/lib/money/      Splitting, settling and reading amounts
+src/lib/supabase/   Browser and server clients
+src/proxy.ts        Runs before every request: signs the device in and refreshes its session
 openspec/           Specifications, design and task breakdown
-supabase/           Database migrations and local stack configuration
+supabase/           Database migrations, seed data and pgTAP tests
 scripts/            Development and verification scripts
 ```
 
