@@ -119,7 +119,13 @@ Splitting an amount is a pure function, tested without a database: integer divis
 with the leftover handed out one by one to the first participants in identifier order. Ordering
 rather than chance is what makes a split reproducible — the same expense split twice charges the
 same people the same cents — and it is why shares are persisted rather than recomputed on the fly.
-`npm test` runs those tests.
+Settling is a pure function too: whoever owes the most pays whoever is owed the most, until nobody
+owes anybody.
+
+Both are checked twice over. `npm test` runs the worked examples and, on top of them, property tests
+that build hundreds of random trips — any number of participants, expenses split among any subset,
+contributions, payments — and assert the two invariants the product rests on: the balances add up to
+exactly zero, and the proposed transfers leave nobody owing anybody.
 
 Balances are derived, never stored. The `participant_balances` view sums, for each participant,
 what they paid, what the splits charged them and what they have moved in settlement payments, and
