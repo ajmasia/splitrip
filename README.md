@@ -119,6 +119,11 @@ Splitting an amount is a pure function, tested without a database: integer divis
 with the leftover handed out one by one to the first participants in identifier order. Ordering
 rather than chance is what makes a split reproducible — the same expense split twice charges the
 same people the same cents — and it is why shares are persisted rather than recomputed on the fly.
+Reading an amount somebody typed is a pure function as well: it works on the digits of the string
+and never multiplies a decimal number, because `10.55 * 100` is 1054.9999999999999 in floating
+point. It accepts either decimal separator, refuses more than two decimals, zero and negatives, and
+returns the reason it refused so the interface can say it in the reader's language.
+
 Settling is a pure function too: whoever owes the most pays whoever is owed the most, until nobody
 owes anybody.
 
