@@ -268,6 +268,42 @@ The accepted consequence is that clearing browser data means losing access. The 
 regenerates an invitation, and rejoining under the same name recovers the participant. Attaching an
 email address, which would fix it properly, is out of scope for this release.
 
+## Look and feel
+
+The interface is composed the way a printed bill is composed: figures that align themselves in a
+tabular column, dotted leaders between a name and its amount, a rule above a subtotal and a double
+rule above a total. That double rule is not decoration — it says which figure is the final one. Money
+owed reads in red and money owing in plain ink, as accounting has always done it, and never by
+colour alone: the sign and the word are always beside it.
+
+The paper is a cool grey with a faint green cast rather than a cream, and the accent is a spruce
+green — travel and money, without the blue of a bank. Dark is the same palette lit differently, and
+it follows the device: there is no manual switch. Every colour, size and family lives in the
+`@theme` block of `src/app/globals.css` and nowhere else, so the palette can be read start to
+finish.
+
+Type does three jobs: **Bricolage Grotesque** for the name and screen titles, where its character
+shows without getting in the way; **Archivo** for everything that gets read, because it holds up
+small and has real tabular figures; **IBM Plex Mono** for what gets checked rather than read —
+labels, invitation tokens, table headings.
+
+The app icon is what the product does: three equal parts above, the whole figure below.
+
+### Phone first, desk when there is room
+
+One set of components, whose density answers the viewport. Below `--breakpoint-wide` (48rem) content
+stacks into cards and the primary actions sit at the bottom edge, where a thumb reaches without the
+hand shifting its grip; above it the same content opens into tables and the actions follow the
+content, because on a desktop the bottom of the window is the furthest thing from the pointer.
+
+Density is expressed in CSS, never by branching on a width measured in JavaScript: a component tree
+that differs between server and client causes hydration mismatches and makes the first paint wrong.
+
+`npm run check:viewport -- <url> <width> <height>` drives a real browser against a running dev server
+and fails if anything reaches past the viewport or if a control is shorter than 44 pixels. Neither
+can be answered from the markup — both are results of layout — and both are easy to break without
+noticing.
+
 ## Interface language
 
 The interface is Spanish and English, defaulting to Spanish. The copy lives in two catalogues under
@@ -295,25 +331,26 @@ and it is a mistake that only shows once it is everywhere.
 
 ## Available scripts
 
-| Script                 | What it does                                                      |
-| ---------------------- | ----------------------------------------------------------------- |
-| `npm run dev`          | Runs the development server with hot reloading                    |
-| `npm run dev:all`      | Starts the Supabase stack and then the dev server                 |
-| `npm run build`        | Produces the production build                                     |
-| `npm start`            | Serves the production build                                       |
-| `npm run db:start`     | Starts the local Supabase stack in Docker                         |
-| `npm run db:stop`      | Stops it                                                          |
-| `npm run db:status`    | Shows the service URLs and keys                                   |
-| `npm run db:reset`     | Recreates the database from the migrations, discarding local data |
-| `npm run db:check`     | Checks that the app environment reaches the Supabase API          |
-| `npm run db:test`      | Runs the pgTAP database tests in `supabase/tests/`                |
-| `npm test`             | Runs the unit tests once                                          |
-| `npm run test:watch`   | Runs the unit tests and re-runs them on change                    |
-| `npm run lint`         | Runs ESLint; fails on any warning                                 |
-| `npm run lint:fix`     | Runs ESLint and applies the fixes it can                          |
-| `npm run typecheck`    | Type-checks the project without emitting output                   |
-| `npm run format`       | Formats the project with Prettier                                 |
-| `npm run format:check` | Checks formatting without writing                                 |
+| Script                   | What it does                                                      |
+| ------------------------ | ----------------------------------------------------------------- |
+| `npm run dev`            | Runs the development server with hot reloading                    |
+| `npm run dev:all`        | Starts the Supabase stack and then the dev server                 |
+| `npm run build`          | Produces the production build                                     |
+| `npm start`              | Serves the production build                                       |
+| `npm run db:start`       | Starts the local Supabase stack in Docker                         |
+| `npm run db:stop`        | Stops it                                                          |
+| `npm run db:status`      | Shows the service URLs and keys                                   |
+| `npm run db:reset`       | Recreates the database from the migrations, discarding local data |
+| `npm run db:check`       | Checks that the app environment reaches the Supabase API          |
+| `npm run db:test`        | Runs the pgTAP database tests in `supabase/tests/`                |
+| `npm run check:viewport` | Checks a running page for overflow and small touch targets        |
+| `npm test`               | Runs the unit tests once                                          |
+| `npm run test:watch`     | Runs the unit tests and re-runs them on change                    |
+| `npm run lint`           | Runs ESLint; fails on any warning                                 |
+| `npm run lint:fix`       | Runs ESLint and applies the fixes it can                          |
+| `npm run typecheck`      | Type-checks the project without emitting output                   |
+| `npm run format`         | Formats the project with Prettier                                 |
+| `npm run format:check`   | Checks formatting without writing                                 |
 
 Before opening a pull request, `npm run lint`, `npm run typecheck` and `npm run format:check` should all pass.
 
