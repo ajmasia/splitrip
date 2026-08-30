@@ -51,7 +51,7 @@ select is((select description from public.expenses where id = 'eeeeeeee-0000-000
 
 update public.expenses set description = 'Dinner in Reykjavik' where id = 'eeeeeeee-0000-0000-0000-00000000000a';
 select is((select description from public.expenses where id = 'eeeeeeee-0000-0000-0000-00000000000a'),
-          'Dinner in Reykjavik', 'a participant edits the expense they recorded themselves');
+          'Dinner', 'not even its own author edits an expense by hand: its shares would be left stale');
 
 delete from public.expenses where id = 'eeeeeeee-0000-0000-0000-00000000000b';
 select isnt_empty($$select 1 from public.expenses where id = 'eeeeeeee-0000-0000-0000-00000000000b'$$,
@@ -101,7 +101,7 @@ set local role authenticated;
 
 update public.expenses set description = 'Dinner, corrected' where id = 'eeeeeeee-0000-0000-0000-00000000000a';
 select is((select description from public.expenses where id = 'eeeeeeee-0000-0000-0000-00000000000a'),
-          'Dinner, corrected', 'an admin corrects an expense recorded by someone else');
+          'Dinner', 'and neither does an admin: corrections go through update_expense');
 
 update public.trips set name = 'Iceland 2027' where id = 'aaaaaaaa-0000-0000-0000-00000000000a';
 select is((select name from public.trips where id = 'aaaaaaaa-0000-0000-0000-00000000000a'),
@@ -120,8 +120,8 @@ select is((select role from public.participants where id = 'cccccccc-0000-0000-0
           'admin', 'an admin promotes a participant');
 
 delete from public.expenses where id = 'eeeeeeee-0000-0000-0000-00000000000a';
-select is_empty($$select 1 from public.expenses where id = 'eeeeeeee-0000-0000-0000-00000000000a'$$,
-          'an admin deletes an expense recorded by someone else');
+select isnt_empty($$select 1 from public.expenses where id = 'eeeeeeee-0000-0000-0000-00000000000a'$$,
+          'nor is one deleted by hand, so that a refusal is reported rather than passing in silence');
 
 delete from public.participants where id = 'cccccccc-0000-0000-0000-00000000000d';
 select is_empty($$select 1 from public.participants where id = 'cccccccc-0000-0000-0000-00000000000d'$$,
