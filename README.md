@@ -149,6 +149,31 @@ What no policy allows stays denied, which is deliberate for anything spanning mo
 An expense and its shares, or a trip and its first admin, are created together or not at all, so
 they go through database functions rather than being writable by hand from a client.
 
+### Write functions
+
+Those functions run as `SECURITY DEFINER`, which means Row Level Security is not standing behind
+them: each one resolves the caller to their participant and refuses a stranger itself, and each is
+executable only by the `authenticated` role.
+
+`create_expense` records an expense and its shares in one transaction. Given nothing but a trip, a
+description and an amount it splits among everybody, attributes the payment to whoever recorded it
+and dates it today; a payer, a date, a subset to split among and the `contribution` type can all be
+given instead.
+
+A rejection carries its own `SQLSTATE`, so the bilingual interface maps a broken rule to its copy
+without reading English text:
+
+| Code    | What was refused                                        |
+| ------- | ------------------------------------------------------- |
+| `42501` | The caller has no standing to do this                   |
+| `SP001` | The trip is closed                                      |
+| `SP002` | The amount is not a positive number of cents            |
+| `SP003` | The currency is not supported in this release           |
+| `SP004` | A contribution cannot be split                          |
+| `SP005` | A shared expense needs at least one person in its split |
+| `SP006` | The split reaches somebody outside the trip             |
+| `SP007` | The payer is not a participant of the trip              |
+
 `npm run db:test` runs the pgTAP tests over all of it. Each one checks both halves of the same
 policy: that the person who belongs can, and that the person who does not cannot.
 
