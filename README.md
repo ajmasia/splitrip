@@ -195,6 +195,8 @@ The project follows [Conventional Commits](https://www.conventionalcommits.org/)
 
 A `commit-msg` hook runs commitlint on every commit, so a malformed message never reaches the history. The accepted types are `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style` and `test`.
 
+A `pre-commit` hook runs the linter, the type-checker and the unit tests first, so a commit that breaks any of them never happens. The pgTAP database tests are deliberately left out: they need the Docker stack running, and a commit should not depend on that. They run in continuous integration, and locally with `npm run db:test`.
+
 The hook is installed by husky through the `prepare` script, which npm runs automatically after `npm install`. If hooks ever stop firing, `npm run prepare` reinstalls them.
 
 ### Releasing
