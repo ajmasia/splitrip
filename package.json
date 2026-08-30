@@ -15,6 +15,7 @@
     "db:reset": "supabase db reset",
     "db:check": "node --env-file=.env.local scripts/check-supabase.mjs",
     "db:test": "supabase test db",
+    "check:viewport": "node scripts/check-viewport.mjs",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -34,6 +35,7 @@
   "devDependencies": {
     "@commitlint/cli": "^21.2.2",
     "@commitlint/config-conventional": "^21.2.2",
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^22.18.1",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
@@ -44,6 +46,7 @@
     "husky": "^9.1.7",
     "prettier": "^3.9.6",
     "supabase": "^2.116.0",
+    "tailwindcss": "^4.3.3",
     "typescript": "^5.9.2",
     "vitest": "^4.1.11"
   },

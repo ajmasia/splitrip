@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Splitrip">
+  <title>Splitrip</title>
+  <rect width="512" height="512" rx="112" fill="#1f5b4e" />
+  <g fill="#fbfcfa">
+    <rect x="120" y="180" width="76" height="56" rx="10" />
+    <rect x="218" y="180" width="76" height="56" rx="10" />
+    <rect x="316" y="180" width="76" height="56" rx="10" />
+    <rect x="120" y="276" width="272" height="56" rx="10" />
+  </g>
+</svg>
