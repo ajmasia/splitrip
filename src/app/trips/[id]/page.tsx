@@ -148,7 +148,12 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
                     <Pill>{t('trips.role.participant')}</Pill>
                   )}
                   {participant.hasDevice ? null : <Pill tone="quiet">{t('trip.noDevice')}</Pill>}
-                  {organising ? (
+                  {/*
+                    Not beside somebody whose place is an account: a link cannot hand that over, so
+                    the button could only ever produce one that asks for a password they already
+                    have.
+                  */}
+                  {organising && !participant.holdsAccount ? (
                     <InviteParticipantButton
                       participantId={participant.id}
                       tripId={id}

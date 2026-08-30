@@ -25,6 +25,11 @@ export type TripParticipant = {
   isYou: boolean
   /** False for somebody the organiser added by name, who is not using the application yet. */
   hasDevice: boolean
+  /**
+   * Whether the device on their place is an account. Such a place cannot be handed over by a link
+   * — its holder signs in — so offering to is offering a dead end.
+   */
+  holdsAccount: boolean
 }
 
 type OverviewRow = {
@@ -100,19 +105,27 @@ export async function getTrip(
 
   if (!user) return null
 
-  const [overview, participants] = await Promise.all([
+  const [overview, participants, devices] = await Promise.all([
     supabase.from('trip_overview').select(OVERVIEW_COLUMNS).eq('id', id).maybeSingle(),
     supabase
       .from('participants')
       .select('id, display_name, role, user_id')
       .eq('trip_id', id)
       .order('display_name'),
+    // Whether each place is answered from an account, which lives in a schema no client may read.
+    supabase.from('participant_devices').select('id, holds_account').eq('trip_id', id),
   ])
 
   if (overview.error) throw new Error(overview.error.message)
   if (participants.error) throw new Error(participants.error.message)
+  if (devices.error) throw new Error(devices.error.message)
   if (!overview.data) return null
 
+  const accounts = new Set(
+    (devices.data as { id: string; holds_account: boolean }[])
+      .filter((row) => row.holds_account)
+      .map((row) => row.id),
+  )
   const you = participants.data.find((row) => row.user_id === user.id)
 
   return {
@@ -123,6 +136,7 @@ export async function getTrip(
       role: row.role as TripRole,
       isYou: row.user_id === user.id,
       hasDevice: row.user_id !== null,
+      holdsAccount: accounts.has(row.id),
     })),
   }
 }
