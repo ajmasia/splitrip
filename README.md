@@ -211,6 +211,18 @@ it through a `data-theme` attribute the server writes on the document from a coo
 is already right in the first paint. The control in the header cycles through following the system,
 light and dark.
 
+## Real time
+
+Every screen of a trip subscribes to one channel named after it and, on any event, asks the server
+again — `router.refresh()`, not a merge of the message into what is on screen. Merging has to know
+how each kind of change affects each number and drifts the moment one is added; re-reading gives the
+screen a fresh visitor would get.
+
+The tables it carries are published in a migration, since Supabase creates the publication empty.
+Isolation between trips is not the `trip_id` filter the client subscribes with, which it could
+simply omit: it is Row Level Security, which Realtime evaluates against each subscriber before
+delivering.
+
 ## Code quality
 
 ESLint uses `eslint-config-next/core-web-vitals` plus its TypeScript rules and runs with

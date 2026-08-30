@@ -75,7 +75,7 @@
 
 ## 9. Real time and activity
 
-- [ ] 9.1 Implement the per-trip channel subscription to the changes of the relevant tables, invalidating the affected queries; verify with two browsers that an expense added in one appears in the other without reloading and that the totals update
+- [x] 9.1 Implement the per-trip channel subscription to the changes of the relevant tables, invalidating the affected queries; verify with two browsers that an expense added in one appears in the other without reloading and that the totals update
 - [ ] 9.2 Implement the connection-lost indicator and resynchronisation on recovery; verify by cutting the network that the notice appears and that on restoring it the screen reflects the changes made while disconnected
 - [ ] 9.3 Implement the trip activity feed with author, action and timestamp; verify that a new expense generates the corresponding entry and that an edit made by an `admin` identifies them as the author
 - [ ] 9.4 Implement the new-activity indicator for when the user is on another screen; verify that it appears without interrupting what they are doing

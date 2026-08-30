@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { AppShell } from '@/components/app-shell'
+import { TripRealtime } from '@/components/trip-realtime'
 import { ChangeRoleButton } from '@/components/change-role-button'
 import { ExpenseList } from '@/components/expense-list'
 import { Pill } from '@/components/pill'
@@ -45,6 +46,7 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
 
   return (
     <AppShell locale={locale} t={t} viewer={viewer} bottom={record} bottomOnPhone>
+      <TripRealtime tripId={id} />
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <Link

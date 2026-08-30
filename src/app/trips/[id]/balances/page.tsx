@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { AppShell } from '@/components/app-shell'
+import { TripRealtime } from '@/components/trip-realtime'
 import { BalanceSheet } from '@/components/balance-sheet'
 import { PaymentHistory } from '@/components/payment-history'
 import { SettlementPlan } from '@/components/settlement-plan'
@@ -35,6 +36,7 @@ export default async function BalancesPage({ params }: { params: Promise<{ id: s
 
   return (
     <AppShell locale={locale} t={t} viewer={viewer}>
+      <TripRealtime tripId={id} />
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <Link
