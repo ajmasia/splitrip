@@ -18,12 +18,12 @@ Full behaviour is specified under [`openspec/changes/add-splitrip-mvp/specs/`](o
 
 ## Tech stack
 
-| Concern | Choice |
-| --- | --- |
-| Framework | Next.js 16 (App Router) with TypeScript in strict mode |
+| Concern                  | Choice                                                  |
+| ------------------------ | ------------------------------------------------------- |
+| Framework                | Next.js 16 (App Router) with TypeScript in strict mode  |
 | Database, auth, realtime | Supabase (Postgres, anonymous auth, Row Level Security) |
-| Hosting | Vercel |
-| Local development | Docker |
+| Hosting                  | Vercel                                                  |
+| Local development        | Docker                                                  |
 
 The reasoning behind each choice, and the alternatives that were rejected, is in [`design.md`](openspec/changes/add-splitrip-mvp/design.md).
 
@@ -43,11 +43,26 @@ The application is then served at <http://localhost:3000>.
 
 ## Available scripts
 
-| Script | What it does |
-| --- | --- |
-| `npm run dev` | Runs the development server with hot reloading |
-| `npm run build` | Produces the production build |
-| `npm start` | Serves the production build |
+| Script                 | What it does                                    |
+| ---------------------- | ----------------------------------------------- |
+| `npm run dev`          | Runs the development server with hot reloading  |
+| `npm run build`        | Produces the production build                   |
+| `npm start`            | Serves the production build                     |
+| `npm run lint`         | Runs ESLint; fails on any warning               |
+| `npm run lint:fix`     | Runs ESLint and applies the fixes it can        |
+| `npm run typecheck`    | Type-checks the project without emitting output |
+| `npm run format`       | Formats the project with Prettier               |
+| `npm run format:check` | Checks formatting without writing               |
+
+Before opening a pull request, `npm run lint`, `npm run typecheck` and `npm run format:check` should all pass.
+
+## Code quality
+
+ESLint uses `eslint-config-next/core-web-vitals` plus its TypeScript rules, and runs with `--max-warnings 0`: everything the Next.js config reports as a warning — accessibility issues among them — fails the check. A lint that cannot fail is not a safety net.
+
+Prettier owns formatting, and `eslint-config-prettier` disables the ESLint rules that would fight it. Prettier deliberately ignores `openspec/`: those artifacts have a structure the `openspec` CLI parses and validates, so that tool owns their formatting.
+
+TypeScript runs in strict mode with `noUncheckedIndexedAccess` and the unused-symbol checks enabled. The balance and settlement code indexes participant arrays heavily, and an `undefined` slipping through there would corrupt money rather than raise a visible error.
 
 ## Project layout
 
