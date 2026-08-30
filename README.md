@@ -259,13 +259,18 @@ it exactly as if there were a real login — there is a genuine JWT and a refres
 stays open: Supabase can later promote an anonymous user to a permanent one while keeping its `uid`,
 and therefore its whole history of trips.
 
-Signing in happens in `src/proxy.ts`, on the server, before anything renders. Doing it in the
-browser instead would leave a first paint where `auth.uid()` is null, which every screen would then
-have to cope with. The proxy also refreshes the token on each request: it calls `getUser`, which
-asks the auth server rather than trusting whatever the cookie was last set to.
+`src/proxy.ts` refreshes whatever session a request already carries — it calls `getUser`, which asks
+the auth server rather than trusting whatever the cookie was last set to — and mints none. Handing an
+identity to every first page view meant every crawler that reached the deployment took one, and they
+pile up in the auth table for nobody's benefit. An identity is issued where one is wanted: signing
+in, or opening an invitation. Reading the entry screen costs nothing.
 
 That file is named `proxy.ts` and exports `proxy`. In Next.js 16 the `middleware` convention was
 renamed; the behaviour is the same, the name is not.
+
+Signing in is an email address and a password, and there is one message for a wrong password and an
+address that does not exist: telling somebody that the address is real turns a sign-in form into a
+way of finding out who has an account here.
 
 Opening a trip is the one thing that needs more. `create_trip` refuses an anonymous session, and
 refuses an account whose address is not in `trip_creators` — a list the instance keeps. Without it, a

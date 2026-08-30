@@ -44,8 +44,8 @@ The system SHALL allow a person to sign in with an email address and a password,
 
 #### Scenario: Signing out
 - **WHEN** a signed-in person signs out
-- **THEN** the system ends their session and they can no longer create trips
-- **AND** they keep reaching the trips they take part in, through the device identity that succeeds their session
+- **THEN** the system ends their session and shows them the entry screen
+- **AND** the trips they take part in are waiting for them the next time they sign in, because their participation is bound to the account rather than to the device
 
 ### Requirement: A participant's trip list
 The system SHALL show each person the list of trips they take part in, and SHALL exclude from that list any trip they do not take part in.
