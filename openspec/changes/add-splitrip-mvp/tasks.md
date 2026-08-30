@@ -13,7 +13,7 @@
 - [x] 2.2 Create the migration with the `expenses`, `expense_shares` and `payments` tables, with amounts as `BIGINT` cents, a `currency` column with `CHECK (currency = 'EUR')`, a positive-amount `CHECK` and the constraint preventing a `contribution` from having shares; verify with inserts that each constraint fires
 - [x] 2.3 Create the migration for the `activity` table and the triggers feeding it from `expenses`, `payments`, `participants` and `trips`; verify that each kind of operation leaves an entry with author, action and timestamp
 - [x] 2.4 Enable RLS on every table and write the read policies based on trip membership through `auth.uid()`; verify with integration tests that a participant reads their trip and that an outsider gets no rows
-- [ ] 2.5 Write the write policies distinguishing `admin` from `participant` as specified in `trip-management`; verify with tests that a `participant` cannot modify someone else's expense and that an `admin` can
+- [x] 2.5 Write the write policies distinguishing `admin` from `participant` as specified in `trip-management`; verify with tests that a `participant` cannot modify someone else's expense and that an `admin` can
 - [ ] 2.6 Create the balances view aggregating paid, charged and settled per participant; verify against a fixture data set that the balances match hand-computed figures and sum to exactly zero
 
 ## 3. Money arithmetic
