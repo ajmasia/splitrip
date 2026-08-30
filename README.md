@@ -176,6 +176,18 @@ voiding it, which leaves the entry and its trace in place while it stops countin
 balances. Nothing in either function knows what anybody owes, which is what makes a partial payment
 an ordinary payment — the balances simply absorb whatever amount changed hands.
 
+`join_trip` brings somebody in. It reads an invitation that the person joining cannot read — the
+policy on `invitations` serves members only, so an outsider cannot learn that a trip exists by
+guessing at tokens — and hands back the participant they became, with the role the invitation
+carried. Opening the same invitation again from the same device is how somebody returns to their
+trip: it gives them back the participant they already were, and does not rename them.
+
+A name already on the trip is refused, and that refusal has two readings the database cannot tell
+apart: a second traveller who happens to share a name, and the same traveller arriving from a new
+phone. The interface asks which it is and comes back confirming, at which point the participant is
+rebound to the new device. So anybody holding an invitation can claim any name on that trip — the
+price of joining without an account, and the reason invitations expire and can be revoked.
+
 A rejection carries its own `SQLSTATE`, so the bilingual interface maps a broken rule to its copy
 without reading English text:
 
@@ -191,6 +203,10 @@ without reading English text:
 | `SP007` | Somebody named in the operation is not on the trip      |
 | `SP008` | A payment cannot be made to oneself                     |
 | `SP009` | The payment is already voided                           |
+| `SP010` | The invitation does not exist, or has been revoked      |
+| `SP011` | The invitation has expired                              |
+| `SP012` | A name is required to join                              |
+| `SP013` | Somebody on the trip already goes by that name          |
 
 `npm run db:test` runs the pgTAP tests over all of it. Each one checks both halves of the same
 policy: that the person who belongs can, and that the person who does not cannot.
