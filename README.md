@@ -298,9 +298,13 @@ content, because on a desktop the bottom of the window is the furthest thing fro
 
 Density is expressed in CSS, never by branching on a width measured in JavaScript: a component tree
 that differs between server and client causes hydration mismatches and makes the first paint wrong.
+So a list that reads as cards on a phone and as a table on a desk puts both in the document and lets
+CSS decide which one shows. Only one is ever displayed, so only one reaches a screen reader.
 
 `npm run check:viewport -- <url> <width> <height>` drives a real browser against a running dev server
-and fails if anything reaches past the viewport or if a control is shorter than 44 pixels. It refuses
+and fails if anything reaches past the viewport, if a control is shorter than 44 pixels, or if the
+console complains — a hydration mismatch does not break a page, it only says so in the console,
+which is exactly why it survives unnoticed. It refuses
 to measure a page that did not load, since a failed navigation still leaves a document behind — the
 browser's own error page — and measuring that reports nothing about the application. Neither
 can be answered from the markup — both are results of layout — and both are easy to break without
