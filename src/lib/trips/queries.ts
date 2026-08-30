@@ -303,3 +303,62 @@ export async function listBalances(
     }
   })
 }
+
+export type TripPayment = {
+  id: string
+  fromName: string
+  toName: string
+  amountCents: number
+  paidOn: string
+  /** Set when the payment was taken back. It stays on the list, struck out rather than gone. */
+  voided: boolean
+  createdBy: string
+}
+
+type PaymentRow = {
+  id: string
+  from_participant_id: string
+  to_participant_id: string
+  amount_cents: number | string
+  paid_on: string
+  voided_at: string | null
+  created_by: string
+}
+
+/**
+ * The trip's settlements, most recent first. Voided ones are read too: a payment that was recorded
+ * and taken back is part of what happened, and a history that quietly drops it leaves somebody
+ * wondering whether they imagined writing it down.
+ */
+export async function listPayments(
+  tripId: string,
+  participants: TripParticipant[],
+): Promise<TripPayment[]> {
+  const supabase = await createSupabaseServerClient()
+
+  const { data, error } = await supabase
+    .from('payments')
+    .select(
+      'id, from_participant_id, to_participant_id, amount_cents, paid_on, voided_at, created_by',
+    )
+    .eq('trip_id', tripId)
+    .order('paid_on', { ascending: false })
+    .order('created_at', { ascending: false })
+    .order('id', { ascending: false })
+
+  if (error) throw new Error(error.message)
+
+  const named = new Map(
+    participants.map((participant) => [participant.id, participant.displayName]),
+  )
+
+  return (data as PaymentRow[]).map((row) => ({
+    id: row.id,
+    fromName: named.get(row.from_participant_id) ?? '',
+    toName: named.get(row.to_participant_id) ?? '',
+    amountCents: count(row.amount_cents),
+    paidOn: row.paid_on,
+    voided: row.voided_at !== null,
+    createdBy: row.created_by,
+  }))
+}

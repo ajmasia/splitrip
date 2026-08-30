@@ -46,3 +46,27 @@ export async function recordPayment(
   revalidatePath(`/trips/${tripId}/balances`)
   return { error: null, at: Date.now() }
 }
+
+export type VoidPaymentState = { error: CopyKey | null }
+
+/**
+ * Takes a payment back. It is not deleted: `void_payment` marks it, the balances stop counting it
+ * and the trigger writes the voiding into the trip activity, which is what makes the correction
+ * itself part of the record.
+ */
+export async function voidPayment(
+  _previous: VoidPaymentState,
+  formData: FormData,
+): Promise<VoidPaymentState> {
+  const tripId = text(formData.get('trip_id'))
+  const supabase = await createSupabaseServerClient()
+
+  const { error } = await supabase.rpc('void_payment', {
+    p_payment_id: text(formData.get('payment_id')),
+  })
+
+  if (error) return { error: errorCopyKey(error.code) }
+
+  revalidatePath(`/trips/${tripId}/balances`)
+  return { error: null }
+}

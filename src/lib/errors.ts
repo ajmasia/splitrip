@@ -17,6 +17,7 @@ const COPY_BY_CODE: Record<string, CopyKey> = {
   SP006: 'error.split_outsider',
   SP007: 'error.payer_not_in_trip',
   SP008: 'error.payment_to_self',
+  SP009: 'error.payment_already_voided',
   SP010: 'error.invitation_invalid',
   SP011: 'error.invitation_expired',
   SP012: 'error.name_required',

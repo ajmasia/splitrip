@@ -204,6 +204,19 @@ export const es = {
   'payment.pending': 'Apuntando…',
   'payment.cancel': 'Cancelar',
 
+  'payments.heading': 'Pagos apuntados',
+  'payments.empty.title': 'Todavía no se ha pagado nada',
+  'payments.empty.body': 'Cuando alguien salde su parte, apúntalo y aparecerá aquí.',
+  'payments.column.date': 'Fecha',
+  'payments.column.payer': 'Quién paga',
+  'payments.column.payee': 'A quién',
+  'payments.column.amount': 'Importe',
+  'payments.column.action': 'Anular',
+  'payments.voided': 'Anulado',
+  'payments.void': 'Anular',
+  'payments.voiding': 'Anulando…',
+  'payments.void.label': 'Anular el pago de {from} a {to}',
+
   'join.heading': 'Entrar en el viaje',
   'join.body':
     'Te han pasado una invitación. Escribe tu nombre y ya estás dentro: sin cuenta y sin contraseña.',
@@ -246,6 +259,7 @@ export const es = {
   'error.split_outsider': 'Hay alguien en el reparto que no está en el viaje.',
   'error.payer_not_in_trip': 'Quien pagó tiene que estar en el viaje.',
   'error.payment_to_self': 'Un pago va de una persona a otra distinta.',
+  'error.payment_already_voided': 'Ese pago ya estaba anulado.',
   'error.payer_is_organisers': 'Solo quien organiza puede apuntar lo que pagó otra persona.',
   'error.type_is_organisers': 'Solo quien organiza puede apuntar algo que no se reparte.',
   'error.not_allowed': 'No tienes permiso para hacer eso.',

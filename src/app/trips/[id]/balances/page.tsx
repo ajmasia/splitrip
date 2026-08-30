@@ -3,12 +3,13 @@ import { notFound } from 'next/navigation'
 
 import { AppShell } from '@/components/app-shell'
 import { BalanceSheet } from '@/components/balance-sheet'
+import { PaymentHistory } from '@/components/payment-history'
 import { SettlementPlan } from '@/components/settlement-plan'
 import { getViewer } from '@/lib/auth/viewer'
 import { intlLocale } from '@/lib/i18n'
 import { getCopy } from '@/lib/i18n/server'
 import { formatAmount } from '@/lib/money/amount'
-import { getTrip, listBalances } from '@/lib/trips/queries'
+import { getTrip, listBalances, listPayments } from '@/lib/trips/queries'
 import { planFor } from '@/lib/trips/settlement'
 
 export default async function BalancesPage({ params }: { params: Promise<{ id: string }> }) {
@@ -22,7 +23,10 @@ export default async function BalancesPage({ params }: { params: Promise<{ id: s
   const { trip, participants } = found
   if (trip.yourRole === null) notFound()
 
-  const balances = await listBalances(id, participants)
+  const [balances, payments] = await Promise.all([
+    listBalances(id, participants),
+    listPayments(id, participants),
+  ])
   const plan = planFor(balances)
   const yours = balances.find((balance) => balance.isYou)
   const net = yours?.netCents ?? 0
@@ -114,6 +118,21 @@ export default async function BalancesPage({ params }: { params: Promise<{ id: s
           </h2>
           <BalanceSheet balances={balances} locale={locale} t={t} />
           <p className="max-w-prose text-sm text-ink-soft">{t('balances.total.note')}</p>
+        </section>
+
+        <section className="flex flex-col gap-3">
+          <h2 className="font-mono text-xs tracking-widest text-ink-faint uppercase">
+            {t('payments.heading')}
+          </h2>
+          <PaymentHistory
+            payments={payments}
+            tripId={id}
+            yourParticipantId={yours?.participantId ?? null}
+            organising={trip.yourRole === 'admin'}
+            voiding={trip.status === 'open'}
+            locale={locale}
+            t={t}
+          />
         </section>
       </div>
     </AppShell>

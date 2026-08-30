@@ -201,6 +201,19 @@ export const en: Catalogue = {
   'payment.pending': 'Recording…',
   'payment.cancel': 'Cancel',
 
+  'payments.heading': 'Payments recorded',
+  'payments.empty.title': 'Nothing has been paid back yet',
+  'payments.empty.body': 'Record a settlement as it happens and it will show up here.',
+  'payments.column.date': 'Date',
+  'payments.column.payer': 'Who pays',
+  'payments.column.payee': 'To whom',
+  'payments.column.amount': 'Amount',
+  'payments.column.action': 'Void',
+  'payments.voided': 'Voided',
+  'payments.void': 'Void',
+  'payments.voiding': 'Voiding…',
+  'payments.void.label': 'Void the payment from {from} to {to}',
+
   'join.heading': 'Join the trip',
   'join.body':
     'Somebody sent you an invitation. Type your name and you are in: no account, no password.',
@@ -241,6 +254,7 @@ export const en: Catalogue = {
   'error.split_outsider': 'Somebody in the split is not on the trip.',
   'error.payer_not_in_trip': 'Whoever paid has to be on the trip.',
   'error.payment_to_self': 'A payment goes from one person to a different one.',
+  'error.payment_already_voided': 'That payment was already voided.',
   'error.payer_is_organisers': 'Only an organiser can record what somebody else paid.',
   'error.type_is_organisers': 'Only an organiser can record something that is not split.',
   'error.not_allowed': 'You are not allowed to do that.',

@@ -69,7 +69,7 @@
 - [x] 8.1 Implement the balances screen with each participant's net figure and what the current user has to pay or collect highlighted; verify against a fixture trip with known balances
 - [x] 8.2 Implement the settlement proposal and the "all settled" state; verify that it reproduces the spec case and proposes no transfer when every balance is zero
 - [x] 8.3 Implement recording a payment from the settlement proposal, partial payments included; verify that a €25.00 payment against a €40.00 debt leaves the balance at -€15.00 and updates the proposal
-- [ ] 8.4 Implement the payment history and voiding a payment with its permissions; verify that voiding reverses the balances of both parties and leaves a trace in the activity
+- [x] 8.4 Implement the payment history and voiding a payment with its permissions; verify that voiding reverses the balances of both parties and leaves a trace in the activity
 
 ## 9. Real time and activity
 
