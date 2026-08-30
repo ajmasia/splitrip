@@ -1,6 +1,6 @@
 ## 1. Project scaffolding and local Docker environment
 
-- [ ] 1.1 Initialise the repository with Next.js (App Router) and TypeScript in strict mode; verify that `npm run build` compiles without errors and that the initial page is served locally
+- [x] 1.1 Initialise the repository with Next.js (App Router) and TypeScript in strict mode; verify that `npm run build` compiles without errors and that the initial page is served locally
 - [ ] 1.2 Configure ESLint, Prettier and the type-check script; verify that `npm run lint` and `npm run typecheck` pass cleanly
 - [ ] 1.3 Add the Conventional Commits setup (commitlint and a commit hook) and the SemVer version file; verify that a non-conforming message is rejected and a valid one passes
 - [ ] 1.4 Initialise the local Supabase project with the CLI; verify that `supabase start` brings the containers up and that Studio responds on its port

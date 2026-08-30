@@ -28,7 +28,7 @@ Four constraints shape the design:
 
 ### Stack: Next.js (App Router) + Supabase
 
-**Chosen:** Next.js 15 with the App Router and TypeScript, deployed on Vercel; Supabase as managed Postgres with Auth, Realtime and RLS.
+**Chosen:** Next.js 16 with the App Router and TypeScript, deployed on Vercel; Supabase as managed Postgres with Auth, Realtime and RLS.
 
 **Why:** splitting expenses is a purely relational problem (participants, expenses, shares, payments) where SQL and integrity constraints do half the work. Supabase additionally provides, with no code of our own, the two pieces that would cost the most: real-time propagation of table changes and an authorisation model that lives next to the data.
 
