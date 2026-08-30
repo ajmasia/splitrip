@@ -21,3 +21,16 @@ export async function getViewer(): Promise<Viewer | null> {
     isAnonymous: user.is_anonymous ?? false,
   }
 }
+
+/**
+ * The reader's access token, for the one thing that cannot go through the server: the real-time
+ * socket, which the browser opens itself and which Row Level Security judges by this token alone.
+ */
+export async function getAccessToken(): Promise<string | null> {
+  const supabase = await createSupabaseServerClient()
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  return session?.access_token ?? null
+}
