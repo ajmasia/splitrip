@@ -91,8 +91,8 @@ select throws_ok(
     '42501', null, 'the activity feed cannot be written by a client: only the triggers write it');
 
 update public.payments set voided_at = now() where id = 'ffffffff-0000-0000-0000-00000000000a';
-select isnt((select voided_at from public.payments where id = 'ffffffff-0000-0000-0000-00000000000a'),
-          null, 'a participant voids the payment they recorded');
+select is((select voided_at from public.payments where id = 'ffffffff-0000-0000-0000-00000000000a'),
+          null, 'a payment is not voided by hand: the same door would let its amount be rewritten');
 
 -- ------------------------------------------------------------------- Ana, the trip organiser
 reset role;
