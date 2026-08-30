@@ -2,6 +2,8 @@ import { settle } from '@/lib/money/settle'
 import type { ParticipantBalance } from '@/lib/trips/queries'
 
 export type SettlementLine = {
+  fromParticipantId: string
+  toParticipantId: string
   fromName: string
   toName: string
   amountCents: number
@@ -29,6 +31,8 @@ export function planFor(balances: readonly ParticipantBalance[]): SettlementLine
     const to = named.get(transfer.toParticipantId)
 
     return {
+      fromParticipantId: transfer.fromParticipantId,
+      toParticipantId: transfer.toParticipantId,
       fromName: from?.displayName ?? '',
       toName: to?.displayName ?? '',
       amountCents: transfer.amountCents,

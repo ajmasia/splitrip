@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { formatAmount, parseAmount } from './amount'
+import { amountForField, formatAmount, parseAmount } from './amount'
 
 const cents = (input: string) => {
   const parsed = parseAmount(input)
@@ -99,5 +99,21 @@ describe('formatAmount', () => {
 
   it('refuses to show an amount that is not whole cents', () => {
     expect(() => formatAmount(10.5, 'es-ES')).toThrow(TypeError)
+  })
+})
+
+describe('amountForField', () => {
+  it('writes an amount a field can hold and the parser can read back', () => {
+    for (const [locale, written] of [
+      ['es-ES', '1234,56'],
+      ['en-GB', '1234.56'],
+    ] as const) {
+      expect(amountForField(123456, locale)).toBe(written)
+      expect(parseAmount(written)).toEqual({ ok: true, amountCents: 123456 })
+    }
+  })
+
+  it('keeps both decimal places, so a round amount does not read as an integer', () => {
+    expect(amountForField(4000, 'es-ES')).toBe('40,00')
   })
 })

@@ -95,7 +95,14 @@ export default async function BalancesPage({ params }: { params: Promise<{ id: s
           <h2 className="font-mono text-xs tracking-widest text-ink-faint uppercase">
             {t('settlement.heading')}
           </h2>
-          <SettlementPlan plan={plan} locale={locale} t={t} />
+          <SettlementPlan
+            plan={plan}
+            tripId={id}
+            organising={trip.yourRole === 'admin'}
+            recording={trip.status === 'open'}
+            locale={locale}
+            t={t}
+          />
           {plan.length > 0 ? (
             <p className="max-w-prose text-sm text-ink-soft">{t('settlement.note')}</p>
           ) : null}

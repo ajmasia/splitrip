@@ -3,9 +3,9 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
-import { errorCopyKey } from '@/lib/errors'
+import { amountCopyKey, errorCopyKey } from '@/lib/errors'
 import type { CopyKey } from '@/lib/i18n'
-import { parseAmount, type ParsedAmount } from '@/lib/money/amount'
+import { parseAmount } from '@/lib/money/amount'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
 export type NewExpenseState = {
@@ -24,13 +24,6 @@ const text = (value: FormDataEntryValue | null) => (typeof value === 'string' ? 
 /** An empty date field arrives as '', and the database reads a missing date as today. */
 const dateOrNull = (value: FormDataEntryValue | null) => text(value).trim() || null
 
-const WHY: Record<Extract<ParsedAmount, { ok: false }>['reason'], CopyKey> = {
-  missing: 'error.amount_required',
-  malformed: 'error.amount_malformed',
-  'too-precise': 'error.amount_too_precise',
-  'not-positive': 'error.amount_not_positive',
-}
-
 export async function createExpense(
   _previous: NewExpenseState,
   formData: FormData,
@@ -47,7 +40,7 @@ export async function createExpense(
   if (description === '') return refused('error.description_required')
 
   const amount = parseAmount(text(formData.get('amount')))
-  if (!amount.ok) return refused(WHY[amount.reason])
+  if (!amount.ok) return refused(amountCopyKey(amount.reason))
 
   const supabase = await createSupabaseServerClient()
 
@@ -104,7 +97,7 @@ export async function updateExpense(
   if (description === '') return { error: 'error.description_required' }
 
   const amount = parseAmount(text(formData.get('amount')))
-  if (!amount.ok) return { error: WHY[amount.reason] }
+  if (!amount.ok) return { error: amountCopyKey(amount.reason) }
 
   const kind = text(formData.get('type'))
   const type = kind === '' ? null : kind === 'contribution' ? 'contribution' : 'shared'

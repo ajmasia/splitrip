@@ -196,6 +196,14 @@ export const es = {
   'settlement.note':
     'Es una propuesta, la más corta que sale de estos saldos. Si os viene mejor saldarlo de otra manera, apuntad los pagos que hagáis y las cuentas cuadran igual.',
 
+  'payment.record': 'Apuntar el pago',
+  'payment.record.label': 'Apuntar el pago de {from} a {to}',
+  'payment.amount.label': 'Cuánto le paga {from} a {to}',
+  'payment.amount.hint': 'Si solo ha pagado una parte, apunta esa parte.',
+  'payment.submit': 'Apuntar',
+  'payment.pending': 'Apuntando…',
+  'payment.cancel': 'Cancelar',
+
   'join.heading': 'Entrar en el viaje',
   'join.body':
     'Te han pasado una invitación. Escribe tu nombre y ya estás dentro: sin cuenta y sin contraseña.',
@@ -237,6 +245,7 @@ export const es = {
   'error.split_empty': 'Marca al menos a una persona en el reparto.',
   'error.split_outsider': 'Hay alguien en el reparto que no está en el viaje.',
   'error.payer_not_in_trip': 'Quien pagó tiene que estar en el viaje.',
+  'error.payment_to_self': 'Un pago va de una persona a otra distinta.',
   'error.payer_is_organisers': 'Solo quien organiza puede apuntar lo que pagó otra persona.',
   'error.type_is_organisers': 'Solo quien organiza puede apuntar algo que no se reparte.',
   'error.not_allowed': 'No tienes permiso para hacer eso.',

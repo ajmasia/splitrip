@@ -1,4 +1,5 @@
 import type { CopyKey } from './i18n'
+import type { ParsedAmount } from './money/amount'
 
 /**
  * The database refuses a broken rule with its own SQLSTATE, which travels to the client untouched.
@@ -15,6 +16,7 @@ const COPY_BY_CODE: Record<string, CopyKey> = {
   SP005: 'error.split_empty',
   SP006: 'error.split_outsider',
   SP007: 'error.payer_not_in_trip',
+  SP008: 'error.payment_to_self',
   SP010: 'error.invitation_invalid',
   SP011: 'error.invitation_expired',
   SP012: 'error.name_required',
@@ -30,4 +32,16 @@ const COPY_BY_CODE: Record<string, CopyKey> = {
 
 export function errorCopyKey(code: string | undefined): CopyKey {
   return (code !== undefined ? COPY_BY_CODE[code] : undefined) ?? 'error.unexpected'
+}
+
+/** Why an amount somebody typed was refused, in words they can read. */
+const COPY_BY_REASON: Record<Extract<ParsedAmount, { ok: false }>['reason'], CopyKey> = {
+  missing: 'error.amount_required',
+  malformed: 'error.amount_malformed',
+  'too-precise': 'error.amount_too_precise',
+  'not-positive': 'error.amount_not_positive',
+}
+
+export function amountCopyKey(reason: Extract<ParsedAmount, { ok: false }>['reason']): CopyKey {
+  return COPY_BY_REASON[reason]
 }

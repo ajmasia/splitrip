@@ -20,8 +20,22 @@ describe('planFor', () => {
     const plan = planFor([balance('Ana', 6000), balance('Beto', -4000), balance('Carla', -2000)])
 
     expect(plan).toEqual<SettlementLine[]>([
-      { fromName: 'Beto', toName: 'Ana', amountCents: 4000, yours: null },
-      { fromName: 'Carla', toName: 'Ana', amountCents: 2000, yours: null },
+      {
+        fromParticipantId: 'beto',
+        toParticipantId: 'ana',
+        fromName: 'Beto',
+        toName: 'Ana',
+        amountCents: 4000,
+        yours: null,
+      },
+      {
+        fromParticipantId: 'carla',
+        toParticipantId: 'ana',
+        fromName: 'Carla',
+        toName: 'Ana',
+        amountCents: 2000,
+        yours: null,
+      },
     ])
   })
 

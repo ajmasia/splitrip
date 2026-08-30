@@ -193,6 +193,14 @@ export const en: Catalogue = {
   'settlement.note':
     'This is a proposal, the shortest one these balances allow. Settle it some other way if that suits you better: record the payments you make and the accounts still add up.',
 
+  'payment.record': 'Record the payment',
+  'payment.record.label': 'Record the payment from {from} to {to}',
+  'payment.amount.label': 'How much {from} pays {to}',
+  'payment.amount.hint': 'If only part of it was handed over, record that part.',
+  'payment.submit': 'Record',
+  'payment.pending': 'Recording…',
+  'payment.cancel': 'Cancel',
+
   'join.heading': 'Join the trip',
   'join.body':
     'Somebody sent you an invitation. Type your name and you are in: no account, no password.',
@@ -232,6 +240,7 @@ export const en: Catalogue = {
   'error.split_empty': 'Tick at least one person in the split.',
   'error.split_outsider': 'Somebody in the split is not on the trip.',
   'error.payer_not_in_trip': 'Whoever paid has to be on the trip.',
+  'error.payment_to_self': 'A payment goes from one person to a different one.',
   'error.payer_is_organisers': 'Only an organiser can record what somebody else paid.',
   'error.type_is_organisers': 'Only an organiser can record something that is not split.',
   'error.not_allowed': 'You are not allowed to do that.',

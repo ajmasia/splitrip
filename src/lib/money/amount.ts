@@ -44,3 +44,20 @@ export function formatAmount(amountCents: number, locale: string): string {
     amountCents / 100,
   )
 }
+
+/**
+ * The same amount as the contents of an input: the locale's decimal separator, no currency symbol
+ * and no grouping. Grouping is the point — "1.234,56" is what a formatter writes and what
+ * `parseAmount` refuses, so a field prefilled with a formatted amount could not be sent back.
+ */
+export function amountForField(amountCents: number, locale: string): string {
+  if (!Number.isInteger(amountCents)) {
+    throw new TypeError(`An amount must be a whole number of cents, got ${amountCents}`)
+  }
+
+  return new Intl.NumberFormat(locale, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+    useGrouping: false,
+  }).format(amountCents / 100)
+}
