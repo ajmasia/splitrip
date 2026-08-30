@@ -74,6 +74,26 @@ Every participant of a trip SHALL hold exactly one of two roles: `admin` or `par
 - **WHEN** an `admin` changes another participant's role to `admin`
 - **THEN** that participant gains every organiser permission
 
+### Requirement: Adding a participant without an invitation
+The system SHALL allow a participant with the `admin` role to add a participant to an open trip by providing only a display name, with no invitation and with that person holding no session of their own. Such a participant SHALL count in splits, carry their own balance and appear wherever a participant appears. The system SHALL reject a name already used in the trip, ignoring case and surrounding whitespace.
+
+#### Scenario: Somebody who will not use the application
+- **WHEN** an `admin` adds a participant named "Abuela" to an open trip
+- **THEN** the system records them as a participant of the trip
+- **AND** they appear in the participant list and are available to be included in the split of an expense
+
+#### Scenario: A participant who does not record their own expenses
+- **WHEN** an `admin` records an expense paid by a participant who holds no session
+- **THEN** the system attributes the payment to them and charges the split as it would for anybody else
+
+#### Scenario: A name already on the trip
+- **WHEN** an `admin` adds a participant with a name another participant already uses
+- **THEN** the system rejects it and reports that the name is taken
+
+#### Scenario: A participant attempts to add somebody
+- **WHEN** a participant with the `participant` role attempts to add a participant
+- **THEN** the system rejects the operation and reports that it is an organiser's to perform
+
 ### Requirement: At least one admin is guaranteed
 A trip SHALL have at least one participant with the `admin` role at all times. The system SHALL reject any operation that would leave the trip with no admin.
 

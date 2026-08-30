@@ -139,6 +139,14 @@ export const es = {
   'trip.you': 'tú',
 
   'trip.invite': 'Invitar',
+  'trip.addParticipant': 'Añadir a alguien',
+  'trip.addParticipant.label': '¿Cómo se llama?',
+  'trip.addParticipant.placeholder': 'Abuela',
+  'trip.addParticipant.submit': 'Añadir',
+  'trip.addParticipant.pending': 'Añadiendo…',
+  'trip.addParticipant.done': 'Ya está',
+  'trip.addParticipant.hint':
+    'Para quien viene al viaje pero no va a usar la aplicación. Cuenta en los repartos desde ya, y sus gastos los apuntas tú. Si más adelante quiere entrar, le pasas una invitación y escribe este mismo nombre.',
   'trip.role.promote': 'Hacer organizador',
   'trip.role.promote.label': 'Hacer a {name} organizador del viaje',
   'trip.role.demote': 'Pasar a participante',
@@ -264,6 +272,7 @@ export const es = {
   'activity.payment.recorded.own': '{actor} apuntó su pago a {to}',
   'activity.payment.voided.own': '{actor} anuló su pago a {to}',
   'activity.participant.joined': '{subject} entró en el viaje',
+  'activity.participant.added': '{actor} añadió a {subject} al viaje',
   'activity.participant.left': '{actor} quitó a {subject} del viaje',
   'activity.participant.left.themselves': '{subject} salió del viaje',
   'activity.trip.closed': '{actor} cerró el viaje',

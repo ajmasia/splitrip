@@ -44,6 +44,22 @@ The system SHALL allow anyone opening an active invitation to join the trip by p
 - **WHEN** a person opens an invitation URL that matches no invitation
 - **THEN** the system shows a message stating that the invitation is not valid, and discloses no information about any trip
 
+### Requirement: Handing the application to somebody already on the trip
+When a person opens an invitation and gives a name matching a participant of that trip who holds no session, the system SHALL bind their device to that participant rather than creating a second one, keeping the role, the expenses and the balance that participant already has. The system SHALL tell them apart from a name taken by a participant who is already using the application, because displacing somebody's device and taking up an unused place are not the same act.
+
+#### Scenario: A participant added by the organiser starts using the application
+- **WHEN** somebody the `admin` added by name opens an invitation and gives that same name
+- **THEN** the system binds their session to the participant that already exists
+- **AND** the expenses, splits and balance recorded against that participant are theirs, unchanged and not duplicated
+
+#### Scenario: The role on the row wins
+- **WHEN** the participant they bind to holds a role different from the one the invitation carries
+- **THEN** the system keeps the role the participant already had
+
+#### Scenario: Told apart from a name in use
+- **WHEN** the matching participant is already using the application from a device
+- **THEN** the system reports that the name is in use, which is a different message from an unused place
+
 ### Requirement: Identity persistence on the device
 After joining a trip, the system SHALL issue the participant a session credential stored on their device, so that later visits reach the trip without identifying again. That credential SHALL grant access only to the trips the person takes part in.
 

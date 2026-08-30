@@ -24,13 +24,15 @@ const SENTENCE: Record<ActivityAction, CopyKey> = {
 function sentence(entry: TripActivity, t: Translate) {
   const ownPayment = entry.actorName === entry.fromName
   const key: CopyKey =
-    entry.action === 'participant.left' && entry.actorName === entry.subject
-      ? 'activity.participant.left.themselves'
-      : entry.action === 'payment.recorded' && ownPayment
-        ? 'activity.payment.recorded.own'
-        : entry.action === 'payment.voided' && ownPayment
-          ? 'activity.payment.voided.own'
-          : SENTENCE[entry.action]
+    entry.action === 'participant.joined' && entry.actorName !== entry.subject
+      ? 'activity.participant.added'
+      : entry.action === 'participant.left' && entry.actorName === entry.subject
+        ? 'activity.participant.left.themselves'
+        : entry.action === 'payment.recorded' && ownPayment
+          ? 'activity.payment.recorded.own'
+          : entry.action === 'payment.voided' && ownPayment
+            ? 'activity.payment.voided.own'
+            : SENTENCE[entry.action]
 
   return t(key, {
     actor: entry.actorName,

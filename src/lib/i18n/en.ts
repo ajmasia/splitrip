@@ -136,6 +136,14 @@ export const en: Catalogue = {
   'trip.you': 'you',
 
   'trip.invite': 'Invite',
+  'trip.addParticipant': 'Add somebody',
+  'trip.addParticipant.label': 'What is their name?',
+  'trip.addParticipant.placeholder': 'Grandma',
+  'trip.addParticipant.submit': 'Add',
+  'trip.addParticipant.pending': 'Adding…',
+  'trip.addParticipant.done': 'Done',
+  'trip.addParticipant.hint':
+    'For somebody on the trip who is not going to use the application. They count in splits straight away, and you record their expenses. If they want in later, send them an invitation and have them type this same name.',
   'trip.role.promote': 'Make organiser',
   'trip.role.promote.label': 'Make {name} an organiser of the trip',
   'trip.role.demote': 'Make traveller',
@@ -261,6 +269,7 @@ export const en: Catalogue = {
   'activity.payment.recorded.own': '{actor} recorded their payment to {to}',
   'activity.payment.voided.own': '{actor} voided their payment to {to}',
   'activity.participant.joined': '{subject} joined the trip',
+  'activity.participant.added': '{actor} added {subject} to the trip',
   'activity.participant.left': '{actor} removed {subject} from the trip',
   'activity.participant.left.themselves': '{subject} left the trip',
   'activity.trip.closed': '{actor} closed the trip',

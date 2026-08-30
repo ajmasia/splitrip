@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { ActivityLink } from '@/components/activity-link'
+import { AddParticipantForm } from '@/components/add-participant-form'
 import { AppShell } from '@/components/app-shell'
 import { TripRealtime } from '@/components/trip-realtime'
 import { ChangeRoleButton } from '@/components/change-role-button'
@@ -126,6 +127,7 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
           <h2 className="font-mono text-xs tracking-widest text-ink-faint uppercase">
             {t('trip.participants')}
           </h2>
+          {organising ? <AddParticipantForm tripId={id} locale={locale} /> : null}
           <ul className="flex flex-col">
             {participants.map((participant) => (
               <li

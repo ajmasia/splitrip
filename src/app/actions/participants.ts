@@ -74,3 +74,32 @@ export async function setParticipantRole(
   revalidatePath(`/trips/${tripId}`)
   return { error: null }
 }
+
+export type AddParticipantState = { error: CopyKey | null; at: number }
+
+/**
+ * Adds somebody who is on the trip but not on the application: a child who counts in the split and
+ * pays nothing, a grandmother who is not going to install anything. They exist as a participant
+ * from the moment they are named, and can be handed the application later.
+ */
+export async function addParticipant(
+  _previous: AddParticipantState,
+  formData: FormData,
+): Promise<AddParticipantState> {
+  const tripId = text(formData.get('trip_id'))
+  const displayName = text(formData.get('display_name')).trim()
+
+  if (displayName === '') return { error: 'error.name_required', at: 0 }
+
+  const supabase = await createSupabaseServerClient()
+  const { error } = await supabase.rpc('add_participant', {
+    p_trip_id: tripId,
+    p_display_name: displayName,
+    p_role: text(formData.get('role')) === 'admin' ? 'admin' : 'participant',
+  })
+
+  if (error) return { error: errorCopyKey(error.code), at: 0 }
+
+  revalidatePath(`/trips/${tripId}`)
+  return { error: null, at: Date.now() }
+}
