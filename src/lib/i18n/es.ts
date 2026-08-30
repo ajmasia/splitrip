@@ -127,6 +127,8 @@ export const es = {
   'expense.closed': 'El viaje está cerrado, así que ya no se toca nada.',
 
   'trip.back': 'Tus viajes',
+  'trip.figure.perPerson': 'Por persona',
+  'trip.figure.unsplit': 'Sin repartir',
   'trip.participants': 'Quién viaja',
   'trip.you': 'tú',
 

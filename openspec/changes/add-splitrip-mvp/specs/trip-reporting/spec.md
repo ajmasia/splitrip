@@ -1,8 +1,24 @@
 ## Purpose
 
-Answers the two aggregate questions a group asks about a trip: "how are we doing?" while the trip is under way, through the organiser's dashboard, and "how did it all end?" when it finishes, through a closing summary any participant can consult.
+Answers the aggregate questions a group asks about a trip: "what has this cost us?" at a glance, from the headline figures on the trip screen; "how are we doing?" while the trip is under way, through the organiser's dashboard; and "how did it all end?" when it finishes, through a closing summary any participant can consult.
 
 ## ADDED Requirements
+
+### Requirement: Trip headline figures
+The system SHALL show any participant of the trip, at the top of the trip screen, three figures presented apart from one another: the total spent, the average cost per person — the shared spending divided by the number of participants, rounded to the nearest cent — and the total of the contributions, which are split among nobody.
+
+#### Scenario: Figures of a trip with contributions
+- **WHEN** a participant opens a trip of 5 people where €807.65 has been split and €895.00 was paid as contributions
+- **THEN** the system shows €1,702.65 spent, €161.53 per person and €895.00 not split
+
+#### Scenario: The per-person figure leaves contributions out
+- **WHEN** an expense of type `contribution` is recorded
+- **THEN** the total spent and the contributions figure grow by its amount
+- **AND** the average cost per person does not change
+
+#### Scenario: Trip with no expenses
+- **WHEN** a participant opens a trip with no expenses
+- **THEN** the system shows the three figures at €0.00
 
 ### Requirement: Organiser dashboard
 The system SHALL offer participants with the `admin` role a trip dashboard presenting, as a minimum: the total spent, the split between shared spending and contributions, the number of expenses recorded, the average cost per person, and a per-participant table with what they have paid, what they are charged and their net balance.

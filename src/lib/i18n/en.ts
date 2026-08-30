@@ -124,6 +124,8 @@ export const en: Catalogue = {
   'expense.closed': 'The trip is closed, so nothing else moves.',
 
   'trip.back': 'Your trips',
+  'trip.figure.perPerson': 'Per person',
+  'trip.figure.unsplit': 'Not split',
   'trip.participants': 'Who is travelling',
   'trip.you': 'you',
 

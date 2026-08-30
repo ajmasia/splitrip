@@ -2,7 +2,7 @@
 
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(18);
+select plan(20);
 
 insert into public.trip_creators (email) values ('ana@splitrip.test'), ('beto@splitrip.test');
 
@@ -73,10 +73,25 @@ select is(
     array[6000, 1, 1]::bigint[],
     'with what has been spent on each one');
 
+select public.create_expense(
+    p_trip_id => (select id from public.trips where name = 'Iceland 2026'),
+    p_description => 'Van rental', p_amount_cents => 30000, p_type => 'contribution') \g /dev/null
+
+select is(
+    (select array[total_cents, shared_cents, contributed_cents] from public.trip_overview
+     where name = 'Iceland 2026'),
+    array[36000, 6000, 30000]::bigint[],
+    'told apart from the part of it that is divided among people');
+
 select is(
     (select array[total_cents, expense_count] from public.trip_overview where name = 'Porto 2026'),
     array[0, 0]::bigint[],
     'and zero where nothing has been spent yet');
+
+select is(
+    (select array[shared_cents, contributed_cents] from public.trip_overview where name = 'Porto 2026'),
+    array[0, 0]::bigint[],
+    'both of them');
 
 reset role;
 set local request.jwt.claims = '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated","email":"beto@splitrip.test"}';

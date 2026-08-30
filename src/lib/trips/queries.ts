@@ -10,6 +10,9 @@ export type TripSummary = {
   startDate: string | null
   endDate: string | null
   totalCents: number
+  /** The part of the total that is divided among people. A contribution is not in it. */
+  sharedCents: number
+  contributedCents: number
   expenseCount: number
   participantCount: number
   yourRole: TripRole | null
@@ -29,6 +32,8 @@ type OverviewRow = {
   start_date: string | null
   end_date: string | null
   total_cents: number | string
+  shared_cents: number | string
+  contributed_cents: number | string
   expense_count: number | string
   participant_count: number | string
 }
@@ -44,6 +49,8 @@ function toSummary(row: OverviewRow, yourRole: TripRole | null): TripSummary {
     startDate: row.start_date,
     endDate: row.end_date,
     totalCents: count(row.total_cents),
+    sharedCents: count(row.shared_cents),
+    contributedCents: count(row.contributed_cents),
     expenseCount: count(row.expense_count),
     participantCount: count(row.participant_count),
     yourRole,
@@ -51,7 +58,7 @@ function toSummary(row: OverviewRow, yourRole: TripRole | null): TripSummary {
 }
 
 const OVERVIEW_COLUMNS =
-  'id, name, status, start_date, end_date, total_cents, expense_count, participant_count'
+  'id, name, status, start_date, end_date, total_cents, shared_cents, contributed_cents, expense_count, participant_count'
 
 /**
  * Row Level Security decides what comes back, so this reads every trip it can see and that is

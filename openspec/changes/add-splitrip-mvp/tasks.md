@@ -63,6 +63,7 @@
 - [x] 7.4 Add the `contribution` expense type to the form for an `admin`, hiding the split when selected; verify that a €300.00 contribution adds to the trip total and changes no balance, and that a `participant` cannot record one
 - [x] 7.5 Implement the successive expense entry flow for an `admin` on a desktop viewport, keeping date, payer and split between entries and reporting the session count and total; verify that ten expenses can be entered from the keyboard alone and that a rejected entry keeps what was typed
 - [x] 7.6 Implement the expense detail, edit and delete with the per-role permissions; verify that a `participant` cannot edit someone else's expense and an `admin` can, and that the numeric keypad appears on tapping the amount field
+- [x] 7.7 Add the trip headline figures to the trip screen — total spent, average cost per person and contributions not split, in three separate boxes; verify against the sample trip that they read €1,702.65, €161.53 and €895.00, that recording a contribution moves the first and the third and not the second, and that a trip with no expenses shows the three at €0.00
 
 ## 8. Balances and settlement
 

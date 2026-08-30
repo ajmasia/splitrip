@@ -98,6 +98,10 @@ paid for alone and asked nobody to share, expenses split among only some of the 
 leave cents over, and settlement payments already made. Its balances sum to exactly zero, so it
 doubles as a quick check that nothing is off.
 
+The trip screen opens on it with **1702,65 € spent, 161,53 € per person and 895,00 € not split**:
+the average divides the 807,65 € that are actually shared, not the total, because the two
+contributions charge nobody.
+
 These are the figures the balances screen must show for it, worked out from the seed by hand:
 
 | Who       | Fronted  | Charged  | Balance    |

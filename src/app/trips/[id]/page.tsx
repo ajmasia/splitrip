@@ -6,11 +6,10 @@ import { ChangeRoleButton } from '@/components/change-role-button'
 import { ExpenseList } from '@/components/expense-list'
 import { Pill } from '@/components/pill'
 import { RemoveParticipantButton } from '@/components/remove-participant-button'
-import { intlLocale } from '@/lib/i18n'
+import { TripFigures } from '@/components/trip-figures'
 import { formatDateRange } from '@/lib/i18n/format'
 import { getViewer } from '@/lib/auth/viewer'
 import { getCopy } from '@/lib/i18n/server'
-import { formatAmount } from '@/lib/money/amount'
 import { getTrip, listExpenses } from '@/lib/trips/queries'
 
 export default async function TripPage({ params }: { params: Promise<{ id: string }> }) {
@@ -80,14 +79,7 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
           </div>
         </div>
 
-        <div className="flex flex-col gap-1 rounded-card border border-rule bg-surface p-4">
-          <p className="font-mono text-xs tracking-widest text-ink-faint uppercase">
-            {t('trips.column.spent')}
-          </p>
-          <p className="tabular text-3xl font-semibold">
-            {formatAmount(trip.totalCents, intlLocale(locale))}
-          </p>
-        </div>
+        <TripFigures trip={trip} locale={locale} t={t} />
 
         <section className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-3">
