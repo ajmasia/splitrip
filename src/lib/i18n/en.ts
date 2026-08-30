@@ -130,7 +130,7 @@ export const en: Catalogue = {
   'expense.closed': 'The trip is closed, so nothing else moves.',
 
   'trip.back': 'Your trips',
-  'trip.figure.perPerson': 'Per person',
+  'trip.figure.perPerson': 'Average per person',
   'trip.figure.unsplit': 'Not split',
   'trip.participants': 'Who is travelling',
   'trip.you': 'you',
@@ -189,6 +189,28 @@ export const en: Catalogue = {
   'balances.total': 'Sum',
   'balances.total.note': "A trip's balances always add up to exactly zero.",
   'balances.contributed': 'Also treated the group to {amount}, which is split among nobody.',
+
+  'statement.heading': "{name}'s statement",
+  'statement.subtitle':
+    'Where every figure comes from, line by line. Open any expense to see the whole split.',
+  'statement.charged': 'Charged',
+  'statement.charged.note':
+    'Their share of each expense they are in. Not the expense: their share of it.',
+  'statement.charged.empty': 'They are in no expense yet.',
+  'statement.fronted': 'Fronted',
+  'statement.fronted.note': 'What they paid out of their own pocket and the group owes them back.',
+  'statement.fronted.empty': 'They have fronted nothing yet.',
+  'statement.settlements': 'Settlements',
+  'statement.settlements.note':
+    'Money already handed over. Positive for what they gave, negative for what they received.',
+  'statement.balance': 'Balance',
+  'statement.owes': '{name} owes the group {amount}.',
+  'statement.owed': 'The group owes {name} {amount}.',
+  'statement.square': '{name} is square: owing nothing, owed nothing.',
+  'statement.contributed': 'Treated the group to',
+  'statement.contributed.note':
+    'What they put in without splitting it with anybody. It adds to what the trip cost and enters no balance, which is why it sits outside the arithmetic above.',
+  'balances.statement.label': "See {name}'s statement",
 
   'settlement.heading': 'How to settle up',
   'settlement.line': '{from} pays {to}',

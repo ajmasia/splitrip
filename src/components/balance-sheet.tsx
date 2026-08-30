@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 import { intlLocale, type Locale, type Translate } from '@/lib/i18n'
 import { formatAmount } from '@/lib/money/amount'
 import type { ParticipantBalance } from '@/lib/trips/queries'
@@ -30,10 +32,12 @@ function tone(netCents: number) {
  */
 export function BalanceSheet({
   balances,
+  tripId,
   locale,
   t,
 }: {
   balances: ParticipantBalance[]
+  tripId: string
   locale: Locale
   t: Translate
 }) {
@@ -49,10 +53,14 @@ export function BalanceSheet({
             className="flex flex-col gap-1 rounded-card border border-rule bg-surface p-3"
           >
             <span className="flex items-baseline justify-between gap-3">
-              <span className="font-semibold">
+              <Link
+                href={`/trips/${tripId}/balances/${balance.participantId}`}
+                aria-label={t('balances.statement.label', { name: balance.displayName })}
+                className="font-semibold text-accent"
+              >
                 {balance.displayName}
                 {balance.isYou ? <span className="text-ink-soft"> ({t('trip.you')})</span> : null}
-              </span>
+              </Link>
               <span className={`tabular font-semibold ${tone(balance.netCents)}`}>
                 {signed(balance.netCents, locale)}
               </span>
@@ -108,7 +116,13 @@ export function BalanceSheet({
             {balances.map((balance) => (
               <tr key={balance.participantId} className="border-b border-rule">
                 <td className="py-2 pr-3 font-medium">
-                  {balance.displayName}
+                  <Link
+                    href={`/trips/${tripId}/balances/${balance.participantId}`}
+                    aria-label={t('balances.statement.label', { name: balance.displayName })}
+                    className="text-accent"
+                  >
+                    {balance.displayName}
+                  </Link>
                   {balance.isYou ? <span className="text-ink-soft"> ({t('trip.you')})</span> : null}
                   {balance.contributedCents > 0 ? (
                     <span className="block text-xs font-normal text-ink-soft">

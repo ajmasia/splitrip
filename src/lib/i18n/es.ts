@@ -133,7 +133,7 @@ export const es = {
   'expense.closed': 'El viaje está cerrado, así que ya no se toca nada.',
 
   'trip.back': 'Tus viajes',
-  'trip.figure.perPerson': 'Por persona',
+  'trip.figure.perPerson': 'Media por persona',
   'trip.figure.unsplit': 'Sin repartir',
   'trip.participants': 'Quién viaja',
   'trip.you': 'tú',
@@ -192,6 +192,28 @@ export const es = {
   'balances.total': 'Suma',
   'balances.total.note': 'Los saldos de un viaje suman siempre cero.',
   'balances.contributed': 'Además invitó a {amount}, que no se reparte con nadie.',
+
+  'statement.heading': 'Extracto de {name}',
+  'statement.subtitle':
+    'De dónde sale cada cifra, línea a línea. Toca cualquier gasto para ver el reparto entero.',
+  'statement.charged': 'Le tocó',
+  'statement.charged.note':
+    'Su parte de cada gasto en el que entra. No el importe del gasto: la suya.',
+  'statement.charged.empty': 'No entra en ningún gasto todavía.',
+  'statement.fronted': 'Adelantó',
+  'statement.fronted.note': 'Lo que pagó de su bolsillo y el grupo le tiene que devolver.',
+  'statement.fronted.empty': 'No ha adelantado nada todavía.',
+  'statement.settlements': 'Pagos',
+  'statement.settlements.note':
+    'Dinero ya entregado para saldar. En positivo lo que dio, en negativo lo que recibió.',
+  'statement.balance': 'Saldo',
+  'statement.owes': '{name} debe {amount} al grupo.',
+  'statement.owed': 'El grupo le debe {amount} a {name}.',
+  'statement.square': '{name} está en paz: ni debe ni le deben.',
+  'statement.contributed': 'Invitó',
+  'statement.contributed.note':
+    'Lo que puso sin repartir con nadie. Suma a lo que costó el viaje y no entra en ningún saldo, por eso queda fuera de la cuenta de arriba.',
+  'balances.statement.label': 'Ver el extracto de {name}',
 
   'settlement.heading': 'Cómo saldarlo',
   'settlement.line': '{from} le paga a {to}',

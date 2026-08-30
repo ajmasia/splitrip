@@ -118,7 +118,7 @@ export default async function BalancesPage({ params }: { params: Promise<{ id: s
           <h2 className="font-mono text-xs tracking-widest text-ink-faint uppercase">
             {t('balances.everyone')}
           </h2>
-          <BalanceSheet balances={balances} locale={locale} t={t} />
+          <BalanceSheet balances={balances} tripId={id} locale={locale} t={t} />
           <p className="max-w-prose text-sm text-ink-soft">{t('balances.total.note')}</p>
         </section>
 

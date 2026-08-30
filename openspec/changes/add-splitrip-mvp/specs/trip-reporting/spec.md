@@ -20,6 +20,26 @@ The system SHALL show any participant of the trip, at the top of the trip screen
 - **WHEN** a participant opens a trip with no expenses
 - **THEN** the system shows the three figures at €0.00
 
+### Requirement: Per-participant statement
+The system SHALL let any participant of the trip open the statement of any participant, listing every expense that charged them with the amount charged to that person, every expense they fronted, and the settlement payments they made or received, each section closing with its own total. The statement SHALL present the net balance as the result of those totals, so that it can be checked by hand.
+
+#### Scenario: Checking a charge line by line
+- **WHEN** a participant opens the statement of somebody who was charged €176.55
+- **THEN** the system lists the expenses that charged them, each with the amount charged to that person
+- **AND** those amounts add up to exactly €176.55
+
+#### Scenario: An expense split among a subset
+- **WHEN** an expense was split among only some of the participants
+- **THEN** it appears in the statement of each participant in its split, and in the statement of nobody else
+
+#### Scenario: The balance follows from the statement
+- **WHEN** a participant reads a statement
+- **THEN** the system shows the net balance as what that person fronted, minus what they were charged, plus or minus the settlement payments they made or received
+
+#### Scenario: A contribution in a statement
+- **WHEN** the participant paid an expense of type `contribution`
+- **THEN** the statement reports it apart from the totals that produce the balance, because it charges nobody
+
 ### Requirement: Organiser dashboard
 The system SHALL offer participants with the `admin` role a trip dashboard presenting, as a minimum: the total spent, the split between shared spending and contributions, the number of expenses recorded, the average cost per person, and a per-participant table with what they have paid, what they are charged and their net balance.
 

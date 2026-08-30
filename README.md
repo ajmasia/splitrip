@@ -212,6 +212,20 @@ it through a `data-theme` attribute the server writes on the document from a coo
 is already right in the first paint. The control in the header cycles through following the system,
 light and dark.
 
+## Checking the numbers
+
+Every figure in the application can be taken apart by whoever does not want to take it on trust.
+
+An expense shows what each person in its split was charged, and those shares add up to the expense
+exactly. A participant's statement shows the other direction: every expense that charged them, with
+their own share of it rather than its total, and the balance as a subtraction anybody can redo —
+what they fronted, minus what they were charged, plus or minus what they have already settled. The
+balance sheet closes with a double rule over a sum that is zero, which is the one number that says
+the whole trip adds up.
+
+The average on the trip screen is an average and says so: with expenses split among only some of the
+group, the exact figure differs per person and lives in the statement, not in a headline.
+
 ## Real time
 
 Every screen of a trip subscribes to one channel named after it and, on any event, asks the server

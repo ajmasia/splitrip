@@ -453,3 +453,156 @@ export async function listActivity(
     }
   })
 }
+
+export type StatementLine = {
+  id: string
+  description: string
+  spentOn: string
+  /** What this line adds to the section it is in, which for a charge is this person's share alone. */
+  amountCents: number
+}
+
+export type ParticipantStatement = {
+  participantId: string
+  displayName: string
+  isYou: boolean
+  /** Every expense that charged them, with the amount charged to them rather than its total. */
+  charges: StatementLine[]
+  chargedCents: number
+  /** The `shared` expenses they fronted, which is what the group owes them back. */
+  fronted: StatementLine[]
+  paidCents: number
+  /** Money handed over to settle up. Negative when they received it. */
+  settlements: StatementLine[]
+  settlementsCents: number
+  /** Reported apart: it charges nobody, so it is in none of the totals above. */
+  contributions: StatementLine[]
+  contributedCents: number
+  netCents: number
+}
+
+type ShareRow = {
+  amount_cents: number | string
+  expenses: { id: string; description: string; spent_on: string } | null
+}
+
+type PaidRow = {
+  id: string
+  description: string
+  spent_on: string
+  amount_cents: number | string
+  type: ExpenseType
+}
+
+type SettlementRow = {
+  id: string
+  amount_cents: number | string
+  paid_on: string
+  from_participant_id: string
+  to_participant_id: string
+}
+
+/** Most recent first, and the identifier settles the rest so two readings never disagree. */
+const byDate = (one: StatementLine, other: StatementLine) =>
+  other.spentOn.localeCompare(one.spentOn) || other.id.localeCompare(one.id)
+
+/**
+ * One person's account, line by line, so a balance stops being a figure to trust and becomes a
+ * subtraction anybody can redo.
+ *
+ * Nothing here is recomputed from the expenses: a charge line is the row `expense_shares` already
+ * holds for that person, which is the same row every other total on the trip is built from. That is
+ * the whole point — a statement that arrived at its numbers its own way would prove nothing about
+ * the ones on the balances screen.
+ */
+export async function getStatement(
+  participant: TripParticipant,
+  participants: TripParticipant[],
+): Promise<ParticipantStatement> {
+  const supabase = await createSupabaseServerClient()
+
+  const [shares, paid, settlements] = await Promise.all([
+    supabase
+      .from('expense_shares')
+      .select('amount_cents, expenses!inner(id, description, spent_on)')
+      .eq('participant_id', participant.id),
+    supabase
+      .from('expenses')
+      .select('id, description, spent_on, amount_cents, type')
+      .eq('paid_by', participant.id),
+    supabase
+      .from('payments')
+      .select('id, amount_cents, paid_on, from_participant_id, to_participant_id')
+      .is('voided_at', null)
+      .or(`from_participant_id.eq.${participant.id},to_participant_id.eq.${participant.id}`),
+  ])
+
+  if (shares.error) throw new Error(shares.error.message)
+  if (paid.error) throw new Error(paid.error.message)
+  if (settlements.error) throw new Error(settlements.error.message)
+
+  const charges = (shares.data as unknown as ShareRow[])
+    .filter((row) => row.expenses !== null)
+    .map((row) => ({
+      id: row.expenses!.id,
+      description: row.expenses!.description,
+      spentOn: row.expenses!.spent_on,
+      amountCents: count(row.amount_cents),
+    }))
+    .sort(byDate)
+
+  const line = (row: PaidRow) => ({
+    id: row.id,
+    description: row.description,
+    spentOn: row.spent_on,
+    amountCents: count(row.amount_cents),
+  })
+
+  const rows = paid.data as PaidRow[]
+  const fronted = rows
+    .filter((row) => row.type === 'shared')
+    .map(line)
+    .sort(byDate)
+  const contributions = rows
+    .filter((row) => row.type === 'contribution')
+    .map(line)
+    .sort(byDate)
+
+  const named = new Map(participants.map((one) => [one.id, one.displayName]))
+  const settled = (settlements.data as SettlementRow[])
+    .map((row) => {
+      const handedOver = row.from_participant_id === participant.id
+      const other = handedOver ? row.to_participant_id : row.from_participant_id
+
+      return {
+        id: row.id,
+        // Who the money moved to or from is the whole description of a settlement.
+        description: named.get(other) ?? '',
+        spentOn: row.paid_on,
+        // Handing money over moves a balance towards zero from below; receiving it, from above.
+        amountCents: handedOver ? count(row.amount_cents) : -count(row.amount_cents),
+      }
+    })
+    .sort(byDate)
+
+  const total = (lines: StatementLine[]) => lines.reduce((sum, one) => sum + one.amountCents, 0)
+
+  const chargedCents = total(charges)
+  const paidCents = total(fronted)
+  const settlementsCents = total(settled)
+
+  return {
+    participantId: participant.id,
+    displayName: participant.displayName,
+    isYou: participant.isYou,
+    charges,
+    chargedCents,
+    fronted,
+    paidCents,
+    settlements: settled,
+    settlementsCents,
+    contributions,
+    contributedCents: total(contributions),
+    netCents: paidCents - chargedCents + settlementsCents,
+  }
+}

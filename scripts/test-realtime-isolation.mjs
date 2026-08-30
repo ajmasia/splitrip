@@ -201,7 +201,9 @@ async function main() {
   if (afterwards.length === 0) {
     pass('a removed participant stops receiving the trip')
   } else {
-    fail(`a removed participant still received ${afterwards.length} event(s): ${afterwards.join(', ')}`)
+    fail(
+      `a removed participant still received ${afterwards.length} event(s): ${afterwards.join(', ')}`,
+    )
   }
   await guest.close()
 
