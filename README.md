@@ -170,6 +170,12 @@ touches no row and says nothing, so the interface would have no way to tell the 
 may only correct their own expenses. On `update_expense` every argument left out means "leave it as
 it is", so fixing an amount does not quietly reassign the payer or reset who was in the split.
 
+`record_payment` and `void_payment` do the same for settling up. A payment is history, so it is
+never deleted and never edited: recording one is a single row, and correcting a mistake means
+voiding it, which leaves the entry and its trace in place while it stops counting towards the
+balances. Nothing in either function knows what anybody owes, which is what makes a partial payment
+an ordinary payment — the balances simply absorb whatever amount changed hands.
+
 A rejection carries its own `SQLSTATE`, so the bilingual interface maps a broken rule to its copy
 without reading English text:
 
@@ -182,7 +188,9 @@ without reading English text:
 | `SP004` | A contribution cannot be split                          |
 | `SP005` | A shared expense needs at least one person in its split |
 | `SP006` | The split reaches somebody outside the trip             |
-| `SP007` | The payer is not a participant of the trip              |
+| `SP007` | Somebody named in the operation is not on the trip      |
+| `SP008` | A payment cannot be made to oneself                     |
+| `SP009` | The payment is already voided                           |
 
 `npm run db:test` runs the pgTAP tests over all of it. Each one checks both halves of the same
 policy: that the person who belongs can, and that the person who does not cannot.
