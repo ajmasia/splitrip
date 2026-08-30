@@ -499,6 +499,22 @@ the friction this application exists to remove. The split is sent as the people 
 rather than left out, so somebody joining between opening the form and sending it does not silently
 end up in a dinner they missed.
 
+### One expense, and correcting it
+
+An expense opens onto what it actually did: the amount, who paid, when, and what each person in the
+split was charged — including the cent that does not divide, which is where somebody checking the
+figures looks first. A treat says plainly that it splits nothing.
+
+Correcting it lives on the same screen rather than behind another link. Whoever recorded it, and any
+organiser, gets the form; everybody else gets a sentence saying who can. The form draws only the
+controls the reader is allowed to use, and `update_expense` refuses the rest anyway — the screen
+decides what to draw, never what is permitted.
+
+Deleting is its own form, so that a stray Enter in the fields above cannot reach it, and every
+argument the edit form does not control is left out of the call. `update_expense` reads an absent
+argument as "leave it as it is", which is what lets a traveller fix the wording of an expense an
+organiser attributed to somebody else without quietly claiming it back.
+
 ### Starting fast, and losing the network
 
 `src/app/sw.js/route.ts` serves the service worker from a route rather than from `public/`, so its

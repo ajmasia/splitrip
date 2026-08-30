@@ -109,7 +109,7 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
               ) : null}
             </div>
           ) : (
-            <ExpenseList expenses={expenses} locale={locale} t={t} />
+            <ExpenseList expenses={expenses} tripId={id} locale={locale} t={t} />
           )}
         </section>
 

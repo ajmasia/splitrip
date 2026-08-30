@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 import { Pill } from '@/components/pill'
 import { intlLocale, type Locale, type Translate } from '@/lib/i18n'
 import { formatShortDate } from '@/lib/i18n/format'
@@ -22,10 +24,12 @@ function kind(expense: TripExpense, t: Translate) {
  */
 export function ExpenseList({
   expenses,
+  tripId,
   locale,
   t,
 }: {
   expenses: TripExpense[]
+  tripId: string
   locale: Locale
   t: Translate
 }) {
@@ -36,22 +40,24 @@ export function ExpenseList({
     <>
       <ul className="flex flex-col gap-3 wide:hidden">
         {expenses.map((expense) => (
-          <li
-            key={expense.id}
-            className="flex flex-col gap-1 rounded-card border border-rule bg-surface p-3"
-          >
-            <span className="flex items-baseline justify-between gap-3">
-              <span className="font-semibold">{expense.description}</span>
-              <span className="tabular font-semibold">{amount(expense.amountCents)}</span>
-            </span>
-            <span className="text-sm text-ink-soft">
-              {day(expense.spentOn)} · {expense.paidByName} · {split(expense, t)}
-            </span>
-            {expense.type === 'contribution' ? (
-              <span className="pt-1">
-                <Pill tone="accent">{kind(expense, t)}</Pill>
+          <li key={expense.id}>
+            <Link
+              href={`/trips/${tripId}/expenses/${expense.id}`}
+              className="flex flex-col gap-1 rounded-card border border-rule bg-surface p-3"
+            >
+              <span className="flex items-baseline justify-between gap-3">
+                <span className="font-semibold">{expense.description}</span>
+                <span className="tabular font-semibold">{amount(expense.amountCents)}</span>
               </span>
-            ) : null}
+              <span className="text-sm text-ink-soft">
+                {day(expense.spentOn)} · {expense.paidByName} · {split(expense, t)}
+              </span>
+              {expense.type === 'contribution' ? (
+                <span className="pt-1">
+                  <Pill tone="accent">{kind(expense, t)}</Pill>
+                </span>
+              ) : null}
+            </Link>
           </li>
         ))}
       </ul>
@@ -86,7 +92,11 @@ export function ExpenseList({
                 <td className="tabular py-2 pr-3 whitespace-nowrap text-ink-soft">
                   {day(expense.spentOn)}
                 </td>
-                <td className="px-3 py-2 font-medium">{expense.description}</td>
+                <td className="px-3 py-2 font-medium">
+                  <Link href={`/trips/${tripId}/expenses/${expense.id}`} className="text-accent">
+                    {expense.description}
+                  </Link>
+                </td>
                 <td className="px-3 py-2">{expense.paidByName}</td>
                 <td className="px-3 py-2 text-ink-soft">{kind(expense, t)}</td>
                 <td className="tabular px-3 py-2 text-right text-ink-soft">

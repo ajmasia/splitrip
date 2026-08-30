@@ -85,3 +85,62 @@ export async function createExpense(
 
   redirect(`/trips/${tripId}`)
 }
+
+export type EditExpenseState = { error: CopyKey | null }
+
+/**
+ * Every argument the form controls is sent, and the ones it does not are left out: `update_expense`
+ * reads an absent argument as "leave it as it is", so a traveller correcting the wording of an
+ * expense an organiser attributed elsewhere does not accidentally claim it back.
+ */
+export async function updateExpense(
+  _previous: EditExpenseState,
+  formData: FormData,
+): Promise<EditExpenseState> {
+  const tripId = text(formData.get('trip_id'))
+  const expenseId = text(formData.get('expense_id'))
+  const description = text(formData.get('description')).trim()
+
+  if (description === '') return { error: 'error.description_required' }
+
+  const amount = parseAmount(text(formData.get('amount')))
+  if (!amount.ok) return { error: WHY[amount.reason] }
+
+  const kind = text(formData.get('type'))
+  const type = kind === '' ? null : kind === 'contribution' ? 'contribution' : 'shared'
+  const paidBy = text(formData.get('paid_by')).trim()
+  const split = formData.getAll('split').filter((id): id is string => typeof id === 'string')
+
+  const supabase = await createSupabaseServerClient()
+  const { error } = await supabase.rpc('update_expense', {
+    p_expense_id: expenseId,
+    p_description: description,
+    p_amount_cents: amount.amountCents,
+    p_type: type,
+    p_spent_on: dateOrNull(formData.get('spent_on')),
+    p_paid_by: paidBy === '' ? null : paidBy,
+    p_split_participant_ids: split.length === 0 ? null : split,
+  })
+
+  if (error) return { error: errorCopyKey(error.code) }
+
+  revalidatePath(`/trips/${tripId}`)
+  redirect(`/trips/${tripId}/expenses/${expenseId}`)
+}
+
+export async function deleteExpense(
+  _previous: EditExpenseState,
+  formData: FormData,
+): Promise<EditExpenseState> {
+  const tripId = text(formData.get('trip_id'))
+  const supabase = await createSupabaseServerClient()
+
+  const { error } = await supabase.rpc('delete_expense', {
+    p_expense_id: text(formData.get('expense_id')),
+  })
+
+  if (error) return { error: errorCopyKey(error.code) }
+
+  revalidatePath(`/trips/${tripId}`)
+  redirect(`/trips/${tripId}`)
+}

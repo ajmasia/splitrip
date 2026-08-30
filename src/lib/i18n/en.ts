@@ -111,6 +111,18 @@ export const en: Catalogue = {
   'expenses.type.contribution': 'Treat',
   'expenses.split.none': 'Not split',
 
+  'expense.paidBy': '{name} paid',
+  'expense.recordedBy': 'Recorded by {name}',
+  'expense.shares': 'Who owes what',
+  'expense.shares.none': 'A treat splits nothing: nobody owes anything for it.',
+  'expense.edit': 'Correct the expense',
+  'expense.save': 'Save the changes',
+  'expense.saving': 'Saving…',
+  'expense.delete': 'Delete the expense',
+  'expense.deleting': 'Deleting…',
+  'expense.readonly': 'Only whoever recorded it, or an organiser of the trip, can change it.',
+  'expense.closed': 'The trip is closed, so nothing else moves.',
+
   'trip.back': 'Your trips',
   'trip.participants': 'Who is travelling',
   'trip.you': 'you',

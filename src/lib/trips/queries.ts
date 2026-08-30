@@ -169,3 +169,79 @@ export async function listExpenses(tripId: string): Promise<TripExpense[]> {
     splitCount: count(row.split_count),
   }))
 }
+
+export type ExpenseShare = {
+  participantId: string
+  displayName: string
+  amountCents: number
+}
+
+export type ExpenseDetail = {
+  id: string
+  tripId: string
+  description: string
+  amountCents: number
+  type: ExpenseType
+  spentOn: string
+  paidBy: string
+  paidByName: string
+  createdBy: string
+  createdByName: string
+  shares: ExpenseShare[]
+}
+
+/**
+ * One expense, with what each person in it was charged. The names are joined here rather than
+ * embedded in the query because the screen already has the trip's participants for its form, and
+ * two reads of the same list would be two chances for them to disagree.
+ */
+export async function getExpense(
+  id: string,
+  participants: TripParticipant[],
+): Promise<ExpenseDetail | null> {
+  const supabase = await createSupabaseServerClient()
+
+  const [expense, shares] = await Promise.all([
+    supabase
+      .from('expense_overview')
+      .select(
+        'id, trip_id, description, amount_cents, type, spent_on, paid_by, paid_by_name, created_by',
+      )
+      .eq('id', id)
+      .maybeSingle(),
+    supabase.from('expense_shares').select('participant_id, amount_cents').eq('expense_id', id),
+  ])
+
+  if (expense.error) throw new Error(expense.error.message)
+  if (shares.error) throw new Error(shares.error.message)
+  if (!expense.data) return null
+
+  const row = expense.data as ExpenseRow & {
+    trip_id: string
+    paid_by: string
+    created_by: string
+  }
+  const named = new Map(
+    participants.map((participant) => [participant.id, participant.displayName]),
+  )
+
+  return {
+    id: row.id,
+    tripId: row.trip_id,
+    description: row.description,
+    amountCents: count(row.amount_cents),
+    type: row.type,
+    spentOn: row.spent_on,
+    paidBy: row.paid_by,
+    paidByName: row.paid_by_name,
+    createdBy: row.created_by,
+    createdByName: named.get(row.created_by) ?? row.paid_by_name,
+    shares: shares.data
+      .map((share) => ({
+        participantId: share.participant_id as string,
+        displayName: named.get(share.participant_id as string) ?? '',
+        amountCents: count(share.amount_cents as number | string),
+      }))
+      .sort((one, other) => one.displayName.localeCompare(other.displayName)),
+  }
+}

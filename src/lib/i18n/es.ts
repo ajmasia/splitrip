@@ -114,6 +114,18 @@ export const es = {
   'expenses.type.contribution': 'Aporte',
   'expenses.split.none': 'Sin reparto',
 
+  'expense.paidBy': 'pagó {name}',
+  'expense.recordedBy': 'Lo apuntó {name}',
+  'expense.shares': 'Quién debe qué',
+  'expense.shares.none': 'Un aporte no reparte nada: nadie queda debiendo por él.',
+  'expense.edit': 'Corregir el gasto',
+  'expense.save': 'Guardar los cambios',
+  'expense.saving': 'Guardando…',
+  'expense.delete': 'Borrar el gasto',
+  'expense.deleting': 'Borrando…',
+  'expense.readonly': 'Solo quien lo apuntó, o quien organiza el viaje, puede cambiarlo.',
+  'expense.closed': 'El viaje está cerrado, así que ya no se toca nada.',
+
   'trip.back': 'Tus viajes',
   'trip.participants': 'Quién viaja',
   'trip.you': 'tú',
