@@ -6,14 +6,18 @@
 
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(14);
+select plan(16);
+
+insert into auth.users (id, instance_id, aud, role, is_anonymous, email, created_at, updated_at)
+values ('11111111-1111-1111-1111-111111111111', '00000000-0000-0000-0000-000000000000',
+        'authenticated', 'authenticated', false, 'ana@splitrip.test', now(), now());
 
 insert into auth.users (id, instance_id, aud, role, is_anonymous, created_at, updated_at)
 select id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', true, now(), now()
-from (values ('11111111-1111-1111-1111-111111111111'::uuid),   -- Ana, who organises
-             ('22222222-2222-2222-2222-222222222222'::uuid),   -- Beto, a traveller
+from (values ('22222222-2222-2222-2222-222222222222'::uuid),   -- Beto, a traveller
              ('33333333-3333-3333-3333-333333333333'::uuid),   -- the grandmother, at last
-             ('44444444-4444-4444-4444-444444444444'::uuid)    -- somebody else with the link
+             ('44444444-4444-4444-4444-444444444444'::uuid),   -- somebody else with the link
+             ('55555555-5555-5555-5555-555555555555'::uuid)    -- and somebody with no trip at all
      ) as u(id);
 
 insert into public.trips (id, name) values
@@ -132,6 +136,30 @@ select throws_ok(
     format($$select public.create_invitation('aaaaaaaa-0000-0000-0000-00000000000a', 'participant', 30, %L)$$,
            'cccccccc-0000-0000-0000-00000000000c'),
     'SP018', null, 'and a traveller mints nobody a link');
+
+-- ------------------------------------------------- a place that belongs to an account, never
+reset role;
+set local request.jwt.claims = '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}';
+set local role authenticated;
+
+create temp table anas_link as
+select token from public.create_invitation(
+    'aaaaaaaa-0000-0000-0000-00000000000a', null, 30, 'cccccccc-0000-0000-0000-00000000000a');
+
+reset role;
+select is(
+    (select takeable from public.invitation_place((select token from anas_link))),
+    false,
+    'a place held by an account is not offered to be taken: its holder signs in instead');
+
+-- Somebody who is on no trip, so the refusal is the refusal and not "you are already in".
+set local request.jwt.claims = '{"sub":"55555555-5555-5555-5555-555555555555","role":"authenticated"}';
+set local role authenticated;
+
+select throws_ok(
+    format($$select public.join_trip(%L, null, true)$$, (select token from anas_link)),
+    'SP029', null,
+    'and insisting is refused — a link must never be able to lock somebody out of their own trip');
 
 reset role;
 select * from finish();

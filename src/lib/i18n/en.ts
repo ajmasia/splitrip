@@ -292,11 +292,14 @@ export const en: Catalogue = {
   'join.place.heading': 'Hello, {name}',
   'join.place.body':
     'Whoever organises the trip has already put you on it. This link is your place: come in and everything in your name is there.',
+  'join.place.account':
+    'That place belongs to an account with an email and a password. Whoever holds it comes in by signing in, from any phone; it cannot be taken from here.',
   'join.place.inUse':
     'This place is already being used from another device. If that is you on a new phone, carry on: the other one loses access.',
   'join.place.takeOver': 'I am {name}, on another phone',
   'join.place.submit': 'Come in as {name}',
   'error.place_taken': 'That place is already being used from another device.',
+  'error.place_taken_by_account': 'That place belongs to an account: it is entered by signing in.',
   'join.dead.heading': 'This invitation no longer works',
   'join.name.label': 'What is your name?',
   'join.name.placeholder': 'Ana',

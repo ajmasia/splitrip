@@ -295,11 +295,14 @@ export const es = {
   'join.place.heading': 'Hola, {name}',
   'join.place.body':
     'Quien organiza el viaje ya te ha apuntado. Este enlace es tu sitio: entra y verás lo que lleva tu nombre.',
+  'join.place.account':
+    'Ese sitio es de una cuenta con correo y contraseña. Quien lo tenga entra con su cuenta desde cualquier móvil; no se puede tomar desde aquí.',
   'join.place.inUse':
     'Este sitio ya se está usando desde otro móvil. Si eres tú y has cambiado de teléfono, continúa: el otro dejará de tener acceso.',
   'join.place.takeOver': 'Soy {name}, desde otro móvil',
   'join.place.submit': 'Entrar como {name}',
   'error.place_taken': 'Ese sitio ya lo está usando alguien desde otro móvil.',
+  'error.place_taken_by_account': 'Ese sitio es de una cuenta: se entra en él iniciando sesión.',
   'join.dead.heading': 'Esta invitación ya no sirve',
   'join.name.label': '¿Cómo te llamas?',
   'join.name.placeholder': 'Ana',

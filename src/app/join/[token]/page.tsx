@@ -58,7 +58,14 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
           <p className="max-w-prose text-ink-soft">
             {place === null
               ? t('join.body')
-              : t(place.inUse ? 'join.place.inUse' : 'join.place.body', { name: place.name })}
+              : t(
+                  !place.takeable
+                    ? 'join.place.account'
+                    : place.inUse
+                      ? 'join.place.inUse'
+                      : 'join.place.body',
+                  { name: place.name },
+                )}
           </p>
         </div>
         {place === null ? (

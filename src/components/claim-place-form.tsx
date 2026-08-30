@@ -42,20 +42,25 @@ export function ClaimPlaceForm({
         A place with somebody in it is taken by confirming, never in silence — the same bargain the
         general link strikes when a name is already on the list. This is what makes "invite again"
         lead somewhere: losing a phone is exactly what an organiser mints one of these for.
+
+        A place held by an account is not offered at all. Its holder has a way in of their own, and
+        a button that would be refused is worse than the sentence explaining why.
       */}
-      <button
-        type="submit"
-        name="continue_as_existing"
-        value={place.inUse ? 'yes' : 'no'}
-        disabled={pending}
-        className={`min-h-touch w-fit cursor-pointer rounded-card px-4 font-semibold disabled:opacity-50 ${
-          place.inUse ? 'border border-debt text-debt' : 'bg-accent text-accent-ink'
-        }`}
-      >
-        {pending
-          ? t('join.pending')
-          : t(place.inUse ? 'join.place.takeOver' : 'join.place.submit', { name: place.name })}
-      </button>
+      {place.takeable ? (
+        <button
+          type="submit"
+          name="continue_as_existing"
+          value={place.inUse ? 'yes' : 'no'}
+          disabled={pending}
+          className={`min-h-touch w-fit cursor-pointer rounded-card px-4 font-semibold disabled:opacity-50 ${
+            place.inUse ? 'border border-debt text-debt' : 'bg-accent text-accent-ink'
+          }`}
+        >
+          {pending
+            ? t('join.pending')
+            : t(place.inUse ? 'join.place.takeOver' : 'join.place.submit', { name: place.name })}
+        </button>
+      ) : null}
     </form>
   )
 }

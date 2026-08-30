@@ -72,6 +72,8 @@ export type InvitationPlace = {
   name: string
   /** True when a device is already answering from it, which the screen has to ask about. */
   inUse: boolean
+  /** False for a place held by an account, which is entered by signing in and never taken. */
+  takeable: boolean
 }
 
 /**
@@ -87,9 +89,13 @@ export async function invitationPlace(token: string): Promise<InvitationPlace | 
 
   if (error) return null
 
-  const [place] = (data ?? []) as { display_name: string; in_use: boolean }[]
+  const [place] = (data ?? []) as {
+    display_name: string
+    in_use: boolean
+    takeable: boolean
+  }[]
 
-  return place ? { name: place.display_name, inUse: place.in_use } : null
+  return place ? { name: place.display_name, inUse: place.in_use, takeable: place.takeable } : null
 }
 
 /** What the join screen may say about a token before anybody has typed a name. */
