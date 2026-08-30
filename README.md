@@ -78,13 +78,16 @@ Copy `.env.example` to `.env.local`. The values it carries are the local stack d
 
 The schema lives as versioned SQL migrations in `supabase/migrations/`, applied identically to the
 local Docker stack and to production. It is being built up alongside the implementation; today it
-covers the three tables that bound a trip:
+covers the tables that bound a trip and the money spent on it:
 
-| Table          | What it holds                                                                             |
-| -------------- | ----------------------------------------------------------------------------------------- |
-| `trips`        | Name, optional dates, base currency, `open`/`closed` state and the frozen closing summary |
-| `participants` | Who takes part in a trip, under what name, with the `admin` or `participant` role         |
-| `invitations`  | The links that let someone join: their token, the role they grant, expiry and revocation  |
+| Table            | What it holds                                                                             |
+| ---------------- | ----------------------------------------------------------------------------------------- |
+| `trips`          | Name, optional dates, base currency, `open`/`closed` state and the frozen closing summary |
+| `participants`   | Who takes part in a trip, under what name, with the `admin` or `participant` role         |
+| `invitations`    | The links that let someone join: their token, the role they grant, expiry and revocation  |
+| `expenses`       | What was spent: description, amount, day, payer, and `shared` or `contribution`           |
+| `expense_shares` | What each participant is charged for a `shared` expense                                   |
+| `payments`       | Settlement payments from one participant to another                                       |
 
 Rules that must never be bypassed are database constraints rather than application checks, so no
 route can forget one: a trip only accepts `EUR` and cannot end before it starts, a summary exists
@@ -92,8 +95,16 @@ only on a closed trip, two people on the same trip cannot answer to the same nam
 surrounding whitespace), one device identity joins a trip once, and an invitation token is unique
 and long enough to carry 128 bits of entropy.
 
-Deleting a trip takes its participants and invitations with it. The auth identity behind a
-participant, by contrast, cannot be deleted while they belong to a trip — they carry balances.
+Money follows the same principle. Every amount is an integer number of cents — no floating-point
+type ever touches money — and must be strictly positive. A `contribution` counts towards the trip
+total but creates no debt, so it can have no shares: that is enforced with a composite foreign key
+against the expense type, which also refuses to turn an expense that already has shares into a
+contribution. Payers, payees and authors are tied to `(id, trip_id)` of `participants`, so money
+cannot move between people from different trips.
+
+A participant carrying expenses or payments cannot be deleted, and neither can the auth identity
+behind them: their money would be left dangling. Those checks are `DEFERRABLE`, so deleting a whole
+trip is still possible inside a transaction that asks for them to be deferred first.
 
 ## Available scripts
 
