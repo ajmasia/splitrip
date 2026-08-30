@@ -176,6 +176,8 @@ export const es = {
   'invite.create': 'Crear una invitación',
   'invite.pending': 'Creando…',
   'invite.live': 'Invitaciones activas',
+  'invite.live.note':
+    'Revocar cierra la puerta: con ese enlace no entra nadie más. A quien ya entró no lo toca — para eso está «Quitar», en la lista de quién viaja.',
   'invite.empty.title': 'Todavía no hay invitaciones',
   'invite.empty.body': 'Crea una y pásasela a quien viaje contigo.',
   'invite.forAnybody': 'Para cualquiera',

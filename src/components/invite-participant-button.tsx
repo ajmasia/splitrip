@@ -5,6 +5,7 @@ import { useActionState, useEffect, useRef } from 'react'
 import { createInvitation, type CreateInvitationState } from '@/app/actions/invitations'
 import { CopyLink } from '@/components/copy-link'
 import { QrSvg } from '@/components/qr-code'
+import { RevokeInvitationButton } from '@/components/revoke-invitation-button'
 import { formatDate } from '@/lib/i18n/format'
 import { translator, type Locale } from '@/lib/i18n'
 
@@ -44,26 +45,32 @@ export function InviteParticipantButton({
   }, [state.minted])
 
   return (
-    <form action={action} className="flex flex-col items-end gap-1">
-      <input type="hidden" name="trip_id" value={tripId} />
-      <input type="hidden" name="participant_id" value={participantId} />
-      <button
-        type="submit"
-        disabled={pending}
-        aria-label={t('trip.invite.label', { name })}
-        className="min-h-touch cursor-pointer rounded-card border border-rule px-3 text-sm text-ink-soft disabled:opacity-50"
-      >
-        {pending
-          ? t('trip.invite.pending')
-          : t(hasDevice ? 'trip.invite.again' : 'trip.invite.one')}
-      </button>
+    <>
+      <form action={action} className="flex flex-col items-end gap-1">
+        <input type="hidden" name="trip_id" value={tripId} />
+        <input type="hidden" name="participant_id" value={participantId} />
+        <button
+          type="submit"
+          disabled={pending}
+          aria-label={t('trip.invite.label', { name })}
+          className="min-h-touch cursor-pointer rounded-card border border-rule px-3 text-sm text-ink-soft disabled:opacity-50"
+        >
+          {pending
+            ? t('trip.invite.pending')
+            : t(hasDevice ? 'trip.invite.again' : 'trip.invite.one')}
+        </button>
 
-      {state.error ? (
-        <p role="alert" className="text-right text-sm text-debt">
-          {t(state.error)}
-        </p>
-      ) : null}
+        {state.error ? (
+          <p role="alert" className="text-right text-sm text-debt">
+            {t(state.error)}
+          </p>
+        ) : null}
+      </form>
 
+      {/*
+        Outside the form, deliberately: revoking is a form of its own, and a form inside a form is
+        dropped by the browser, which is a button that silently does nothing.
+      */}
       {state.minted !== null ? (
         <dialog
           ref={dialog}
@@ -91,16 +98,28 @@ export function InviteParticipantButton({
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => dialog.current?.close()}
-              className="min-h-touch cursor-pointer rounded-card border border-rule px-4 text-sm font-semibold"
-            >
-              {t('trip.invite.close')}
-            </button>
+            {/*
+              Thinking better of it belongs here too. Handing somebody a link and then having to
+              find another screen to take it back is how a live link gets forgotten.
+            */}
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => dialog.current?.close()}
+                className="min-h-touch cursor-pointer rounded-card border border-rule px-4 text-sm font-semibold"
+              >
+                {t('trip.invite.close')}
+              </button>
+              <RevokeInvitationButton
+                invitationId={state.minted.id}
+                tripId={tripId}
+                locale={locale}
+                onRevoked={() => dialog.current?.close()}
+              />
+            </div>
           </div>
         </dialog>
       ) : null}
-    </form>
+    </>
   )
 }

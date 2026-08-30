@@ -173,6 +173,8 @@ export const en: Catalogue = {
   'invite.create': 'Create an invitation',
   'invite.pending': 'Creating…',
   'invite.live': 'Live invitations',
+  'invite.live.note':
+    'Revoking shuts the door: nobody else comes in through that link. It does not touch whoever already did — that is what “Remove” is for, in the list of who is travelling.',
   'invite.empty.title': 'No invitations yet',
   'invite.empty.body': 'Create one and pass it to whoever is travelling with you.',
   'invite.forAnybody': 'For anybody',

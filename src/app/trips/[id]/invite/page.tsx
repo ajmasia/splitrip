@@ -53,6 +53,7 @@ export default async function InvitePage({ params }: { params: Promise<{ id: str
           <h2 className="font-mono text-xs tracking-widest text-ink-faint uppercase">
             {t('invite.live')}
           </h2>
+          <p className="max-w-prose text-sm text-ink-soft">{t('invite.live.note')}</p>
 
           {invitations.length === 0 ? (
             <div className="rounded-card border border-rule bg-surface p-4">

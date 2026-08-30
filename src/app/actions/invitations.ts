@@ -10,6 +10,7 @@ import { appOrigin, joinPath } from '@/lib/trips/invitations'
 
 /** Everything the screen needs to hand a link over, without going anywhere to find it. */
 export type MintedInvitation = {
+  id: string
   url: string
   expiresAt: string
   /** The QR modules, computed here so the encoder never travels to the browser. */
@@ -55,12 +56,12 @@ export async function createInvitation(
   // button to another screen to look for it would lose the one thing they wanted.
   if (participantId === '') return { error: null, minted: null }
 
-  const invitation = data as { token: string; expires_at: string }
+  const invitation = data as { id: string; token: string; expires_at: string }
   const url = `${await appOrigin()}${joinPath(invitation.token)}`
 
   return {
     error: null,
-    minted: { url, expiresAt: invitation.expires_at, qr: qrCode(url) },
+    minted: { id: invitation.id, url, expiresAt: invitation.expires_at, qr: qrCode(url) },
   }
 }
 

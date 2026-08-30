@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useEffect, useRef } from 'react'
 
 import { revokeInvitation, type RevokeInvitationState } from '@/app/actions/invitations'
 import { translator, type Locale } from '@/lib/i18n'
@@ -11,13 +11,22 @@ export function RevokeInvitationButton({
   invitationId,
   tripId,
   locale,
+  onRevoked,
 }: {
   invitationId: string
   tripId: string
   locale: Locale
+  /** For the caller that is showing the link: once it is dead, there is nothing left to show. */
+  onRevoked?: () => void
 }) {
   const t = translator(locale)
   const [state, action, pending] = useActionState(revokeInvitation, EMPTY)
+  const done = useRef(false)
+
+  useEffect(() => {
+    if (pending) done.current = true
+    if (!pending && done.current && state.error === null) onRevoked?.()
+  }, [pending, state.error, onRevoked])
 
   return (
     <form action={action} className="flex flex-col gap-2">
