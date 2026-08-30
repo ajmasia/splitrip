@@ -134,6 +134,12 @@ Tyrion pays Brienne       9,95 €
 the application at that address rather than at `localhost`: an invitation link carries the host it
 was created from, so one made at `localhost` is useless on a phone.
 
+The development server refuses to serve its build output to any origin but localhost, and a phone on
+the same wifi is not localhost — the page arrives, the scripts come back 403, React never hydrates
+and every control on the screen is painted and dead. `next.config.ts` allows this machine's own
+network addresses, read from the system on start-up rather than written down, since a router hands
+them out and they change. Restart the server after moving to a different network.
+
 Installing to a home screen and the offline behaviour need a secure context, which plain HTTP over
 the local network is not. Try those at <http://localhost:3100> with `npm run preview`, or on the
 deployed instance.
