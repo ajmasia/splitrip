@@ -34,6 +34,8 @@ Decisions taken explicitly, to bound the first release:
 - **Percentage or uneven splits** (beyond excluding participants from an expense).
 - **Cross-device access recovery** by email. If a participant loses their device, the organiser regenerates an invitation for them.
 - **Offline writes**. The PWA caches the shell so it starts fast, but recording an expense requires a connection.
+- **Participants with no app session**: a child, or somebody without a smartphone, who counts as a head in the split but never opens the application. The model change is small — participants would stop requiring a device identity — but the rule it needs, a balance that rolls up to whoever answers for that person, reaches the balances view, the settlement, the organiser dashboard, the closing summary and the export. Those five places do not exist yet, and the rule is far easier to get right with the screens in front of you. Nice to have, and cheap to add later: every participant recorded by this release already carries an identity, so relaxing the requirement migrates no data.
+- **A read-only role**, for a participant who may consult the trip but record nothing. A `participant` can already only touch what they recorded themselves, so this refines a case that works rather than unlocking one that does not. Additive whenever it is wanted.
 
 ## Capabilities
 
