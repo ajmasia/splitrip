@@ -9,6 +9,7 @@
     "dev:all": "supabase start && next dev",
     "build": "next build",
     "start": "next start",
+    "preview": "next build && next start -p 3100",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:status": "supabase status",

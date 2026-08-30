@@ -134,8 +134,14 @@ the application at that address rather than at `localhost`: an invitation link c
 was created from, so one made at `localhost` is useless on a phone.
 
 Installing to a home screen and the offline behaviour need a secure context, which plain HTTP over
-the local network is not. Try those at `http://localhost:3000` after `npm run build && npm start`, or
-on the deployed instance.
+the local network is not. Try those at <http://localhost:3100> with `npm run preview`, or on the
+deployed instance.
+
+The port is deliberately not the development one. A service worker belongs to an origin and outlives
+the server that registered it, so a production build tested on `localhost:3000` would go on
+intercepting requests for the development server afterwards — and the build output it cached is
+immutable only in production. On its own port it can be left running without ever touching
+`npm run dev`.
 
 ## Available scripts
 
@@ -145,6 +151,7 @@ on the deployed instance.
 | `npm run dev:all`        | Starts the Supabase stack and then the dev server                 |
 | `npm run build`          | Produces the production build                                     |
 | `npm start`              | Serves the production build                                       |
+| `npm run preview`        | Builds and serves it on port 3100, away from the dev origin       |
 | `npm run db:start`       | Starts the local Supabase stack in Docker                         |
 | `npm run db:stop`        | Stops it                                                          |
 | `npm run db:status`      | Shows the service URLs and keys                                   |
