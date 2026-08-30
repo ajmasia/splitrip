@@ -24,6 +24,10 @@ The system SHALL offer participants with the `admin` role a trip dashboard prese
 - **WHEN** an `admin` opens the dashboard of a trip with no expenses
 - **THEN** the system shows the totals at zero and an empty state, without errors
 
+#### Scenario: Dashboard on a phone
+- **WHEN** an `admin` opens the dashboard on a phone-sized viewport
+- **THEN** the system shows the same figures in a compact stacked layout, without horizontal scrolling
+
 ### Requirement: Filterable expense detail
 The system SHALL allow an `admin` to review the full expense detail of the trip, filtering at least by payer and by expense type, and SHALL show the total for the filtered expenses.
 
@@ -38,6 +42,10 @@ The system SHALL allow an `admin` to review the full expense detail of the trip,
 #### Scenario: Filter with no results
 - **WHEN** an `admin` applies a combination of filters matching no expense
 - **THEN** the system shows an empty state with a total of €0.00
+
+#### Scenario: Detail table on a desktop
+- **WHEN** an `admin` opens the expense detail on a desktop-sized viewport
+- **THEN** the expenses are presented as a table with their columns visible and sortable by date and amount
 
 ### Requirement: Trip closing summary
 On closing a trip, the system SHALL generate a summary including: the total spent, the cost per person, what each participant contributed, the contributions that were not split along with their author, the final balance of each participant, and the settlement with the state of each transfer. The summary SHALL reflect the state of the trip at the moment of closing and SHALL NOT change while the trip remains closed.

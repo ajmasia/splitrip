@@ -1,6 +1,6 @@
 ## Purpose
 
-Makes the application behave like a phone app rather than a web page: it installs to the home screen, starts fast, and its interface is built to be used one-handed and on the move, which is how expenses actually get logged during a trip.
+Makes the application behave like a phone app rather than a web page: it installs to the home screen, starts fast, and is usable one-handed and on the move, which is how expenses get logged during a trip. It also covers the other half of the product's life — the organiser preparing the trip from a desktop browser — by adapting the interface density to the viewport rather than stretching a phone layout across a wide screen.
 
 ## ADDED Requirements
 
@@ -19,7 +19,7 @@ The system SHALL publish a web app manifest with a name, icons in the sizes requ
 
 #### Scenario: Use from a desktop browser
 - **WHEN** a user opens the application in a desktop browser
-- **THEN** the application works normally, adapting the width of the interface
+- **THEN** the application works normally, with the layout adapted to the wider viewport
 
 ### Requirement: Fast start and offline behaviour
 The system SHALL cache the static interface assets through a service worker, so that the application opens without waiting for the network. Where there is no connection, the system SHALL show a clear message instead of a browser error, and SHALL prevent expenses from being recorded until the connection is restored.
@@ -36,8 +36,8 @@ The system SHALL cache the static interface assets through a service worker, so 
 - **WHEN** a user attempts to record an expense with no connection
 - **THEN** the system informs them that a connection is required and does not treat the expense as recorded
 
-### Requirement: Mobile-first interface
-The interface SHALL be designed for phone screens as the primary case: thumb-reachable navigation, touch targets of at least 44 pixels on a side, forms that require no zooming, and the record-an-expense action reachable from the main trip screen.
+### Requirement: Phone interface
+On phone-sized viewports the interface SHALL be laid out for one-handed use on the move: thumb-reachable navigation, touch targets of at least 44 pixels on a side, forms that require no zooming, content stacked in a single column, and the record-an-expense action reachable from the main trip screen.
 
 #### Scenario: Recording an expense in few taps
 - **WHEN** a participant with the trip open wants to record an expense
@@ -51,6 +51,39 @@ The interface SHALL be designed for phone screens as the primary case: thumb-rea
 #### Scenario: Amount entry
 - **WHEN** a participant taps the amount field
 - **THEN** the device shows a numeric keypad
+
+### Requirement: Desktop interface density
+On desktop-sized viewports the interface SHALL raise its information density rather than stretch the phone layout: lists that are stacked cards on a phone SHALL be presented as tables with their columns visible, and the content SHALL be constrained to a readable measure instead of spanning the full window width. The same data and the same actions SHALL be available in both layouts.
+
+#### Scenario: Expense list on a desktop
+- **WHEN** a participant opens the trip expense list on a desktop-sized viewport
+- **THEN** the expenses are presented as a table with date, description, amount, payer and split visible as columns
+- **AND** the same list on a phone-sized viewport is presented as stacked cards
+
+#### Scenario: No loss of capability on either layout
+- **WHEN** the same trip is opened on a phone and on a desktop by the same participant
+- **THEN** every action available in one layout is available in the other
+
+#### Scenario: Wide window
+- **WHEN** the application is displayed in a very wide browser window
+- **THEN** the content is constrained to a readable measure rather than stretched across the full width
+
+### Requirement: Organiser tools appear by role and viewport
+Interface affordances built for preparing a trip at a desk — successive expense entry and the dense expense tables of the organiser dashboard — SHALL be offered only to participants with the `admin` role on desktop-sized viewports. An `admin` on a phone-sized viewport SHALL be shown the trip interface by default. The organiser dashboard SHALL remain reachable on a phone in a compact, stacked form: an `admin` SHALL never be denied their own trip data because of their screen size.
+
+#### Scenario: Organiser at a desk
+- **WHEN** a participant with the `admin` role opens the trip on a desktop-sized viewport
+- **THEN** the organiser tools are offered, including successive expense entry
+
+#### Scenario: Organiser on a phone during the trip
+- **WHEN** a participant with the `admin` role opens the trip on a phone-sized viewport
+- **THEN** the trip interface is shown by default, without the desk-oriented tools
+- **AND** the organiser dashboard remains reachable, laid out in a compact stacked form
+
+#### Scenario: Participant on a desktop
+- **WHEN** a participant with the `participant` role opens the trip on a desktop-sized viewport
+- **THEN** the denser desktop layout is used
+- **AND** no organiser tool is offered
 
 ### Requirement: Updating the installed application
 The system SHALL detect when a new version has been published and SHALL apply it without the user having to uninstall and reinstall the application.

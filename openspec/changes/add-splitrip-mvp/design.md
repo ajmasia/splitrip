@@ -110,6 +110,18 @@ Four constraints shape the design:
 
 **Consequence for the tasks:** the task list is grouped so that each task is a reasonable commit on its own, and each group a releasable increment.
 
+### Two usage contexts, one responsive component tree
+
+**Chosen:** a single set of components whose layout and density respond to the viewport, not two applications. Phone viewports get stacked cards and thumb-reachable navigation; desktop viewports get tables with visible columns and content constrained to a readable measure. On top of that, two affordances are gated on being an `admin` on a desktop viewport: successive expense entry and the dense dashboard tables.
+
+**Why:** the trip is prepared at a desk and lived on a phone, and entering fifteen bookings in a row is genuinely a different interaction from logging one dinner in a bar. But the underlying data, permissions and mutations are identical in both contexts, so two component trees would duplicate every screen to vary only presentation — and would then drift.
+
+**Alternatives considered:** separate desktop and mobile routes, which makes each context optimal but doubles the surface to maintain and the places a bug can hide. Rejected for a first release. Strict mobile-first with a stretched desktop layout, which is what the specs originally said: rejected once the organiser's desk work turned out to be half the product's life rather than an edge case.
+
+**Where the line falls:** viewport decides *density*; role decides *capability*; the two together decide whether the desk-oriented tools are *offered*. An `admin` on a phone is never denied their trip data — the dashboard stays reachable in compact form — they are simply not shown a bulk-entry flow that a phone cannot serve well.
+
+**Implementation consequence:** the breakpoint is a shared constant, and density is expressed in CSS rather than by branching on a JavaScript-measured width. Rendering a different component tree depending on a measured viewport causes hydration mismatches and makes the server unable to produce correct HTML on the first paint.
+
 ### Internationalisation: static catalogues, Spanish by default
 
 **Chosen:** the copy lives in per-language JSON catalogues (`es`, `en`) loaded on the server according to the resolved language, with no heavy i18n library. Resolution follows this order: stored user preference → browser `Accept-Language` header → Spanish. Amounts and dates are formatted with the browser's native `Intl` APIs using the active language.

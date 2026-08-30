@@ -21,7 +21,8 @@ This is the first release of the product. There is no prior code: the change int
 - **Organiser views**: the organiser gets a trip dashboard with the total spent, the per-participant breakdown (paid against charged), the split between `shared` and `contribution` spending, spending over time by day, and the full filterable detail of every expense. This is the view that answers "how are we doing?" without opening expenses one by one.
 - **Closing summary**: closing the trip freezes a summary that **every participant** can consult: trip total, cost per person, what each person put in, the contributions that were not split, and the final settlement with the state of each payment. A closed trip becomes read-only and its summary stays available permanently.
 - **Bilingual (Spanish / English)**: the whole interface is translated into Spanish and English. The default language is Spanish; the application detects the device language and the user can change it manually at any time.
-- **Installable PWA**: mobile-first interface, installable to the home screen on iOS and Android, with a cached shell so it opens fast.
+- **Two usage contexts, one application**: the trip is prepared on a laptop and lived on a phone. Before departure the organiser sits at a desktop browser entering the bookings and upfront costs, which is a different interaction from logging a single dinner in a bar. The interface adapts its density to the viewport — stacked cards and thumb-reachable navigation on a phone, dense tables and more information per screen on a desktop — and the organiser gets a rapid successive-entry flow that only appears on large screens.
+- **Installable PWA**: installable to the home screen on iOS and Android, with a cached shell so it opens fast.
 
 ### Out of scope for this release
 
@@ -45,7 +46,7 @@ Decisions taken explicitly, to bound the first release:
 - `trip-reporting`: aggregate trip views — the organiser dashboard with totals and breakdowns, and the frozen closing summary every participant can consult.
 - `realtime-activity`: real-time propagation of trip changes to connected clients, and the recent activity feed.
 - `localization`: bilingual Spanish/English interface, with Spanish as the default, device language detection, a persistent manual switch, and amount and date formatting per the active language.
-- `pwa-shell`: installability on a phone, the manifest, the shell service worker and the behaviour of the mobile-first interface.
+- `pwa-shell`: installability on a phone, the manifest, the shell service worker, and the responsive behaviour of the interface across the phone and desktop contexts.
 
 ### Modified Capabilities
 

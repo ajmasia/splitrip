@@ -102,6 +102,26 @@ The system SHALL allow editing and deleting expenses of a trip in the `open` sta
 - **WHEN** any participant attempts to edit or delete an expense of a trip in the `closed` state
 - **THEN** the system rejects the operation and reports that the trip is closed
 
+### Requirement: Successive expense entry on a desktop
+The system SHALL offer participants with the `admin` role on desktop-sized viewports a flow for entering several expenses in succession: after an expense is saved the form SHALL stay open and ready for the next one, keeping the values most likely to repeat and clearing the rest. The flow SHALL be completable from the keyboard alone, without reaching for a pointer between expenses.
+
+#### Scenario: Entering several bookings before departure
+- **WHEN** an `admin` on a desktop viewport saves an expense through the successive-entry flow
+- **THEN** the expense is recorded and the form remains open, focused and ready for the next one
+- **AND** the description and amount are cleared while the date, payer and split are kept
+
+#### Scenario: Keyboard-only entry
+- **WHEN** an `admin` fills in the description and the amount and submits from the keyboard
+- **THEN** the expense is recorded and focus returns to the description field, ready for the next entry
+
+#### Scenario: Running total during entry
+- **WHEN** an `admin` has recorded several expenses in one successive-entry session
+- **THEN** the system shows how many expenses were entered in that session and their total
+
+#### Scenario: Error during successive entry
+- **WHEN** an expense submitted through the successive-entry flow is rejected
+- **THEN** the system reports the error and keeps the entered values in the form, so nothing typed is lost
+
 ### Requirement: Viewing the trip expenses
 The system SHALL show any participant of the trip the complete list of expenses, sorted by date in descending order, stating for each one the description, the amount, the payer, the type and how many people it is split among.
 

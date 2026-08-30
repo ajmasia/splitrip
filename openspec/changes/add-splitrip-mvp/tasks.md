@@ -47,9 +47,11 @@
 - [ ] 6.1 Implement the Spanish and English copy catalogues with typed keys; verify that the compiler fails when a key exists in Spanish and is missing from English
 - [ ] 6.2 Implement language resolution (stored preference, browser header, Spanish by default) and the persistent language switcher; verify the three resolution paths and that the preference survives a reload
 - [ ] 6.3 Implement amount and date formatting with `Intl` according to the active language; verify that 1055 cents render as "10,55 €" in Spanish and with English conventions in English
-- [ ] 6.4 Implement the mobile-first base layout with thumb-reachable navigation and touch targets of at least 44 pixels; verify on a 360-pixel-wide screen that there is no horizontal scrolling
-- [ ] 6.5 Add the PWA manifest with icons for iOS and Android, a theme colour and standalone mode; verify by installing the application on an Android device and on an iOS device that it opens without the browser interface
-- [ ] 6.6 Add the shell-caching service worker, the offline notice and new-version detection; verify that the second opening does not wait for the network, that the notice appears offline instead of the browser error, and that a new version is applied without reinstalling
+- [ ] 6.4 Implement the phone base layout with thumb-reachable navigation and touch targets of at least 44 pixels; verify on a 360-pixel-wide screen that there is no horizontal scrolling
+- [ ] 6.5 Implement the responsive density layer: a shared breakpoint constant and CSS-driven switching between stacked cards and tables, with content constrained to a readable measure; verify that the same page renders as cards at 360 pixels and as a table at 1280 pixels with no hydration warning in the console
+- [ ] 6.6 Implement the role-and-viewport gate offering the organiser tools only to an `admin` on a desktop viewport; verify that an `admin` sees them at 1280 pixels, does not at 360 pixels, that a `participant` never does, and that the dashboard stays reachable on a phone
+- [ ] 6.7 Add the PWA manifest with icons for iOS and Android, a theme colour and standalone mode; verify by installing the application on an Android device and on an iOS device that it opens without the browser interface
+- [ ] 6.8 Add the shell-caching service worker, the offline notice and new-version detection; verify that the second opening does not wait for the network, that the notice appears offline instead of the browser error, and that a new version is applied without reinstalling
 
 ## 7. Expenses
 
@@ -57,7 +59,8 @@
 - [ ] 7.2 Implement the add-expense form with its default values (payer is whoever records it, split among everyone, today's date); verify that an expense can be recorded providing only a description and an amount
 - [ ] 7.3 Add payer selection and split-subset selection to the form; verify that a €45.00 expense split among three of five charges €15.00 to each and leaves the other two unchanged
 - [ ] 7.4 Add the `contribution` expense type to the form, hiding the split when selected; verify that a €300.00 contribution adds to the trip total and changes no balance
-- [ ] 7.5 Implement the expense detail, edit and delete with the per-role permissions; verify that a `participant` cannot edit someone else's expense and an `admin` can, and that the numeric keypad appears on tapping the amount field
+- [ ] 7.5 Implement the successive expense entry flow for an `admin` on a desktop viewport, keeping date, payer and split between entries and reporting the session count and total; verify that ten expenses can be entered from the keyboard alone and that a rejected entry keeps what was typed
+- [ ] 7.6 Implement the expense detail, edit and delete with the per-role permissions; verify that a `participant` cannot edit someone else's expense and an `admin` can, and that the numeric keypad appears on tapping the amount field
 
 ## 8. Balances and settlement
 
@@ -78,8 +81,8 @@
 
 - [ ] 10.1 Implement the organiser dashboard with total spent, the shared/contribution breakdown, the number of expenses, the average cost per person and the per-participant table; verify against a fixture trip with known figures and check the empty state raises no errors
 - [ ] 10.2 Add spending over time by day to the dashboard; verify with a trip spanning several dates that the daily amounts reconcile with the total
-- [ ] 10.3 Implement the expense detail with filters by payer and by type, showing the filtered total; verify the three cases: filter by payer, filter by type, and a filter with no results and a €0.00 total
-- [ ] 10.4 Restrict the dashboard to the `admin` role, offering the `participant` the balances view; verify that a `participant` cannot reach the dashboard and can reach the balances
+- [ ] 10.3 Implement the expense detail with filters by payer and by type, showing the filtered total, presented as a table sortable by date and amount on desktop; verify the three filter cases, the €0.00 empty total, and that sorting works on both columns
+- [ ] 10.4 Restrict the dashboard to the `admin` role, offering the `participant` the balances view, and give it a compact stacked layout on phone viewports; verify that a `participant` cannot reach the dashboard, that an `admin` can reach it at 360 pixels without horizontal scrolling, and that the figures match the desktop layout
 - [ ] 10.5 Implement closing the trip from the interface and the closing summary screen reachable by every participant; verify that after closing, a `participant` sees the complete summary and that the trip becomes read-only
 - [ ] 10.6 Implement exporting the summary as shareable text and exporting the expenses as CSV; verify that the text includes total, cost per person, balances and settlement, and that the CSV has one row per expense with date, description, amount, payer, type and split participants
 
