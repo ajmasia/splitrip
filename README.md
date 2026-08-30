@@ -115,6 +115,12 @@ A participant carrying expenses or payments cannot be deleted, and neither can t
 behind them: their money would be left dangling. Those checks are `DEFERRABLE`, so deleting a whole
 trip is still possible inside a transaction that asks for them to be deferred first.
 
+Splitting an amount is a pure function, tested without a database: integer division of the cents,
+with the leftover handed out one by one to the first participants in identifier order. Ordering
+rather than chance is what makes a split reproducible — the same expense split twice charges the
+same people the same cents — and it is why shares are persisted rather than recomputed on the fly.
+`npm test` runs those tests.
+
 Balances are derived, never stored. The `participant_balances` view sums, for each participant,
 what they paid, what the splits charged them and what they have moved in settlement payments, and
 reports the net: positive means the group owes them. Because every shared expense is charged in
@@ -156,6 +162,8 @@ what it describes is gone.
 | `npm run db:reset`     | Recreates the database from the migrations, discarding local data |
 | `npm run db:check`     | Checks that the app environment reaches the Supabase API          |
 | `npm run db:test`      | Runs the pgTAP database tests in `supabase/tests/`                |
+| `npm test`             | Runs the unit tests once                                          |
+| `npm run test:watch`   | Runs the unit tests and re-runs them on change                    |
 | `npm run lint`         | Runs ESLint; fails on any warning                                 |
 | `npm run lint:fix`     | Runs ESLint and applies the fixes it can                          |
 | `npm run typecheck`    | Type-checks the project without emitting output                   |
