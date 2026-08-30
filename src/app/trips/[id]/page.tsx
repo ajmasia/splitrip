@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
+import { ActivityLink } from '@/components/activity-link'
 import { AppShell } from '@/components/app-shell'
 import { TripRealtime } from '@/components/trip-realtime'
 import { ChangeRoleButton } from '@/components/change-role-button'
@@ -24,6 +25,7 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
   if (!found) notFound()
 
   const { trip, participants } = found
+  const you = participants.find((participant) => participant.isYou)
   const expenses = await listExpenses(id)
   // Stepping down is a role change like any other, so this one appears beside yourself too.
   const organising = trip.yourRole === 'admin' && trip.status === 'open'
@@ -46,7 +48,7 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
 
   return (
     <AppShell locale={locale} t={t} viewer={viewer} bottom={record} bottomOnPhone>
-      <TripRealtime tripId={id} />
+      <TripRealtime tripId={id} youParticipantId={you?.id ?? null} />
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <Link
@@ -70,12 +72,11 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
             >
               {t('trip.balances')}
             </Link>
-            <Link
-              href={`/trips/${id}/activity`}
+            <ActivityLink
+              tripId={id}
+              locale={locale}
               className="flex min-h-touch w-fit items-center rounded-card border border-rule px-4 text-sm font-semibold"
-            >
-              {t('trip.activity')}
-            </Link>
+            />
             {trip.yourRole === 'admin' && trip.status === 'open' ? (
               <Link
                 href={`/trips/${id}/invite`}

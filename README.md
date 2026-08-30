@@ -223,6 +223,11 @@ Isolation between trips is not the `trip_id` filter the client subscribes with, 
 simply omit: it is Row Level Security, which Realtime evaluates against each subscriber before
 delivering.
 
+While the reader is elsewhere in the trip, the count of what they have not looked at rides on the
+link to the feed — not a dialogue, not a strip that moves the page under a thumb halfway through
+typing an amount. Their own actions are not counted: a badge for the expense they just recorded
+would be the application talking to itself.
+
 The trip's activity feed is written by database triggers rather than by application code, so it is
 impossible to change an expense without leaving a trace, and it travels over the same channel as
 everything else. The author's name is stored as text on the entry — that one has to outlive them,

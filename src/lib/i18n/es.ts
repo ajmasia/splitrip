@@ -232,6 +232,8 @@ export const es = {
     'Todo lo que ha pasado en el viaje, y quién lo hizo. Lo más reciente arriba.',
   'activity.empty.title': 'Aquí no ha pasado nada todavía',
   'activity.empty.body': 'En cuanto alguien apunte un gasto o entre en el viaje, aparecerá aquí.',
+  'activity.unseen.one': '1 novedad',
+  'activity.unseen.other': '{count} novedades',
   'activity.expense.created': '{actor} apuntó {subject}',
   'activity.expense.updated': '{actor} corrigió {subject}',
   'activity.expense.deleted': '{actor} quitó {subject}',

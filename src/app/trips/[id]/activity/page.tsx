@@ -23,7 +23,7 @@ export default async function ActivityPage({ params }: { params: Promise<{ id: s
 
   return (
     <AppShell locale={locale} t={t} viewer={viewer}>
-      <TripRealtime tripId={id} />
+      <TripRealtime tripId={id} feed />
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <Link

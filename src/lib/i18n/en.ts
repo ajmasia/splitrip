@@ -229,6 +229,8 @@ export const en: Catalogue = {
   'activity.empty.title': 'Nothing has happened here yet',
   'activity.empty.body':
     'As soon as somebody records an expense or joins the trip, it shows up here.',
+  'activity.unseen.one': '1 new entry',
+  'activity.unseen.other': '{count} new entries',
   'activity.expense.created': '{actor} added {subject}',
   'activity.expense.updated': '{actor} corrected {subject}',
   'activity.expense.deleted': '{actor} removed {subject}',

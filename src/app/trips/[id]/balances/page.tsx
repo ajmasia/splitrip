@@ -36,7 +36,7 @@ export default async function BalancesPage({ params }: { params: Promise<{ id: s
 
   return (
     <AppShell locale={locale} t={t} viewer={viewer}>
-      <TripRealtime tripId={id} />
+      <TripRealtime tripId={id} youParticipantId={yours?.participantId ?? null} />
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <Link

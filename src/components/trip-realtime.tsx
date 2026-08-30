@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
+import { clearActivity, noteActivity } from '@/lib/realtime/activity'
 import { setLiveConnection } from '@/lib/realtime/status'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 
@@ -27,10 +28,25 @@ const WATCHED: readonly { table: string; column: string }[] = [
  * writes the expense, its shares and an activity entry in the same transaction, and three refreshes
  * for one dinner is two too many.
  */
-export function TripRealtime({ tripId }: { tripId: string }) {
+export function TripRealtime({
+  tripId,
+  youParticipantId = null,
+  feed = false,
+}: {
+  tripId: string
+  /**
+   * Who the reader is on this trip. Their own actions are not news to them, and a badge counting
+   * the expense they just recorded would be the application talking to itself.
+   */
+  youParticipantId?: string | null
+  /** True on the activity screen, where an entry is not unseen: it just appeared in front of them. */
+  feed?: boolean
+}) {
   const router = useRouter()
 
   useEffect(() => {
+    if (feed) clearActivity(tripId)
+
     const supabase = createSupabaseBrowserClient()
     let timer: ReturnType<typeof setTimeout> | undefined
 
@@ -59,7 +75,17 @@ export function TripRealtime({ tripId }: { tripId: string }) {
       channel.on(
         'postgres_changes',
         { event: '*', schema: 'public', table, filter: `${column}=eq.${tripId}` },
-        refresh,
+        (message) => {
+          // The one event whose payload is read, and only for who caused it. Everything else about
+          // what happened is read back from the database like every other change.
+          if (table === 'activity' && message.eventType === 'INSERT') {
+            const actor = (message.new as { actor_participant_id?: string | null })
+              .actor_participant_id
+            if (feed) clearActivity(tripId)
+            else if (actor !== youParticipantId) noteActivity(tripId)
+          }
+          refresh()
+        },
       )
     }
 
@@ -96,7 +122,7 @@ export function TripRealtime({ tripId }: { tripId: string }) {
       setLiveConnection(true)
       void supabase.removeChannel(channel)
     }
-  }, [tripId, router])
+  }, [tripId, router, feed, youParticipantId])
 
   return null
 }
