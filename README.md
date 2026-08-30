@@ -98,6 +98,20 @@ paid for alone and asked nobody to share, expenses split among only some of the 
 leave cents over, and settlement payments already made. Its balances sum to exactly zero, so it
 doubles as a quick check that nothing is off.
 
+These are the figures the balances screen must show for it, worked out from the seed by hand:
+
+| Who       | Fronted  | Charged  | Balance    |
+| --------- | -------- | -------- | ---------- |
+| Francisca | 43,72 €  | 169,23 € | −275,51 €  |
+| Marta     | 219,73 € | 151,20 € | +168,53 €  |
+| Sonia     | 81,50 €  | 141,45 € | −9,95 €    |
+| Virginia  | 137,70 € | 176,55 € | −38,85 €   |
+| Yvonne    | 325,00 € | 169,22 € | +155,78 €  |
+| **Sum**   |          |          | **0,00 €** |
+
+Francisca is deepest in the red despite paying for the flat: those 800 € are a contribution, which
+counts towards what the trip cost and puts nobody in debt.
+
 ### Trying it from a phone
 
 `next dev` listens on the whole network and prints a `Network:` address next to the local one. Open

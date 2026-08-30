@@ -245,3 +245,61 @@ export async function getExpense(
       .sort((one, other) => one.displayName.localeCompare(other.displayName)),
   }
 }
+
+export type ParticipantBalance = {
+  participantId: string
+  displayName: string
+  isYou: boolean
+  /** What they fronted in `shared` expenses, which is what the group owes them back. */
+  paidCents: number
+  /** What they fronted and asked nobody to share. It changes no balance; it explains one. */
+  contributedCents: number
+  chargedCents: number
+  /** Positive means the group owes them; negative, that they owe the group. */
+  netCents: number
+}
+
+type BalanceRow = {
+  participant_id: string
+  paid_cents: number | string
+  contributed_cents: number | string
+  charged_cents: number | string
+  net_cents: number | string
+}
+
+/**
+ * The balances of a trip, in the same order the participants are listed everywhere else: by name,
+ * which stays put, rather than by amount, which would reshuffle the sheet as expenses land.
+ *
+ * The arithmetic is the view's, not this function's. A balance recomputed here would be a second
+ * opinion about the same rows, and two opinions about money is one too many.
+ */
+export async function listBalances(
+  tripId: string,
+  participants: TripParticipant[],
+): Promise<ParticipantBalance[]> {
+  const supabase = await createSupabaseServerClient()
+
+  const { data, error } = await supabase
+    .from('participant_balances')
+    .select('participant_id, paid_cents, contributed_cents, charged_cents, net_cents')
+    .eq('trip_id', tripId)
+
+  if (error) throw new Error(error.message)
+
+  const balances = new Map((data as BalanceRow[]).map((row) => [row.participant_id, row]))
+
+  return participants.map((participant) => {
+    const row = balances.get(participant.id)
+
+    return {
+      participantId: participant.id,
+      displayName: participant.displayName,
+      isYou: participant.isYou,
+      paidCents: count(row?.paid_cents ?? 0),
+      contributedCents: count(row?.contributed_cents ?? 0),
+      chargedCents: count(row?.charged_cents ?? 0),
+      netCents: count(row?.net_cents ?? 0),
+    }
+  })
+}

@@ -96,6 +96,11 @@
     font-variant-numeric: tabular-nums;
   }
 
+  /* The line a bill draws above its final figure: below it is the total, and nothing else. */
+  .rule-double {
+    border-top: 3px double var(--color-rule-strong);
+  }
+
   /* The dotted run between a name and its amount, as a bill sets it. */
   .leader {
     flex: 1;
