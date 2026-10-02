@@ -193,6 +193,25 @@ export const es = {
 
   'trip.balances': 'Ver saldos',
   'trip.dashboard': 'Panel',
+  'trip.close': 'Cerrar viaje',
+  'trip.close.body':
+    'Al cerrarlo, el viaje queda en solo lectura y se congela un resumen con las cuentas finales, que todos podréis consultar. Si hace falta, se puede reabrir.',
+  'trip.close.confirm': 'Sí, cerrar el viaje',
+  'trip.close.cancel': 'Cancelar',
+  'trip.closing': 'Cerrando…',
+  'trip.reopen': 'Reabrir viaje',
+  'trip.reopening': 'Reabriendo…',
+  'trip.summary': 'Ver el resumen',
+  'trip.summary.closed': 'Este viaje está cerrado. Sus cuentas finales están en el resumen.',
+
+  'summary.heading': 'Resumen del viaje',
+  'summary.subtitle':
+    'Así quedaron las cuentas al cerrar el viaje. No cambia mientras siga cerrado.',
+  'summary.contributions': 'Invitaciones',
+  'summary.contribution.by': 'Invitó {name}',
+  'summary.open.title': 'El viaje aún no está cerrado',
+  'summary.open.body':
+    'El resumen se congela al cerrar el viaje. Mientras tanto, las cuentas van al día en los saldos.',
 
   'balances.heading': 'Saldos',
   'balances.subtitle': 'Cómo van las cuentas ahora mismo, con todo lo apuntado hasta este momento.',
@@ -395,5 +414,7 @@ export const es = {
   'error.not_allowed': 'No tienes permiso para hacer eso.',
   'error.needs_admin': 'Para eso hay que organizar el viaje.',
   'error.trip_closed': 'El viaje está cerrado.',
+  'error.trip_status_changed':
+    'Alguien acaba de cerrar o reabrir el viaje. Recarga la página para ver cómo está.',
   'error.unexpected': 'Algo ha fallado. Inténtalo otra vez.',
 } as const

@@ -6,10 +6,12 @@ import { AddParticipantForm } from '@/components/add-participant-form'
 import { AppShell } from '@/components/app-shell'
 import { TripRealtime } from '@/components/trip-realtime'
 import { ChangeRoleButton } from '@/components/change-role-button'
+import { CloseTripButton } from '@/components/close-trip-button'
 import { InviteParticipantButton } from '@/components/invite-participant-button'
 import { ExpenseList } from '@/components/expense-list'
 import { Pill } from '@/components/pill'
 import { RemoveParticipantButton } from '@/components/remove-participant-button'
+import { ReopenTripButton } from '@/components/reopen-trip-button'
 import { TripFigures } from '@/components/trip-figures'
 import { formatDateRange } from '@/lib/i18n/format'
 import { getViewer } from '@/lib/auth/viewer'
@@ -97,6 +99,19 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
             ) : null}
           </div>
         </div>
+
+        {/* On a closed trip the summary is the answer everybody comes for, so it comes first. */}
+        {trip.status === 'closed' ? (
+          <div className="flex flex-col gap-3 rounded-card border border-rule bg-surface p-4 wide:flex-row wide:items-center wide:justify-between">
+            <p className="text-ink-soft">{t('trip.summary.closed')}</p>
+            <Link
+              href={`/trips/${id}/summary`}
+              className="flex min-h-touch w-fit shrink-0 items-center rounded-card bg-accent px-4 text-sm font-semibold text-accent-ink"
+            >
+              {t('trip.summary')}
+            </Link>
+          </div>
+        ) : null}
 
         <TripFigures trip={trip} locale={locale} t={t} />
 
@@ -192,6 +207,20 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
             ))}
           </ul>
         </section>
+
+        {/*
+          The last thing on the page because it is the last thing done to a trip, and well away
+          from the controls used every day.
+        */}
+        {trip.yourRole === 'admin' ? (
+          <section className="flex flex-col gap-3 border-t border-rule pt-6">
+            {trip.status === 'open' ? (
+              <CloseTripButton tripId={id} locale={locale} />
+            ) : (
+              <ReopenTripButton tripId={id} locale={locale} />
+            )}
+          </section>
+        ) : null}
       </div>
     </AppShell>
   )

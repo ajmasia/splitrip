@@ -190,6 +190,25 @@ export const en: Catalogue = {
 
   'trip.balances': 'View balances',
   'trip.dashboard': 'Dashboard',
+  'trip.close': 'Close the trip',
+  'trip.close.body':
+    'Closing it makes the trip read-only and freezes a summary of the final accounts that everybody can consult. It can be reopened if need be.',
+  'trip.close.confirm': 'Yes, close the trip',
+  'trip.close.cancel': 'Cancel',
+  'trip.closing': 'Closing…',
+  'trip.reopen': 'Reopen the trip',
+  'trip.reopening': 'Reopening…',
+  'trip.summary': 'See the summary',
+  'trip.summary.closed': 'This trip is closed. Its final accounts are in the summary.',
+
+  'summary.heading': 'Trip summary',
+  'summary.subtitle':
+    'How the accounts stood when the trip was closed. It does not change while it stays closed.',
+  'summary.contributions': 'Treats',
+  'summary.contribution.by': 'Treat from {name}',
+  'summary.open.title': 'The trip is not closed yet',
+  'summary.open.body':
+    'The summary is frozen when the trip is closed. Until then, the balances keep the accounts up to date.',
 
   'balances.heading': 'Balances',
   'balances.subtitle': 'Where the accounts stand right now, with everything recorded so far.',
@@ -390,5 +409,7 @@ export const en: Catalogue = {
   'error.not_allowed': 'You are not allowed to do that.',
   'error.needs_admin': 'That is for an organiser of the trip.',
   'error.trip_closed': 'The trip is closed.',
+  'error.trip_status_changed':
+    'Somebody has just closed or reopened the trip. Reload the page to see where it stands.',
   'error.unexpected': 'Something went wrong. Try again.',
 }

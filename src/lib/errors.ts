@@ -22,6 +22,7 @@ const COPY_BY_CODE: Record<string, CopyKey> = {
   SP011: 'error.invitation_expired',
   SP012: 'error.name_required',
   SP013: 'error.name_taken',
+  SP014: 'error.trip_status_changed',
   SP015: 'error.trip_name_required',
   SP016: 'error.trip_dates_out_of_order',
   SP017: 'error.needs_an_account',

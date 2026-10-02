@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { readClosingSummary, type ClosingSummary } from '@/lib/trips/summary'
 
 export type TripRole = 'admin' | 'participant'
 export type TripStatus = 'open' | 'closed'
@@ -625,4 +626,25 @@ export async function getStatement(
     contributedCents: total(contributions),
     netCents: paidCents - chargedCents + settlementsCents,
   }
+}
+
+/**
+ * The frozen summary of a closed trip, or null while it is open — an open trip has no summary yet,
+ * only running balances. Row Level Security already keeps it from anybody outside the trip.
+ */
+export async function getClosingSummary(
+  tripId: string,
+  yourParticipantId: string | null,
+): Promise<ClosingSummary | null> {
+  const supabase = await createSupabaseServerClient()
+  const { data, error } = await supabase
+    .from('trips')
+    .select('summary')
+    .eq('id', tripId)
+    .maybeSingle()
+
+  if (error) throw new Error(error.message)
+  if (!data?.summary) return null
+
+  return readClosingSummary(data.summary, yourParticipantId)
 }
