@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { AppShell } from '@/components/app-shell'
 import { DailySpending } from '@/components/daily-spending'
 import { DashboardTable } from '@/components/dashboard-table'
+import { OrganiserOnly } from '@/components/organiser-only'
 import { TripRealtime } from '@/components/trip-realtime'
 import { Figure } from '@/components/trip-figures'
 import { getViewer } from '@/lib/auth/viewer'
@@ -22,9 +23,15 @@ export default async function DashboardPage({ params }: { params: Promise<{ id: 
   if (!found) notFound()
 
   const { trip, participants } = found
-  // An organiser view. Telling a `participant` so, and pointing them at the balances they can read,
-  // is the access task of its own; until then the page is simply not there for them.
-  if (trip.yourRole !== 'admin') notFound()
+  // Somebody outside the trip learns nothing about it; a `participant` is told what this is instead.
+  if (trip.yourRole === null) notFound()
+  if (trip.yourRole !== 'admin') {
+    return (
+      <AppShell locale={locale} t={t} viewer={viewer}>
+        <OrganiserOnly tripId={id} tripName={trip.name} t={t} />
+      </AppShell>
+    )
+  }
 
   const [balances, expenses] = await Promise.all([listBalances(id, participants), listExpenses(id)])
   const dashboard = dashboardFor(trip, balances)

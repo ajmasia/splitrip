@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 
 import { AppShell } from '@/components/app-shell'
 import { ExpenseDetail } from '@/components/expense-detail'
+import { OrganiserOnly } from '@/components/organiser-only'
 import { TripRealtime } from '@/components/trip-realtime'
 import { getViewer } from '@/lib/auth/viewer'
 import { intlLocale } from '@/lib/i18n'
@@ -38,8 +39,15 @@ export default async function ExpenseDetailPage({
   if (!found) notFound()
 
   const { trip, participants } = found
-  // An organiser view, like the dashboard it hangs from; telling anybody else so is its own task.
-  if (trip.yourRole !== 'admin') notFound()
+  // An organiser view, like the dashboard it hangs from, and refused the same way.
+  if (trip.yourRole === null) notFound()
+  if (trip.yourRole !== 'admin') {
+    return (
+      <AppShell locale={locale} t={t} viewer={viewer}>
+        <OrganiserOnly tripId={id} tripName={trip.name} t={t} />
+      </AppShell>
+    )
+  }
 
   const filter = readExpenseFilter(
     await searchParams,

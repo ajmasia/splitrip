@@ -252,6 +252,10 @@ export const en: Catalogue = {
   'dashboard.daily.quiet': '{days} days with nothing spent',
   'dashboard.expenses': 'See all expenses',
 
+  'organiser.only.heading': 'This is an organiser view',
+  'organiser.only.body':
+    'The dashboard and the detail of every expense are for whoever organises the trip. How the accounts stand, and how to settle them, you can see in the balances.',
+
   'detail.heading': 'All expenses',
   'detail.subtitle': 'Filter by who paid or by type, and sort by date or by amount.',
   'detail.filter.payer.any': 'Anybody',

@@ -255,6 +255,10 @@ export const es = {
   'dashboard.daily.quiet': '{days} días sin gastos',
   'dashboard.expenses': 'Ver todos los gastos',
 
+  'organiser.only.heading': 'Esto es una vista de organizador',
+  'organiser.only.body':
+    'El panel y el detalle de todos los gastos son para quien organiza el viaje. Cómo van las cuentas, y cómo saldarlas, lo puedes ver en los saldos.',
+
   'detail.heading': 'Todos los gastos',
   'detail.subtitle': 'Filtra por quién pagó o por tipo, y ordena por fecha o por importe.',
   'detail.filter.payer.any': 'Cualquiera',
