@@ -7,7 +7,7 @@ Four constraints shape the design:
 1. **No accounts for travellers.** A traveller gets in through a QR code and types their name, with no password and no email, but there still has to be a stable per-device identity for authorisation to rest on. Opening a trip is the one thing that does need an account, so that a public deployment cannot be used as free hosting by whoever finds it.
 2. **Real time.** Several phones with the same screen open must see the same numbers within seconds.
 3. **Money.** Amounts have to add up to the cent, always, and reproducibly.
-4. **Minimal operations.** One developer, free tiers, a complete local environment in Docker and deployment on Vercel.
+4. **Minimal operations.** One developer, a complete local environment in Docker, and a self-hosted production instance installed by one script.
 
 ## Goals / Non-Goals
 
@@ -28,7 +28,7 @@ Four constraints shape the design:
 
 ### Stack: Next.js (App Router) + Supabase
 
-**Chosen:** Next.js 16 with the App Router and TypeScript, deployed on Vercel; Supabase as managed Postgres with Auth, Realtime and RLS.
+**Chosen:** Next.js 16 with the App Router and TypeScript, served from a self-hosted instance; Supabase, self-hosted alongside it, for Postgres with Auth, Realtime and RLS.
 
 **Why:** splitting expenses is a purely relational problem (participants, expenses, shares, payments) where SQL and integrity constraints do half the work. Supabase additionally provides, with no code of our own, the two pieces that would cost the most: real-time propagation of table changes and an authorisation model that lives next to the data.
 
@@ -122,11 +122,13 @@ Four constraints shape the design:
 
 **Revisit this if:** self-hosting becomes a goal. The AGPL makes it plausible that someone will want to deploy a modified Splitrip outside Vercel, and that is when a production Dockerfile earns its place — built and tested for a target that actually exists.
 
+**Revisited:** self-hosting became the goal. `add-self-hosted-deployment` adds the production image and decides its shape there; local development stays as described here.
+
 ### Repository conventions
 
 **Chosen:** Semantic Versioning for released versions and Conventional Commits for the history, with atomic commits — one commit per logical change — and no reference to AI tooling in the messages. A `0.X.0` annotated tag is published on completing each of the task groups in `tasks.md`, and `1.0.0` on completing the MVP. The application version file is the source of the version the PWA shows the user.
 
-**Why:** with conventional, atomic commits the history is the source of the changelog and makes the version bump derivable rather than a manual decision. It is also what makes Vercel's rollback useful: reverting to a specific version is only safe if each commit is a coherent unit.
+**Why:** with conventional, atomic commits the history is the source of the changelog and makes the version bump derivable rather than a manual decision. It is also what makes rolling an instance back with `update <version>` useful: reverting to a specific version is only safe if each commit is a coherent unit.
 
 **Consequence for the tasks:** the task list is grouped so that each task is a reasonable commit on its own, and each group a releasable increment.
 
@@ -166,18 +168,18 @@ Three levels, chosen by what can actually break:
 - **Someone corrects an expense while another person is editing it** → Last write wins, with no locking. With groups of five the collision is rare and real time makes it immediately visible. Detecting it explicitly is not worth it in the first release.
 - **With no push, a participant may not learn about a change until they open the app** → Accepted and stated in the proposal. The activity feed keeps the complete trace, so opening the app shows what has happened.
 - **The expense date depends on the device time zone** → It is stored as a civil date (`DATE`), with no time and no zone, because what matters is "the day of the trip" and not the exact instant. This prevents a dinner expense from showing up on the following day because of the destination's time difference.
-- **Free tiers have limits** → With small groups the volume is trivial; the first limit that would be reached is the Supabase project's inactivity pause, which affects availability, not data.
-- **An open door to anonymous sessions on a public deployment** → Anyone reaching the site can be handed an identity. It buys them nothing — creating a trip needs an account, and every other write checks membership — but the identities themselves accumulate and count against a free tier's quota. Bounded by issuing a session only where one is needed, by rate limits per address, and by sweeping anonymous users who belong to no trip. Escalates to a CAPTCHA on the invitation flow if that proves insufficient.
+- **One self-hosted instance** → its availability is the host's, and its backups are Proxmox's backups of the container, as `add-self-hosted-deployment` documents.
+- **An open door to anonymous sessions on a public deployment** → Anyone reaching the site can be handed an identity. It buys them nothing — creating a trip needs an account, and every other write checks membership — but the identities themselves accumulate and fill the instance's auth table. Bounded by issuing a session only where one is needed, by rate limits per address, and by sweeping anonymous users who belong to no trip. Escalates to a CAPTCHA on the invitation flow if that proves insufficient.
 
 ## Migration Plan
 
 There is no migration: this is a new project with no prior users or data. Bringing it up means:
 
-1. Create the production Supabase project and apply the repository migrations to it.
-2. Deploy on Vercel with the environment variables pointing at that project.
-3. Verify the complete run in the deployed environment from a real phone, including installation as a PWA on iOS and on Android.
+1. Install an instance in an LXC on the local Proxmox host with the installer from `add-self-hosted-deployment`; it applies the repository migrations.
+2. Verify the complete run through the reverse proxy from a real phone, including installation as a PWA on iOS and on Android.
+3. Install the external Proxmox server the same way and point the public domain at it.
 
-**Rollback:** the deployment is rolled back through Vercel's rollback to the previous version. Database migrations are additive within this release, so rolling the application back does not leave the schema incompatible.
+**Rollback:** `update <previous version>` moves an instance back to the previous release. Database migrations are additive within this release, so rolling the application back does not leave the schema incompatible.
 
 ## Open Questions
 

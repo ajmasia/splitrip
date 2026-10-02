@@ -97,7 +97,7 @@
 
 - [ ] 11.1 Write the end-to-end run with Playwright: create a trip, invite, join, add expenses of both types, view the settlement, record a payment, close and view the summary; verify that it passes against the local Docker environment
 - [ ] 11.2 Add continuous integration running lint, types, unit tests, integration tests against Postgres and the end-to-end run; verify that the full run passes on a clean branch
-- [ ] 11.3 Create the production Supabase project and apply the repository migrations to it; verify that the deployed schema matches the local one and that RLS is enabled on every table
-- [ ] 11.4 Deploy on Vercel with its environment variables; verify the complete run from a real phone, including installation as a PWA on iOS and on Android
+- [ ] 11.3 Install a production instance in an LXC on the local Proxmox host with the installer from `add-self-hosted-deployment`, behind the local reverse proxy; verify that its schema matches the local one, that RLS is enabled on every table, and the complete run from a real phone, including installation as a PWA on iOS and on Android
+- [ ] 11.4 Install the external Proxmox server with the same installer and point the product's public domain at it; verify the complete run from a real phone over the public internet, including installation as a PWA on iOS and on Android
 - [ ] 11.5 Verify behaviour with a group of five participants on separate devices: check that the amounts reconcile to the cent, that real time reaches everyone and that the final settlement is correct
 - [ ] 11.6 Harden the deployed instance against the open door to anonymous sessions: tune the rate limits per address and add the periodic sweep of anonymous users belonging to no trip; verify that the sweep removes an unused identity and leaves every participant of a trip untouched
