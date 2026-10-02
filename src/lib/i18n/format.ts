@@ -45,3 +45,11 @@ export function formatShortDate(day: string, locale: Locale): string {
     timeZone: 'UTC',
   }).format(new Date(`${day}T00:00:00Z`))
 }
+
+/** Two dates of a list as one range, sharing what they share: "3–15 dic 2026". */
+export function formatShortDateRange(start: string, end: string, locale: Locale): string {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
+    dateStyle: 'medium',
+    timeZone: 'UTC',
+  }).formatRange(new Date(`${start}T00:00:00Z`), new Date(`${end}T00:00:00Z`))
+}

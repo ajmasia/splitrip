@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { AppShell } from '@/components/app-shell'
+import { DailySpending } from '@/components/daily-spending'
 import { DashboardTable } from '@/components/dashboard-table'
 import { TripRealtime } from '@/components/trip-realtime'
 import { Figure } from '@/components/trip-figures'
@@ -9,8 +10,8 @@ import { getViewer } from '@/lib/auth/viewer'
 import { intlLocale } from '@/lib/i18n'
 import { getCopy } from '@/lib/i18n/server'
 import { formatAmount } from '@/lib/money/amount'
-import { dashboardFor } from '@/lib/trips/dashboard'
-import { getTrip, listBalances } from '@/lib/trips/queries'
+import { dashboardFor, spendingByDay } from '@/lib/trips/dashboard'
+import { getTrip, listBalances, listExpenses } from '@/lib/trips/queries'
 
 export default async function DashboardPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -25,7 +26,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ id: 
   // is the access task of its own; until then the page is simply not there for them.
   if (trip.yourRole !== 'admin') notFound()
 
-  const balances = await listBalances(id, participants)
+  const [balances, expenses] = await Promise.all([listBalances(id, participants), listExpenses(id)])
   const dashboard = dashboardFor(trip, balances)
   const you = participants.find((participant) => participant.isYou)
   const amount = (cents: number) => formatAmount(cents, intlLocale(locale))
@@ -66,6 +67,15 @@ export default async function DashboardPage({ params }: { params: Promise<{ id: 
           <Figure label={t('dashboard.figure.count')} amount={String(dashboard.expenseCount)} />
           <Figure label={t('trip.figure.perPerson')} amount={amount(dashboard.perPersonCents)} />
         </div>
+
+        {expenses.length > 0 ? (
+          <section className="flex flex-col gap-3">
+            <h2 className="font-mono text-xs tracking-widest text-ink-faint uppercase">
+              {t('dashboard.daily')}
+            </h2>
+            <DailySpending days={spendingByDay(expenses)} locale={locale} t={t} />
+          </section>
+        ) : null}
 
         <section className="flex flex-col gap-3">
           <h2 className="font-mono text-xs tracking-widest text-ink-faint uppercase">

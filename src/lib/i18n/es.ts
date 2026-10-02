@@ -248,6 +248,11 @@ export const es = {
   'dashboard.note':
     'En cada fila, lo que adelantó menos lo que le tocó, más sus pagos, da el saldo: lo que alguien envía para saldar suma a su saldo y lo que recibe resta. Lo que invitó no entra en la cuenta.',
   'dashboard.empty.body': 'Las cifras se irán llenando conforme se apunten gastos.',
+  'dashboard.daily': 'Gasto por día',
+  'dashboard.daily.row': '{day}: {total}, de ello {shared} repartido y {contributed} sin repartir',
+  'dashboard.daily.table': 'Ver como tabla',
+  'dashboard.daily.column.day': 'Día',
+  'dashboard.daily.quiet': '{days} días sin gastos',
 
   'settlement.heading': 'Cómo saldarlo',
   'settlement.line': '{from} le paga a {to}',

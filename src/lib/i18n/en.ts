@@ -245,6 +245,11 @@ export const en: Catalogue = {
   'dashboard.note':
     'On each row, what they fronted minus what they were charged, plus their settlements, gives the balance: what somebody sends to settle up adds to their balance and what they receive takes from it. What they treated the group to stays out of the sum.',
   'dashboard.empty.body': 'The figures fill in as expenses are recorded.',
+  'dashboard.daily': 'Spending by day',
+  'dashboard.daily.row': '{day}: {total}, of which {shared} split and {contributed} not split',
+  'dashboard.daily.table': 'Show as a table',
+  'dashboard.daily.column.day': 'Day',
+  'dashboard.daily.quiet': '{days} days with nothing spent',
 
   'settlement.heading': 'How to settle up',
   'settlement.line': '{from} pays {to}',

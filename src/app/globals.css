@@ -31,6 +31,17 @@
   --color-debt: light-dark(#9e2b2b, #e98486);
   --color-debt-soft: light-dark(#f6e4e3, #34201f);
 
+  /*
+   * Chart marks. The accent is too muted to carry data — below the chroma a mark needs to read as a
+   * colour — so the figure it would draw takes a step of the same hue that clears it. What is merely
+   * context is a grey, set apart from the green in lightness so the two read as two at a glance and
+   * under colour blindness alike. Checked with the data-visualisation palette validator in both
+   * modes; the grey sits under 3:1 against the surface on purpose, which is why every value it
+   * draws is also written out beside it.
+   */
+  --color-chart-figure: light-dark(#0d846f, #40a690);
+  --color-chart-context: light-dark(#abb3af, #5a635f);
+
   --font-display: var(--font-bricolage), var(--font-archivo), system-ui, sans-serif;
   --font-sans: var(--font-archivo), system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, 'SF Mono', Menlo, monospace;
