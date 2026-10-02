@@ -149,6 +149,7 @@ export type TripExpense = {
   amountCents: number
   type: ExpenseType
   spentOn: string
+  paidBy: string
   paidByName: string
   /** Zero for a contribution, which is split among nobody. */
   splitCount: number
@@ -160,6 +161,7 @@ type ExpenseRow = {
   amount_cents: number | string
   type: ExpenseType
   spent_on: string
+  paid_by: string
   paid_by_name: string
   split_count: number | string
 }
@@ -175,7 +177,7 @@ export async function listExpenses(tripId: string): Promise<TripExpense[]> {
 
   const { data, error } = await supabase
     .from('expense_overview')
-    .select('id, description, amount_cents, type, spent_on, paid_by_name, split_count')
+    .select('id, description, amount_cents, type, spent_on, paid_by, paid_by_name, split_count')
     .eq('trip_id', tripId)
     .order('spent_on', { ascending: false })
     .order('created_at', { ascending: false })
@@ -189,6 +191,7 @@ export async function listExpenses(tripId: string): Promise<TripExpense[]> {
     amountCents: count(row.amount_cents),
     type: row.type,
     spentOn: row.spent_on,
+    paidBy: row.paid_by,
     paidByName: row.paid_by_name,
     splitCount: count(row.split_count),
   }))

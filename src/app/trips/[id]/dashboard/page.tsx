@@ -46,6 +46,12 @@ export default async function DashboardPage({ params }: { params: Promise<{ id: 
           </Link>
           <h1 className="text-2xl font-bold">{t('dashboard.heading')}</h1>
           <p className="max-w-prose text-ink-soft">{t('dashboard.subtitle')}</p>
+          <Link
+            href={`/trips/${id}/dashboard/expenses`}
+            className="flex min-h-touch w-fit items-center rounded-card border border-rule px-4 text-sm font-semibold"
+          >
+            {t('dashboard.expenses')}
+          </Link>
         </div>
 
         <div className="grid grid-cols-2 gap-2 wide:grid-cols-3 wide:gap-3">
