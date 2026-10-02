@@ -320,8 +320,14 @@ A `0.X.0` tag is published on completing each task group in
 [`tasks.md`](openspec/changes/add-splitrip-mvp/tasks.md), and `1.0.0` on completing the MVP. A
 version marks a verifiable functional increment, not an intermediate step.
 
+Every release updates [`CHANGELOG.md`](CHANGELOG.md), which follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Changes land under `Unreleased` as they are
+made; releasing moves them into a section for the new version, with its date and its comparison
+link, and the release commit carries that edit:
+
 ```bash
-npm version minor   # bumps package.json, commits and tags in one step
+git add CHANGELOG.md   # Unreleased moved into the new version's section
+npm version minor      # bumps package.json, commits what is staged and tags in one step
 git push --follow-tags
 ```
 
