@@ -130,9 +130,11 @@ Tyrion pays Brienne       9,95 €
 
 ### Trying it from a phone
 
-`next dev` listens on the whole network and prints a `Network:` address next to the local one. Open
-the application at that address rather than at `localhost`: an invitation link carries the host it
-was created from, so one made at `localhost` is useless on a phone.
+`next dev` listens on the whole network and prints a `Network:` address next to the local one. An
+invitation link carries the host it was created from, except that the development server never hands
+out one to `localhost`, which would open nothing on a phone: it swaps in this machine's network
+address, same port. So you can run the trip at `localhost` on the laptop and scan its QR codes from
+the phone.
 
 The development server refuses to serve its build output to any origin but localhost, and a phone on
 the same wifi is not localhost — the page arrives, the scripts come back 403, React never hydrates

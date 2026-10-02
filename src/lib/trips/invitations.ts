@@ -1,3 +1,5 @@
+import { networkInterfaces } from 'node:os'
+
 import { headers } from 'next/headers'
 
 import { createSupabaseServerClient } from '@/lib/supabase/server'
@@ -14,16 +16,48 @@ export type Invitation = {
   forName: string | null
 }
 
+const LOOPBACK = ['localhost', '127.0.0.1', '[::1]']
+const PRIVATE_NETWORK = /^(192\.168|10|172\.(1[6-9]|2\d|3[01]))\./
+
+/**
+ * The address this machine answers to on the local network, preferring the ranges a home router
+ * hands out over whatever a VPN or a virtual machine has added alongside them.
+ */
+function localNetworkAddress(): string | null {
+  const addresses = Object.values(networkInterfaces())
+    .flat()
+    .flatMap((address) =>
+      address !== undefined && address.family === 'IPv4' && !address.internal
+        ? [address.address]
+        : [],
+    )
+  const rank = (address: string) =>
+    address.startsWith('192.168.') ? 0 : PRIVATE_NETWORK.test(address) ? 1 : 2
+
+  return addresses.sort((a, b) => rank(a) - rank(b))[0] ?? null
+}
+
 /**
  * The origin comes from the request rather than from a setting, so the local machine, a preview
  * deployment and production each hand out a link back to themselves with nothing to configure.
+ *
+ * Except a loopback host in development: a link to localhost opens nothing on the phone it is
+ * meant for, so it is handed out at the machine's network address instead, same port.
  */
 export async function appOrigin(): Promise<string> {
   const headerList = await headers()
-  const host = headerList.get('x-forwarded-host') ?? headerList.get('host') ?? 'localhost:3000'
+  let host = headerList.get('x-forwarded-host') ?? headerList.get('host') ?? 'localhost:3000'
+  const hostname = host.replace(/:\d+$/, '')
+  const isLoopback = LOOPBACK.includes(hostname)
+
+  if (isLoopback && process.env.NODE_ENV === 'development') {
+    const address = localNetworkAddress()
+    if (address !== null) host = address + host.slice(hostname.length)
+  }
+
   const protocol =
     headerList.get('x-forwarded-proto') ??
-    (host.startsWith('localhost') || host.startsWith('127.0.0.1') ? 'http' : 'https')
+    (isLoopback || PRIVATE_NETWORK.test(host) ? 'http' : 'https')
 
   return `${protocol}://${host}`
 }
