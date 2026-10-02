@@ -84,7 +84,7 @@
 - [x] 9.4 Implement the new-activity indicator for when the user is on another screen; verify that it appears without interrupting what they are doing
 - [x] 9.5 Verify real-time isolation: check with tests that a client subscribed to trip A receives no event from trip B and that a removed participant stops receiving them
 
-## 10. Organiser dashboard, closing and export
+## 10. Organiser dashboard and closing
 
 - [x] 10.1 Implement the per-participant statement, reachable from the balances table: the expenses that charged them with the amount charged to that person, the expenses they fronted and the settlement payments, each section with its total, closing with the balance those totals produce; verify against the sample trip that Jon's charges add up to €176.55 and that his statement yields −€38.85, and that an expense split among a subset appears only in the statements of its split
 - [x] 10.2 Implement the organiser dashboard with total spent, the shared/contribution breakdown, the number of expenses, the average cost per person and the per-participant table; verify against a fixture trip with known figures and check the empty state raises no errors
@@ -92,7 +92,6 @@
 - [x] 10.4 Implement the expense detail with filters by payer and by type, showing the filtered total, presented as a table sortable by date and amount on desktop; verify the three filter cases, the €0.00 empty total, and that sorting works on both columns
 - [x] 10.5 Restrict the dashboard to the `admin` role, offering the `participant` the balances view, and give it a compact stacked layout on phone viewports; verify that a `participant` cannot reach the dashboard, that an `admin` can reach it at 360 pixels without horizontal scrolling, and that the figures match the desktop layout
 - [x] 10.6 Implement closing the trip from the interface and the closing summary screen reachable by every participant; verify that after closing, a `participant` sees the complete summary and that the trip becomes read-only
-- [ ] 10.7 Implement exporting the summary as shareable text and exporting the expenses as CSV; verify that the text includes total, cost per person, balances and settlement, and that the CSV has one row per expense with date, description, amount, payer, type and split participants
 
 ## 11. End-to-end verification and deployment
 

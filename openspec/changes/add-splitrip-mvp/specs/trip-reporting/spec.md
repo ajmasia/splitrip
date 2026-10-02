@@ -113,15 +113,3 @@ The system SHALL allow any participant of the trip, regardless of their role, to
 #### Scenario: Person outside the trip
 - **WHEN** someone who is not a participant of the trip attempts to access its closing summary
 - **THEN** the system denies access and discloses no trip data
-
-### Requirement: Exporting the summary
-The system SHALL allow any participant to export the trip summary in a shareable text format usable outside the application, including the total, the cost per person, the balances and the outstanding settlement.
-
-#### Scenario: Sharing the summary
-- **WHEN** a participant chooses to share a trip summary
-- **THEN** the system produces readable text with the total, the cost per person, each participant's balance and the settlement transfers
-- **AND** offers to copy or share it through the device's own mechanisms
-
-#### Scenario: Exporting the expense detail
-- **WHEN** an `admin` exports the trip expenses
-- **THEN** the system generates a CSV file with one row per expense including date, description, amount, payer, type and the participants in the split
