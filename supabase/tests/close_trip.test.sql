@@ -9,7 +9,7 @@
 
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(25);
+select plan(26);
 
 insert into auth.users (id, instance_id, aud, role, is_anonymous, created_at, updated_at)
 select id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', true, now(), now()
@@ -220,6 +220,28 @@ select throws_ok(
     $$update public.trips set status = 'closed', closed_at = now(), summary = null
       where id = 'aaaaaaaa-0000-0000-0000-00000000000b'$$,
     '23514', null, 'no trip is closed by hand and left without a summary');
+
+-- --------------------------------------------- a cost per person that does not divide evenly
+-- 20.00 among three is 6.666…, which the trip screen shows as 6.67. The frozen summary has to read
+-- the same, not the 6.66 that integer division would truncate it to.
+insert into public.trips (id, name) values ('aaaaaaaa-0000-0000-0000-00000000000c', 'Lisbon 2026');
+insert into public.participants (id, trip_id, display_name, role) values
+    ('eeeeeeee-0000-0000-0000-000000000001', 'aaaaaaaa-0000-0000-0000-00000000000c', 'Eva',  'admin'),
+    ('eeeeeeee-0000-0000-0000-000000000002', 'aaaaaaaa-0000-0000-0000-00000000000c', 'Fran', 'participant'),
+    ('eeeeeeee-0000-0000-0000-000000000003', 'aaaaaaaa-0000-0000-0000-00000000000c', 'Gus',  'participant');
+insert into public.expenses (id, trip_id, type, description, amount_cents, spent_on, paid_by, created_by) values
+    ('ffffffff-0000-0000-0000-000000000001', 'aaaaaaaa-0000-0000-0000-00000000000c', 'shared',
+     'Tram passes', 2000, '2026-08-01', 'eeeeeeee-0000-0000-0000-000000000001',
+     'eeeeeeee-0000-0000-0000-000000000001');
+insert into public.expense_shares (expense_id, participant_id, amount_cents) values
+    ('ffffffff-0000-0000-0000-000000000001', 'eeeeeeee-0000-0000-0000-000000000001', 667),
+    ('ffffffff-0000-0000-0000-000000000001', 'eeeeeeee-0000-0000-0000-000000000002', 667),
+    ('ffffffff-0000-0000-0000-000000000001', 'eeeeeeee-0000-0000-0000-000000000003', 666);
+
+select is(
+    public.trip_summary('aaaaaaaa-0000-0000-0000-00000000000c')->>'cost_per_person_cents',
+    '667',
+    'rounds a cost per person that does not divide evenly to the nearest cent');
 
 select * from finish();
 rollback;
