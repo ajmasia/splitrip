@@ -74,6 +74,14 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
             >
               {t('trip.balances')}
             </Link>
+            {trip.yourRole === 'admin' ? (
+              <Link
+                href={`/trips/${id}/dashboard`}
+                className="flex min-h-touch w-fit items-center rounded-card border border-rule px-4 text-sm font-semibold"
+              >
+                {t('trip.dashboard')}
+              </Link>
+            ) : null}
             <ActivityLink
               tripId={id}
               locale={locale}

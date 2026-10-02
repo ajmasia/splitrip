@@ -1,14 +1,29 @@
 import { intlLocale, type Locale, type Translate } from '@/lib/i18n'
 import { formatAmount } from '@/lib/money/amount'
+import { perPersonCents } from '@/lib/trips/dashboard'
 import type { TripSummary } from '@/lib/trips/queries'
 
-function Figure({ label, amount }: { label: string; amount: string }) {
+export function Figure({
+  label,
+  amount,
+  note,
+  className = '',
+}: {
+  label: string
+  amount: string
+  /** A line under the figure that qualifies it, such as the share of a total it stands for. */
+  note?: string
+  className?: string
+}) {
   return (
-    <div className="flex flex-col justify-between gap-1 rounded-card border border-rule bg-surface p-3 wide:p-4">
+    <div
+      className={`flex flex-col justify-between gap-1 rounded-card border border-rule bg-surface p-3 wide:p-4 ${className}`}
+    >
       <p className="font-mono text-[0.625rem] tracking-widest text-ink-faint uppercase wide:text-xs">
         {label}
       </p>
       <p className="tabular text-xl font-semibold wide:text-2xl">{amount}</p>
+      {note ? <p className="text-xs text-ink-soft">{note}</p> : null}
     </div>
   )
 }
@@ -31,8 +46,7 @@ export function TripFigures({
   t: Translate
 }) {
   const amount = (cents: number) => formatAmount(cents, intlLocale(locale))
-  const perPerson =
-    trip.participantCount === 0 ? 0 : Math.round(trip.sharedCents / trip.participantCount)
+  const perPerson = perPersonCents(trip)
 
   return (
     <div className="grid grid-cols-3 gap-2 wide:gap-3">

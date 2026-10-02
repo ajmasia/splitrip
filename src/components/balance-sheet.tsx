@@ -9,7 +9,7 @@ import type { ParticipantBalance } from '@/lib/trips/queries'
  * not an accident of the formatter: `Intl` writes the minus and says nothing about a plus, which
  * would leave "155,78 €" and "-275,51 €" looking like two different kinds of number.
  */
-function signed(netCents: number, locale: Locale) {
+export function signed(netCents: number, locale: Locale) {
   const amount = formatAmount(netCents, intlLocale(locale))
   return netCents > 0 ? `+${amount}` : amount
 }
@@ -21,7 +21,7 @@ function position(netCents: number, t: Translate) {
 }
 
 /** Red says it first, the word says it too: colour alone is not a statement everybody can read. */
-function tone(netCents: number) {
+export function tone(netCents: number) {
   return netCents < 0 ? 'text-debt' : ''
 }
 

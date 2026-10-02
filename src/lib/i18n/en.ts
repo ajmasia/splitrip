@@ -189,6 +189,7 @@ export const en: Catalogue = {
   'invite.closed': 'The trip is closed: nobody else comes in.',
 
   'trip.balances': 'View balances',
+  'trip.dashboard': 'Dashboard',
 
   'balances.heading': 'Balances',
   'balances.subtitle': 'Where the accounts stand right now, with everything recorded so far.',
@@ -232,6 +233,18 @@ export const en: Catalogue = {
   'statement.contributed.note':
     'What they put in without splitting it with anybody. It adds to what the trip cost and enters no balance, which is why it sits outside the arithmetic above.',
   'balances.statement.label': "See {name}'s statement",
+
+  'dashboard.heading': 'Trip dashboard',
+  'dashboard.subtitle': 'How the trip is doing in figures, without opening expenses one by one.',
+  'dashboard.figure.shared': 'Split',
+  'dashboard.figure.share': '{percent}% of the total',
+  'dashboard.figure.count': 'Expenses',
+  'dashboard.people': 'By participant',
+  'dashboard.column.contributed': 'Treated',
+  'dashboard.column.settled': 'Settlements',
+  'dashboard.note':
+    'On each row, what they fronted minus what they were charged, plus their settlements, gives the balance: what somebody sends to settle up adds to their balance and what they receive takes from it. What they treated the group to stays out of the sum.',
+  'dashboard.empty.body': 'The figures fill in as expenses are recorded.',
 
   'settlement.heading': 'How to settle up',
   'settlement.line': '{from} pays {to}',

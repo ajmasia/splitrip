@@ -192,6 +192,7 @@ export const es = {
   'invite.closed': 'El viaje está cerrado: ya no entra nadie más.',
 
   'trip.balances': 'Ver saldos',
+  'trip.dashboard': 'Panel',
 
   'balances.heading': 'Saldos',
   'balances.subtitle': 'Cómo van las cuentas ahora mismo, con todo lo apuntado hasta este momento.',
@@ -235,6 +236,18 @@ export const es = {
   'statement.contributed.note':
     'Lo que puso sin repartir con nadie. Suma a lo que costó el viaje y no entra en ningún saldo, por eso queda fuera de la cuenta de arriba.',
   'balances.statement.label': 'Ver el extracto de {name}',
+
+  'dashboard.heading': 'Panel del viaje',
+  'dashboard.subtitle': 'Cómo va el viaje en cifras, sin abrir los gastos uno a uno.',
+  'dashboard.figure.shared': 'Repartido',
+  'dashboard.figure.share': '{percent} % del total',
+  'dashboard.figure.count': 'Gastos',
+  'dashboard.people': 'Por participante',
+  'dashboard.column.contributed': 'Invitó',
+  'dashboard.column.settled': 'Pagos',
+  'dashboard.note':
+    'En cada fila, lo que adelantó menos lo que le tocó, más sus pagos, da el saldo: lo que alguien envía para saldar suma a su saldo y lo que recibe resta. Lo que invitó no entra en la cuenta.',
+  'dashboard.empty.body': 'Las cifras se irán llenando conforme se apunten gastos.',
 
   'settlement.heading': 'Cómo saldarlo',
   'settlement.line': '{from} le paga a {to}',
