@@ -4,6 +4,7 @@ import { AppShell } from '@/components/app-shell'
 import { TripList } from '@/components/trip-list'
 import { getViewer } from '@/lib/auth/viewer'
 import { getCopy } from '@/lib/i18n/server'
+import { isOperator } from '@/lib/operators/queries'
 import { listTrips } from '@/lib/trips/queries'
 
 export default async function HomePage({
@@ -33,7 +34,9 @@ export default async function HomePage({
     )
   }
 
-  const trips = await listTrips()
+  // Asked here rather than in the shared frame: this screen already knows who is looking, so it
+  // costs one call on one page instead of one on every page.
+  const [trips, operator] = await Promise.all([listTrips(), isOperator(viewer)])
 
   // Set by whoever deleted a trip, and by the trip screens that saw it go. The trip's name is not
   // repeated: it no longer exists anywhere to be read.
@@ -74,6 +77,15 @@ export default async function HomePage({
         ) : (
           <TripList trips={trips} locale={locale} t={t} />
         )}
+
+        {operator ? (
+          <Link
+            href="/operator/feedback"
+            className="flex min-h-touch w-fit items-center rounded-card border border-rule px-4 text-ink-soft"
+          >
+            {t('operator.feedback.link')}
+          </Link>
+        ) : null}
       </div>
     </AppShell>
   )
