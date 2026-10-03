@@ -473,7 +473,6 @@ render_gateway() {
     >/etc/nginx/splitrip-studio.htpasswd
   chown root:www-data /etc/nginx/splitrip-studio.htpasswd
   chmod 640 /etc/nginx/splitrip-studio.htpasswd
-  rm -f /etc/nginx/sites-enabled/default
   nginx -t -q
 }
 
