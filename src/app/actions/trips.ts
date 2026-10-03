@@ -104,3 +104,18 @@ export async function deleteTrip(
   revalidatePath('/')
   redirect(TRIP_DELETED_LANDING)
 }
+
+/**
+ * Whether the reader can still read the trip, asked with their own session.
+ *
+ * The trip's channel is public, so an announcement that it was deleted is a hint and not a fact:
+ * the screen asks here before leaving, and an announcement about a trip that still exists changes
+ * nothing.
+ */
+export async function tripIsReadable(tripId: string): Promise<boolean> {
+  const supabase = await createSupabaseServerClient()
+  const { data, error } = await supabase.from('trips').select('id').eq('id', tripId).maybeSingle()
+  // A failed read is not evidence that the trip is gone; staying put is the safe answer.
+  if (error) return true
+  return data !== null
+}

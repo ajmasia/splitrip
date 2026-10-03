@@ -12,6 +12,7 @@ Shared travel expenses, settled in seconds. A mobile-first PWA where travellers 
 - Mark an expense as a contribution when someone picks up the tab as a gift: it counts towards the trip total but creates no debt.
 - See at any moment what the trip has cost and who owes whom, with the minimum set of transfers that settles everything.
 - Record settlement payments as they happen, so balances stay honest.
+- Delete a trip for good once it has served its purpose, or was never meant to exist: the organiser types its name to confirm, and it disappears for everybody on it, including anybody who has it open at that moment.
 - Everything updates in real time across everyone's phones, with an activity feed of who did what.
 - Available in Spanish and English, defaulting to Spanish.
 

@@ -20,6 +20,9 @@ under **Added**, corrections under **Fixed**, and changes to how it is built or 
 - An `update` command on the instance, which moves it to the latest release or to one asked for,
   preparing everything while the running release keeps serving and keeping every secret and
   session.
+- An organiser can delete a trip, open or closed, after typing its name to confirm. It goes for
+  every participant with everything in it and cannot be undone; whoever has it open is taken back
+  to their list with a notice that it was deleted.
 
 ### Changed
 

@@ -3,7 +3,9 @@
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
+import { tripIsReadable } from '@/app/actions/trips'
 import { clearActivity, noteActivity } from '@/lib/realtime/activity'
+import { TRIP_DELETED_EVENT, TRIP_DELETED_LANDING } from '@/lib/realtime/events'
 import { setLiveConnection } from '@/lib/realtime/status'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 
@@ -107,6 +109,16 @@ export function TripChannel({
         },
       )
     }
+
+    // A deleted trip cannot be announced through Row Level Security — everybody it would be checked
+    // against went with it — so it arrives as a broadcast on this public channel instead. Anybody
+    // who knows the trip's id could send one, which makes it a reason to ask, never an answer: the
+    // reader leaves only if their own session can no longer read the trip.
+    channel.on('broadcast', { event: TRIP_DELETED_EVENT }, () => {
+      void tripIsReadable(tripId).then((readable) => {
+        if (!cancelled && !readable) router.replace(TRIP_DELETED_LANDING)
+      })
+    })
 
     // The socket authorises itself once, when it opens, and Row Level Security is what decides
     // whether an event reaches this reader at all. Opening it as an anonymous stranger would
