@@ -1,0 +1,17 @@
+[Unit]
+Description=Splitrip: Supabase Auth
+After=network-online.target postgresql.service
+Wants=network-online.target
+Requires=postgresql.service
+
+[Service]
+User=splitrip-auth
+EnvironmentFile=/opt/splitrip/env/auth.env
+WorkingDirectory=/opt/splitrip/components/auth/current
+ExecStart=/opt/splitrip/components/auth/current/auth
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

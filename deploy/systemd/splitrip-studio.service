@@ -1,0 +1,17 @@
+[Unit]
+Description=Splitrip: Supabase Studio
+After=network-online.target splitrip-meta.service
+Wants=network-online.target splitrip-meta.service
+
+[Service]
+User=splitrip-studio
+EnvironmentFile=/opt/splitrip/env/studio.env
+StateDirectory=splitrip-studio
+WorkingDirectory=/opt/splitrip/components/studio/current
+ExecStart=/opt/splitrip/components/node/current/bin/node apps/studio/server.js
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

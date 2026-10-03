@@ -1,0 +1,16 @@
+[Unit]
+Description=Splitrip: the application
+After=network-online.target nginx.service splitrip-auth.service splitrip-rest.service
+Wants=network-online.target
+
+[Service]
+User=splitrip-app
+EnvironmentFile=/opt/splitrip/env/app.env
+WorkingDirectory=/opt/splitrip/current/.next/standalone
+ExecStart=/opt/splitrip/components/node/current/bin/node server.js
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

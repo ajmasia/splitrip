@@ -1,0 +1,18 @@
+[Unit]
+Description=Splitrip: PostgREST
+After=network-online.target postgresql.service splitrip-auth.service
+Wants=network-online.target
+Requires=postgresql.service
+
+[Service]
+User=splitrip-rest
+EnvironmentFile=/opt/splitrip/env/rest.env
+ExecStart=/opt/splitrip/components/postgrest/current/postgrest
+# Reloads the schema cache without dropping connections, after migrations.
+ExecReload=/bin/kill -USR1 $MAINPID
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

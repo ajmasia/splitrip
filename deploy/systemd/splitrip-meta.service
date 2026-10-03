@@ -1,0 +1,17 @@
+[Unit]
+Description=Splitrip: postgres-meta, for Studio
+After=network-online.target postgresql.service
+Wants=network-online.target
+Requires=postgresql.service
+
+[Service]
+User=splitrip-meta
+EnvironmentFile=/opt/splitrip/env/meta.env
+WorkingDirectory=/opt/splitrip/components/meta/current
+ExecStart=/opt/splitrip/components/node/current/bin/node dist/server/server.js
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

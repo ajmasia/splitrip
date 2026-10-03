@@ -1,0 +1,19 @@
+# The services behind the gateway answer only on this host. Most are told to listen on 127.0.0.1;
+# Realtime's web server cannot be, and these rules keep every one of them unreachable from outside
+# whatever its own settings say. Only the application (3000), the API (8000), Studio (8001) and SSH
+# are left open.
+#
+# A table of its own, replaced as a whole on every load, so it neither touches nor is touched by any
+# other rules on the host.
+
+table inet splitrip
+delete table inet splitrip
+
+table inet splitrip {
+    chain input {
+        type filter hook input priority filter; policy accept;
+
+        iifname "lo" accept
+        tcp dport { 3001, 3002, 3011, 4000, 4369, 5369, 5432, 8080, 9999 } drop
+    }
+}

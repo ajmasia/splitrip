@@ -1,0 +1,23 @@
+[Unit]
+Description=Splitrip: Supabase Realtime
+After=network-online.target postgresql.service
+Wants=network-online.target
+Requires=postgresql.service
+
+[Service]
+User=splitrip-realtime
+EnvironmentFile=/opt/splitrip/env/realtime.env
+StateDirectory=splitrip-realtime
+WorkingDirectory=/opt/splitrip/components/realtime/current
+# What the image's run.sh does before starting: its own migrations, then the single tenant of a
+# self-hosted stack, which the seed creates or leaves as it is.
+ExecStartPre=/opt/splitrip/components/realtime/current/bin/migrate
+ExecStartPre=/opt/splitrip/components/realtime/current/bin/realtime eval Realtime.Release.seeds(Realtime.Repo)
+ExecStart=/opt/splitrip/components/realtime/current/bin/server
+LimitNOFILE=10000
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target
