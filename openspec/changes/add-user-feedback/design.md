@@ -60,7 +60,7 @@ The server action reads `APP_VERSION` and the resolved interface language itself
 
 ### The operators' screen and how they reach it
 
-`/operator/feedback` checks `is_operator()` and otherwise renders a not-found, so its existence is not confirmed to anybody else. The list reads `feedback` directly — RLS already limits it to operators — newest first, joined to the trip name when there is a trip. The link to it appears on the home screen for operators only; the home screen already asks who the viewer is, so the check costs one call there rather than one on every page.
+`/operator/feedback` checks `is_operator()` and otherwise renders a not-found, so its existence is not confirmed to anybody else. The list comes from `operator_feedback()`, a `security definer` function guarded by `is_operator()` that returns every message newest first with the name of its trip. Reading the table directly would be enough for the messages, but the trip's name sits behind the trip's own policies, which an operator on no trip does not pass; the function hands over that name and nothing else of the trip, and returns nothing to anybody who is not an operator. The link to it appears on the home screen for operators only; the home screen already asks who the viewer is, so the check costs one call there rather than one on every page.
 
 ## Risks / Trade-offs
 
