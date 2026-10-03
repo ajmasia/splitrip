@@ -62,6 +62,15 @@ grant usage on schema auth to anon, authenticated, service_role;
 
 create schema if not exists _realtime authorization supabase_admin;
 
+-- Realtime keeps its own tenant record in _realtime, and in realtime the tables and functions it
+-- checks each subscriber's access with. It creates those itself, but not the schema: Supabase's
+-- image has it already, and without it the tenant never comes up and every socket is dropped.
+create schema if not exists realtime authorization supabase_admin;
+grant usage on schema realtime to postgres, anon, authenticated, service_role;
+alter default privileges for role supabase_admin in schema realtime grant all on tables to postgres;
+alter default privileges for role supabase_admin in schema realtime grant all on sequences to postgres;
+alter default privileges for role supabase_admin in schema realtime grant all on routines to postgres;
+
 grant usage on schema public to postgres, anon, authenticated, service_role;
 alter default privileges in schema public grant all on tables to postgres, anon, authenticated, service_role;
 alter default privileges in schema public grant all on functions to postgres, anon, authenticated, service_role;

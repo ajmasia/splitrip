@@ -44,6 +44,7 @@ wait_for_services() {
 switch_to() {
   local target=$1 deploy=$2
   configure_postgres
+  bootstrap_database "$deploy"
   render_service_envs
   render_gateway "$deploy"
   install_units "$deploy"
