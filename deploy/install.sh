@@ -34,8 +34,9 @@ preflight() {
   [ "$(id -u)" = 0 ] || early_fail 'Run the installer as root.'
   # shellcheck source=/dev/null
   . /etc/os-release
-  [ "${ID:-}" = debian ] && [ "${VERSION_ID:-}" = 13 ] ||
+  if [ "${ID:-}" != debian ] || [ "${VERSION_ID:-}" != 13 ]; then
     early_fail "The installer supports Debian 13; this is ${PRETTY_NAME:-an unknown system}."
+  fi
   [ "$(dpkg --print-architecture)" = amd64 ] ||
     early_fail 'The installer supports amd64 hosts only.'
   # Proxmox VE is Debian too; the instance belongs in a container on it, never on the host itself.
