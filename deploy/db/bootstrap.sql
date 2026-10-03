@@ -22,7 +22,7 @@
 select format('create role %I', r)
 from unnest(array[
     'supabase_admin', 'authenticator', 'supabase_auth_admin', 'supabase_realtime_admin',
-    'anon', 'authenticated', 'service_role'
+    'anon', 'authenticated', 'service_role', 'dashboard_user'
 ]) as r
 where not exists (select from pg_roles where rolname = r)
 \gexec
@@ -37,6 +37,10 @@ alter role authenticated nologin noinherit;
 alter role service_role nologin noinherit bypassrls;
 alter role authenticator with login noinherit;
 grant anon, authenticated, service_role to authenticator;
+
+-- Studio's role in Supabase's image. Nothing logs in as it here, but Realtime's own migrations
+-- grant it access to their tables and fail when it is missing.
+alter role dashboard_user with nologin createdb createrole replication;
 
 alter role anon set statement_timeout = '3s';
 alter role authenticated set statement_timeout = '8s';
