@@ -214,7 +214,7 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
           from the controls used every day.
         */}
         {trip.yourRole === 'admin' ? (
-          <section className="flex flex-col gap-3 border-t border-rule pt-6">
+          <section className="flex flex-wrap items-start gap-3 border-t border-rule pt-6">
             {trip.status === 'open' ? (
               <CloseTripButton tripId={id} locale={locale} />
             ) : (

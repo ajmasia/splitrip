@@ -32,7 +32,7 @@ export function CloseTripButton({ tripId, locale }: { tripId: string; locale: Lo
   return (
     <form
       action={action}
-      className="flex max-w-prose flex-col gap-3 rounded-card border border-rule bg-surface p-4"
+      className="flex max-w-prose basis-full flex-col gap-3 rounded-card border border-rule bg-surface p-4"
     >
       <input type="hidden" name="trip_id" value={tripId} />
       <p className="text-ink-soft">{t('trip.close.body')}</p>
