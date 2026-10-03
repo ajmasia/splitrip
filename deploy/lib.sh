@@ -522,9 +522,17 @@ install_units() {
 
 # Database -----------------------------------------------------------------------------------------
 
+# Writes Splitrip's PostgreSQL settings and restarts the server only when they changed, so the
+# installer and `update` can both apply them and an update that changes nothing here does not
+# interrupt the database.
 configure_postgres() {
-  local conf=/etc/postgresql/17/main/conf.d/splitrip.conf
-  cat >"$conf" <<EOF
+  local conf=/etc/postgresql/17/main/conf.d/splitrip.conf next allowed
+  systemctl enable postgresql >/dev/null 2>&1
+  systemctl start postgresql
+  wait_for 'PostgreSQL' 60 runuser -u postgres -- pg_isready -q -h 127.0.0.1
+
+  next=$(mktemp)
+  cat >"$next" <<SETTINGS
 # Splitrip: local connections only, and the logical decoding Realtime reads changes through.
 listen_addresses = '127.0.0.1'
 port = $PG_PORT
@@ -532,8 +540,26 @@ wal_level = logical
 max_replication_slots = 10
 max_wal_senders = 10
 max_slot_wal_keep_size = 1024
-EOF
-  systemctl enable postgresql >/dev/null
+SETTINGS
+
+  # Recent PostgreSQL releases let replication use only the output plugins listed here, and
+  # wal2json is not among those they list by default. The list is taken from the server's built-in
+  # default rather than its current value, which this file sets, so the result is the same on
+  # every run. A release without the setting needs nothing.
+  # Asked over the local socket: the superuser has no password yet on a first install.
+  allowed=$(runuser -u postgres -- psql -X -At -d postgres -c \
+    "select 'x' || coalesce(boot_val, '') from pg_settings where name = 'output_plugin_libraries'")
+  if [ -n "$allowed" ]; then
+    allowed=${allowed#x}
+    printf "output_plugin_libraries = '%s'\n" "${allowed:+$allowed, }wal2json" >>"$next"
+  fi
+
+  if cmp -s "$next" "$conf"; then
+    rm -f "$next"
+    return 0
+  fi
+  install -m 644 "$next" "$conf"
+  rm -f "$next"
   systemctl restart postgresql
   wait_for 'PostgreSQL' 60 runuser -u postgres -- pg_isready -q -h 127.0.0.1 -p "$PG_PORT"
 }
