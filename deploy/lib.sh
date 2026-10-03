@@ -100,6 +100,25 @@ state_set() {
   fi
 }
 
+# System packages ----------------------------------------------------------------------------------
+
+# What a release needs from Debian. The installer installs it and `update` installs it again before
+# preparing a release, so a release that comes to need a new package brings it to every instance it
+# is installed on; apt leaves alone whatever is already there.
+#   wal2json: Realtime reads the published changes through it; Supabase's image bundles it.
+SYSTEM_PACKAGES=(
+  ca-certificates curl git xz-utils openssl locales libncurses6 libstdc++6
+  postgresql-17 postgresql-17-wal2json nginx nftables
+)
+
+install_system_packages() {
+  DEBIAN_FRONTEND=noninteractive apt-get update -qq
+  DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "${SYSTEM_PACKAGES[@]}" >/dev/null
+  # Realtime's runtime expects this locale.
+  sed -i '/^# *en_US.UTF-8 UTF-8/s/^# *//' /etc/locale.gen
+  locale-gen >/dev/null
+}
+
 # Users --------------------------------------------------------------------------------------------
 
 create_service_users() {

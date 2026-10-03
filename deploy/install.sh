@@ -165,15 +165,6 @@ ask_questions() {
 
 # Steps --------------------------------------------------------------------------------------------
 
-install_packages() {
-  apt-get install -y -qq \
-    xz-utils openssl locales libncurses6 libstdc++6 \
-    postgresql-17 postgresql-17-wal2json nginx nftables >/dev/null
-  # Realtime's runtime expects this locale.
-  sed -i '/^# *en_US.UTF-8 UTF-8/s/^# *//' /etc/locale.gen
-  locale-gen >/dev/null
-}
-
 write_configuration() {
   write_config "$SPLITRIP_APP_DOMAIN" "$SPLITRIP_API_DOMAIN"
   load_config
@@ -252,7 +243,7 @@ EOF
 }
 
 ask_questions
-step 'Installing system packages' install_packages
+step 'Installing system packages' install_system_packages
 step 'Creating the service users' create_service_users
 step 'Installing the pinned components' install_components
 step 'Selecting the pinned components' switch_components

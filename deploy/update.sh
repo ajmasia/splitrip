@@ -60,6 +60,7 @@ apply() {
   . "$deploy/versions.env"
   load_config
 
+  step "Installing the system packages $target needs" install_system_packages
   step "Installing the components $target pins" install_components
   step "Building Splitrip $target" build_release "$release"
   if release_older "$target" "$previous"; then
