@@ -4,72 +4,98 @@ See proposal.md for why; the behaviour is in `specs/self-hosted-deployment`.
 
 What the repository already settles, and what it gets wrong for this target:
 
-- **The MVP design expected this.** Its decision not to containerise the application ends with "revisit this if self-hosting becomes a goal". It has: the application now needs a production image, built and run for a target that exists.
-- **`NEXT_PUBLIC_*` values are inlined at build time.** `src/lib/supabase/env.ts` reads `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, and the browser bundle carries them as literals. The image therefore has to be built on the host, after the domain and the keys are known; a prebuilt image cannot serve two instances.
+- **The MVP design expected this.** Its decision not to containerise the application ends with "revisit this if self-hosting becomes a goal". It has, and the answer is still not a container: the instance runs inside an LXC, which is already a container, and everything in it runs as the host's own services.
+- **`NEXT_PUBLIC_*` values are inlined at build time.** `src/lib/supabase/env.ts` reads `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, and the browser bundle carries them as literals. The application therefore has to be built on the host, after the domain and the keys are known; one build cannot serve two instances.
 - **Anonymous identities are minted by the application server.** `src/app/actions/join.ts` calls `signInAnonymously()` server-side, so Supabase Auth sees the application's address on every anonymous sign-in, and behind a reverse proxy it would see the proxy's on the browser's own calls. Per-address limits counted that way are one limit for the whole instance.
-- **Local Auth settings live in `supabase/config.toml`**, which the self-hosted stack does not read; production Auth is configured through the environment of the self-hosted services.
+- **Local Auth settings live in `supabase/config.toml`**, which a production install does not read; production Auth is configured through its own environment.
 - **The seed is development data**, including an account with a published password. It must never reach production.
+- **The migrations ask little of the database.** Beyond plain SQL they use `auth.uid()` and `auth.jwt()`, which Auth's own migrations create, `extensions.gen_random_bytes` from `pgcrypto`, and the `supabase_realtime` publication. Stock PostgreSQL 17 with a short bootstrap is enough; Supabase's own Postgres build, with its dozens of extensions, is not needed.
 
 ## Goals / Non-Goals
 
 **Goals:**
 - One command on a Proxmox host to a working instance; one command in the container to bring it up to date.
-- Stay on Supabase's own self-hosting path, pinned, so upgrading it means moving a pin, not maintaining a fork.
+- Run everything natively in the container — no container runtime inside it — so that the LXC's resources go to the services and not to a second layer of isolation.
+- Stay on Supabase's own components, each pinned, so upgrading means moving pins, not maintaining a fork of their code.
 - Expose to the reverse proxy only what the browser needs.
 
 **Non-Goals:**
-- Supporting distributions other than Debian, or container runtimes other than Docker.
+- Supporting distributions other than Debian 13, or virtual machines instead of an LXC.
 - Zero-downtime updates. A restart of a few seconds is acceptable for this instance.
+- Supabase services Splitrip does not use: storage, the image proxy, edge functions, analytics, the connection pooler.
 
 ## Decisions
 
+### Native in the LXC, no container runtime
+
+Every component runs as a systemd service of the container: PostgreSQL, Auth, PostgREST, Realtime, postgres-meta, Studio, the nginx gateway and the application. Each runs under its own system user and, except the gateway and the application, listens only on `127.0.0.1`. Realtime's web server cannot be bound to one address, so an nftables table of the instance's own, loaded by a oneshot unit, drops connections to every internal port that do not come from the host itself, whatever each service's settings say.
+
+*Alternative considered:* Supabase's self-hosting `docker compose` stack inside the LXC. Rejected: Docker in an unprivileged LXC needs `nesting` and `keyctl`, depends on the host's kernel and storage driver, and adds a layer of overhead and failure modes to a small machine whose resources should go to the services. It would also bring Kong and the services Splitrip does not use.
+
 ### Files and layout
 
-The repository gains `deploy/`: `proxmox/splitrip-lxc.sh` (host layer), `install.sh` (installer), `update.sh` (installed as `/usr/local/bin/update`), `compose.app.yml`, `gateway.conf`, `supabase.version` (the pinned Supabase self-hosting release) and the environment template; and a root `Dockerfile`.
+The repository gains `deploy/`: `proxmox/splitrip-lxc.sh` (host layer), `install.sh` (installer), `update.sh` (installed as `/usr/local/bin/update`), `versions.env` (the pins), `db/bootstrap.sql`, `nginx/` (the gateway's configuration), `systemd/` (one unit per service) and the environment templates.
 
-On the host everything lives under `/opt/splitrip`: `releases/<version>/` holds a checkout of each installed release, `current` points at the running one, `supabase/` holds the self-hosting stack, and `splitrip.env` (mode `600`, owned by root) holds every secret and setting. A `state` file records the installed application release and Supabase pin.
+On the host everything lives under `/opt/splitrip`: `releases/<version>/` holds a checkout and build of each installed release and `current` points at the running one; `components/<name>/<version>/` holds each Supabase component, with `components/<name>/current` pointing at the version in use; `splitrip.env` (mode `600`, owned by root) holds every secret and setting, and `env/<service>.env` (mode `600`, root) the subset each service needs, read by systemd through `EnvironmentFile` before it drops privileges. A `state` file records the installed application release and the pins in use.
 
 ### How the scripts are fetched
 
 As with the Proxmox VE helper scripts, the host script is run straight from the repository: `bash -c "$(curl -fsSL https://raw.githubusercontent.com/<owner>/splitrip/main/deploy/proxmox/splitrip-lxc.sh)"`. It downloads `install.sh` from the release it is installing and runs it inside the container with `pct exec`. Releases are the repository's version tags; the installer checks out a tag, never a branch.
 
-*Alternative considered:* a published installer image. Rejected: the build has to happen on the host anyway, so an image would only wrap a checkout.
-
 ### The container
 
-An unprivileged Debian LXC with `nesting=1,keyctl=1`, which is what Docker inside an unprivileged container needs; defaults of 2 cores, 4 GB of memory, 1 GB of swap and 20 GB of disk, with DHCP on `vmbr0`. The script asks for identifier, bridge, address and storage, offering these defaults, and refuses an identifier `pct`/`qm` already know.
+An unprivileged Debian 13 LXC with `nesting=1`, which systemd inside a recent Debian needs; no `keyctl`, since nothing in it uses kernel keyrings. Defaults of 2 cores, 4 GB of memory, 1 GB of swap and 20 GB of disk, with DHCP on `vmbr0`; the memory is sized mostly for building the application, and a task measures what the running instance actually uses. The script asks for identifier, bridge, address and storage, offering these defaults, and refuses an identifier `pct`/`qm` already know.
 
-### Supabase: upstream's self-hosting stack, pinned
+### Pins: one file, versions from one upstream release
 
-The installer fetches the `docker/` directory of Supabase's repository at the commit named in `supabase.version`, writes its `.env` from the generated secrets and starts it with `docker compose`. Services Splitrip does not use (storage, image proxy, edge functions) are left out through a compose override rather than by editing upstream's file, so moving the pin stays a matter of fetching a different commit.
+`deploy/versions.env` names a version for each component: Auth (GoTrue), PostgREST, Realtime, postgres-meta, Studio, Node, the Supabase CLI and `crane`. The Supabase versions are taken together from one release of Supabase's self-hosting stack, so the combination is one upstream has tested; moving to a newer stack means copying its versions into this file. Release binaries are verified against checksums recorded beside their versions, and images are referenced by digest, never by tag.
 
-*Alternative considered:* a hand-written compose with only the services Splitrip uses. Rejected: it would be a fork of a dozen services to keep in step with upstream's upgrades, exactly what the MVP design declined to own.
+### PostgreSQL: Debian's own, bootstrapped
 
-### Exposing the API: a gateway in front of Kong
+Debian 13 ships PostgreSQL 17, the version the local stack uses. `db/bootstrap.sql`, run once as the superuser, creates what Supabase's components and the migrations assume: the roles `supabase_admin`, `authenticator` (with login, granted `anon`, `authenticated` and `service_role`), `supabase_auth_admin` owning the `auth` schema, `supabase_realtime_admin`, and `postgres` as the migrations' owner; the `extensions` schema with `pgcrypto` in it; and the `supabase_realtime` publication. It is written to be safe to run again. The server listens on `127.0.0.1` only.
 
-In the self-hosted stack, Kong serves both the API and the Studio admin console on the same port. Publishing that port through the reverse proxy would publish Studio. A small nginx container, the gateway, listens on its own port and forwards only `/auth/v1/`, `/rest/v1/` and `/realtime/v1/` (with websocket upgrade) to Kong, answering anything else with a not-found. The reverse proxy is told to forward the API domain to the gateway; Kong's own port, with Studio behind its basic-auth credentials, is reachable only on the local network.
+PostgREST exposes `public` alone: `graphql_public` needs `pg_graphql`, which is not packaged for Debian and which the application does not use.
+
+*Alternative considered:* extracting Supabase's Postgres build. Rejected: it is a full PostgreSQL with its own data layout and extensions, far more than the migrations need, and would replace a distribution package that gets security updates.
+
+### Auth and PostgREST: release binaries
+
+Both publish static Linux binaries for each release. The installer downloads the pinned ones, verifies them and runs them under systemd. Auth runs its own migrations on start, creating the `auth` schema's tables and functions.
+
+### Realtime, Studio and postgres-meta: releases taken from the pinned images
+
+None of the three publishes a build outside its container image. `crane export` — a single static binary, pinned — downloads the image by digest and unpacks its filesystem without a container runtime; the installer keeps only the application directory: Realtime's Elixir release, which carries its own Erlang runtime, and the Node builds of Studio and postgres-meta, run with the pinned Node. They are then ordinary programs under systemd.
+
+Realtime is started with its self-hosting settings, which seed the single tenant the stack uses; the tenant is chosen by the request's host, so the gateway sends Realtime that tenant's name as `Host`, as Kong does upstream.
+
+*Alternative considered:* compiling Realtime from source. Rejected: it needs Erlang, Elixir and Rust in the container and a long build on every install and update, for the same program the image already carries.
+
+### The gateway: nginx instead of Kong
+
+Kong's work in the self-hosted stack is routing and checking the API key; Auth and PostgREST verify the JWTs themselves. nginx, installed from Debian, takes the routing and has two listeners:
+
+- **The API port**, the one the reverse proxy publishes, forwards only `/auth/v1/`, `/rest/v1/` and `/realtime/v1/` (with websocket upgrade) to their services, and answers anything else with a not-found.
+- **The Studio port**, reachable on the local network only, serves Studio behind basic authentication with the generated credentials, and forwards Studio's own calls to postgres-meta and the API.
 
 *Alternative considered:* custom locations in the reverse proxy. Rejected: it would make keeping Studio private depend on the operator configuring the proxy exactly right by hand.
 
-### The application: a standalone image built on the host
+### The application: the standalone server under systemd
 
-`next.config.ts` gains `output: 'standalone'`. The `Dockerfile` builds with the two public values as build arguments and runs the standalone server as a non-root user. `compose.app.yml` runs it on the Supabase stack's network with `restart: unless-stopped`, tagged with its release, on port 3000. Docker starts on boot, and with it every container.
+`next.config.ts` gains `output: 'standalone'`. The installer builds the release with the pinned Node, the two public values in its environment, places the static assets beside the standalone server and runs it under systemd as its own user, on port 3000.
 
-Server-side, the application reaches Supabase on the internal network (`http://kong:8000`), not through the public domain, which avoids sending every server request out through the reverse proxy and back. Because `@supabase/ssr` derives the session cookie's name from the URL, both the browser and the server client are given the same explicit cookie name, so a session written by one is read by the other. A server-only `SUPABASE_INTERNAL_URL` selects the internal address; when it is absent, as in development, the public URL is used as today.
+Server-side, the application reaches Supabase at the gateway's local address, not through the public domain, which avoids sending every server request out through the reverse proxy and back. Because `@supabase/ssr` derives the session cookie's name from the URL, both the browser and the server client are given the same explicit cookie name, so a session written by one is read by the other. A server-only `SUPABASE_INTERNAL_URL` selects the internal address; when it is absent, as in development, the public URL is used as today.
 
 ### Rate limits that see the visitor
 
-The reverse proxy sets `X-Forwarded-For`; the gateway passes it on. The server-side Supabase client forwards the visitor's address from the incoming request in that same header on every Auth call, and Supabase Auth is configured to take the client address from it. Anonymous sign-ins are capped per address at the same 30 an hour used locally.
-
-The header's exact form after each hop — the visitor's address alone, or a list — decides what Auth keys the limit on; a task verifies it against the running stack with two addresses before this is considered done.
+The reverse proxy appends the visitor's address to `X-Forwarded-For`. The server-side Supabase client forwards the last entry of the incoming request's header — the one the reverse proxy appended — on every call. The gateway, trusting forwarding headers only from local and private addresses, takes the visitor's address from that same last entry and passes it on as the whole header, so Auth sees one address per visitor whichever path a call took, and nothing the visitor wrote. Auth is configured to read its client address from that header. Anonymous sign-ins are capped per address at the same 30 an hour used locally; a task verifies it against the running instance with two addresses before this is considered done.
 
 ### Auth configuration
 
-Through the self-hosted stack's environment: the site address is `https://<app domain>`, the only redirect allowed is the application's domain, the external API address is `https://<api domain>`, anonymous sign-ins are enabled, email confirmation is off and no mail server is set. Public email sign-up should be off, since accounts are created by the operator; whether Auth accepts anonymous sign-ins with email sign-up disabled is verified in a task, and if it does not, email sign-up stays on — an account alone still cannot open a trip without being on `trip_creators`.
+Through its service environment: the site address is `https://<app domain>`, the only redirect allowed is the application's domain, the external API address is `https://<api domain>`, anonymous sign-ins are enabled, email confirmation is off and no mail server is set. Public email sign-up should be off, since accounts are created by the operator; whether Auth accepts anonymous sign-ins with email sign-up disabled is verified in a task, and if it does not, email sign-up stays on — an account alone still cannot open a trip without being on `trip_creators`.
 
 ### Migrations
 
-The Supabase CLI, pinned and downloaded as a single binary, runs `supabase db push --db-url` against the stack's database on the local network. It records applied migrations in Supabase's own history table, so a second run applies only what is new. `supabase/seed.sql` is never run.
+The Supabase CLI, pinned and downloaded as a single binary, runs `supabase db push --db-url` against the local database. It records applied migrations in Supabase's own history table, so a second run applies only what is new. `supabase/seed.sql` is never run.
 
 ### The first account
 
@@ -77,18 +103,19 @@ The installer creates it through Auth's admin endpoint with the service key, alr
 
 ### `update`
 
-`update [version]` resolves the target (the latest version tag unless one is given) and exits early when it is already installed. Otherwise it checks the release out into `releases/<version>/` and builds its image while the current one keeps serving. When the release's `supabase.version` differs from the installed pin, it fetches the new stack, keeping `splitrip.env`, and pulls its images. It then applies the new migrations, and only then switches the application to the new image and restarts. A failure at any step before the switch leaves the previous release running and names the step. The previous release's checkout and image are kept, so going back is `update <previous version>`.
+`update [version]` resolves the target (the latest version tag unless one is given) and exits early when it is already installed. Otherwise it checks the release out into `releases/<version>/` and builds it while the current one keeps serving. For each component whose pin in the release's `versions.env` differs from the one in use, it installs the new version beside the old one in `components/<name>/<version>/`. It then applies the new migrations, and only then switches `current` for the application and each moved component and restarts their services. A failure at any step before the switch leaves the previous release running and names the step. Previous releases and component versions are kept, so going back is `update <previous version>`.
 
-Migrations are applied before the switch on the understanding, already held by the MVP, that migrations are additive within a release: the running release tolerates the new schema for the seconds until the switch.
+Migrations are applied before the switch on the understanding, already held by the MVP, that migrations are additive within a release: the running release tolerates the new schema for the seconds until the switch. Auth and Realtime run their own migrations when they start on a new version; the same rule is relied on from upstream.
 
 ## Risks / Trade-offs
 
-- **An unprivileged LXC running Docker** depends on `nesting` and `keyctl` and occasionally on the host's kernel. → The host script sets both; the installer checks that Docker can start a container before going further and stops with a clear message if not.
-- **Self-hosted Supabase is heavy** for a small instance. → 4 GB by default, with unused services left out; the defaults are prompts, not constants.
+- **We now own the composition of Supabase's components**, which upstream's compose file did for us. → Versions are always taken together from one upstream self-hosting release, and the configuration of each service follows upstream's compose file for that release.
+- **Programs taken from images depend on the container's libraries**: Realtime's release and the Node modules of Studio and postgres-meta are built against their image's glibc and OpenSSL. → The container runs the Debian release those images are based on; a task verifies each starts on it, and moving pins re-runs that check.
+- **Self-hosted Supabase is still several services** for a small instance. → Only those Splitrip uses are installed, with no container layer; the defaults are prompts, not constants, and a task measures real memory use.
 - **A migration that is not additive** would break the running release during `update`. → The rule is the MVP's; a release that needs otherwise says so in its notes and is updated with the service stopped.
 - **A domain that resolves only inside the local network** cannot obtain a certificate by HTTP challenge. → The printed instructions say a DNS challenge is needed in that case; obtaining the certificate stays with the reverse proxy.
 - **The repository must be public** for the host script and the installer to fetch it without credentials. → It is published under the AGPL; a private fork would need a token, not covered here.
-- **Secrets in one file.** → Root-only, never printed except the Studio credentials at the end of the install, and covered by Proxmox's backups of the container, which are themselves the operator's to protect.
+- **Secrets in one file.** → Root-only, split into root-only files per service, never printed except the Studio credentials at the end of the install, and covered by Proxmox's backups of the container, which are themselves the operator's to protect.
 
 ## Migration Plan
 
@@ -98,4 +125,4 @@ This adds a deployment target and touches the application in two contained place
 
 ## Open Questions
 
-- The exact Supabase self-hosting commit to pin first; any recent stable one that runs Postgres 17, the version the local stack uses, will do, and moving it later is a one-line change.
+- The exact upstream self-hosting release to take the first pins from; any recent stable one will do, and moving it later is a change to `versions.env`.

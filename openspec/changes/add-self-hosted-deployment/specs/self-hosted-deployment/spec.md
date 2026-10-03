@@ -5,11 +5,11 @@ Lets whoever runs Splitrip install a complete production instance on a Proxmox h
 ## ADDED Requirements
 
 ### Requirement: Creating the container on a Proxmox host
-The deployment SHALL provide a script that, run on a Proxmox host, creates a Debian LXC able to run Docker containers, with at least the memory, disk and processors the stack needs, and then runs the installer inside it. It SHALL ask for the container identifier, its network configuration and its storage, offering a default for each, and SHALL refuse to proceed when the identifier is already in use.
+The deployment SHALL provide a script that, run on a Proxmox host, creates an unprivileged Debian LXC, with at least the memory, disk and processors the stack needs, and then runs the installer inside it. It SHALL ask for the container identifier, its network configuration and its storage, offering a default for each, and SHALL refuse to proceed when the identifier is already in use.
 
 #### Scenario: A new container with the defaults
 - **WHEN** the host script is run on a Proxmox host and every default is accepted
-- **THEN** a new Debian LXC exists with Docker able to run inside it, and the installer has been started within it
+- **THEN** a new unprivileged Debian LXC exists and the installer has been started within it
 
 #### Scenario: An identifier already taken
 - **WHEN** the identifier given for the new container belongs to an existing container or virtual machine
@@ -20,11 +20,15 @@ The deployment SHALL provide a script that, run on a Proxmox host, creates a Deb
 - **THEN** it stops before changing anything and says that it must run on a Proxmox host
 
 ### Requirement: Installing on a Debian host
-The deployment SHALL provide an installer that, run as the superuser on a supported Debian release with no instance installed, leaves a working instance behind: the self-hosted Supabase services at a pinned version, the repository's migrations applied, and the application built and served, all of them started again automatically when the machine boots. When any step fails, the installer SHALL stop, say which step failed, and be safe to run again.
+The deployment SHALL provide an installer that, run as the superuser on a supported Debian release with no instance installed, leaves a working instance behind: the Supabase services the application uses, each at a pinned version, the repository's migrations applied, and the application built and served, all of them running as the host's own services, without a container runtime, and started again automatically when the machine boots. When any step fails, the installer SHALL stop, say which step failed, and be safe to run again.
 
 #### Scenario: A clean install
 - **WHEN** the installer is run on a supported Debian host with no instance installed and its questions are answered
 - **THEN** the application answers on its port, the Supabase API answers on its port, and every migration in the repository has been applied
+
+#### Scenario: No container runtime
+- **WHEN** an installation has finished
+- **THEN** no container runtime is installed or running on the host, and every service of the instance is one of the host's own services
 
 #### Scenario: After a reboot
 - **WHEN** the machine running an installed instance is restarted
@@ -105,7 +109,7 @@ The self-hosted Supabase admin console SHALL be reachable only on the host's loc
 - **THEN** the admin console is not among the hosts to publish
 
 ### Requirement: The update command
-An installed instance SHALL provide an `update` command available at the host's console. Run as the superuser, it SHALL move the application to its latest release, or to a release asked for, update the self-hosted Supabase services when that release pins a newer version of them, apply any migrations not yet applied, and restart the service, keeping every row of data and every secret. It SHALL say which version it moved from and to, SHALL change nothing when the instance is already at the requested release, and SHALL leave the instance running its previous release when any step before the restart fails.
+An installed instance SHALL provide an `update` command available at the host's console. Run as the superuser, it SHALL move the application to its latest release, or to a release asked for, update each Supabase service whose pinned version that release changes, apply any migrations not yet applied, and restart the service, keeping every row of data and every secret. It SHALL say which version it moved from and to, SHALL change nothing when the instance is already at the requested release, and SHALL leave the instance running its previous release when any step before the restart fails.
 
 #### Scenario: A new release
 - **WHEN** `update` is run on an instance one release behind
