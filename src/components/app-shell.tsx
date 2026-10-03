@@ -8,6 +8,7 @@ import { ThemeSwitcher } from '@/components/theme-switcher'
 import type { Viewer } from '@/lib/auth/viewer'
 import type { Locale, Translate } from '@/lib/i18n'
 import { getTheme } from '@/lib/theme/server'
+import { APP_VERSION } from '@/lib/version'
 
 function Account({ viewer, t }: { viewer: Viewer | null; t: Translate }) {
   if (viewer === null || viewer.isAnonymous) {
@@ -101,8 +102,10 @@ export async function AppShell({
           Inside main, after everything, rather than a footer of its own: main already keeps clear
           of the bar pinned to the bottom of a phone, so this is never hidden under it.
         */}
-        <footer className="mt-12">
+        <footer className="mt-12 flex flex-wrap items-center justify-between gap-x-4">
           <FeedbackLink locale={locale} />
+          {/* A name and a version number read the same in every language. */}
+          <span className="text-xs text-ink-faint">Splitrip {APP_VERSION}</span>
         </footer>
       </main>
 

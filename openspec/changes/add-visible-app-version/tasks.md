@@ -5,7 +5,7 @@
 
 ## 2. The version at the foot of every screen
 
-- [ ] 2.1 Show `Splitrip <version>` in the shared frame's footer, after the feedback link, faint and wrapping under it on a narrow screen; verify on the local server that it appears on the public entry page, the trip list, a trip screen, the feedback form and the operators' screen, that on a trip screen on a phone it is not hidden under the bottom bar, and that `npm run check:viewport` reports no overflow at 360 pixels on the public entry page and on a trip screen
+- [x] 2.1 Show `Splitrip <version>` in the shared frame's footer, after the feedback link, faint and wrapping under it on a narrow screen; verify on the local server that it appears on the public entry page, the trip list, a trip screen, the feedback form and the operators' screen, that on a trip screen on a phone it is not hidden under the bottom bar, and that `npm run check:viewport` reports no overflow at 360 pixels on the public entry page and on a trip screen
 
 ## 3. On the running instance
 
