@@ -149,17 +149,46 @@ ask_password() {
 
 not_the_app_domain() { valid_domain "$1" && [ "$1" != "$SPLITRIP_APP_DOMAIN" ]; }
 
+# A domain that does not resolve yet may simply not have been created yet, so it is only pointed
+# out; but it is also how a typo looks, and a typo here is built into the application.
+warn_unresolved() {
+  local domain
+  for domain in "$@"; do
+    getent hosts "$domain" >/dev/null ||
+      say "  Note: $domain does not resolve from here. If that is not expected, check it for typos."
+  done
+}
+
 ask_questions() {
-  say ''
-  ask_until_valid SPLITRIP_APP_DOMAIN 'Domain the application will be served at' valid_domain \
-    'That is not a domain name, such as splitrip.example.com.'
-  ask_until_valid SPLITRIP_API_DOMAIN 'Domain its API will be served at' not_the_app_domain \
-    "That is not a domain name different from the application's." "api.$SPLITRIP_APP_DOMAIN"
-  say ''
-  say 'The first account can open trips. This release has no sign-up screen, so it is created here.'
-  ask_until_valid SPLITRIP_ADMIN_EMAIL 'Its email address' valid_email \
-    'That is not an email address.'
-  ask_password
+  local interactive=yes answer
+  [ -n "${SPLITRIP_APP_DOMAIN:-}${SPLITRIP_API_DOMAIN:-}${SPLITRIP_ADMIN_EMAIL:-}" ] && interactive=no
+
+  while true; do
+    say ''
+    ask_until_valid SPLITRIP_APP_DOMAIN 'Domain the application will be served at' valid_domain \
+      'That is not a domain name, such as splitrip.example.com.'
+    ask_until_valid SPLITRIP_API_DOMAIN 'Domain its API will be served at' not_the_app_domain \
+      "That is not a domain name different from the application's." "api.$SPLITRIP_APP_DOMAIN"
+    say ''
+    say 'The first account can open trips. This release has no sign-up screen, so it is created here.'
+    ask_until_valid SPLITRIP_ADMIN_EMAIL 'Its email address' valid_email \
+      'That is not an email address.'
+    ask_password
+
+    # The domains are built into the application and into Auth's configuration; changing them
+    # afterwards means installing again. So they are read back before anything is done with them.
+    say ''
+    say "  Application:   https://$SPLITRIP_APP_DOMAIN"
+    say "  API:           https://$SPLITRIP_API_DOMAIN"
+    say "  First account: $SPLITRIP_ADMIN_EMAIL"
+    warn_unresolved "$SPLITRIP_APP_DOMAIN" "$SPLITRIP_API_DOMAIN"
+    [ "$interactive" = no ] && break
+    read -r -p 'Is this right? [Y/n]: ' answer
+    case ${answer,,} in
+      '' | y | yes) break ;;
+    esac
+    SPLITRIP_APP_DOMAIN='' SPLITRIP_API_DOMAIN='' SPLITRIP_ADMIN_EMAIL='' SPLITRIP_ADMIN_PASSWORD=''
+  done
   say ''
 }
 

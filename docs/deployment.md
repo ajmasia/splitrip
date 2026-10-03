@@ -75,6 +75,9 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/ajmasia/splitrip/main/de
    at least 6 characters.
 
 Anything that is not a valid domain, an email address or a long enough password is asked again.
+Before installing, it reads the answers back and asks for a confirmation, and points out a domain
+that does not resolve from the machine: the domains are built into the application, and a typo in
+one means installing again.
 
 The latest release is installed. To install another, set `SPLITRIP_VERSION=0.13.0` before the
 command; the host script passes it on to the installer.
