@@ -9,6 +9,10 @@
  *
  * Run with the dev server up:
  *   npm run check:viewport -- http://localhost:3000/
+ *
+ * A screen behind a sign-in needs the session's cookies, as a browser's Cookie header would carry
+ * them:
+ *   CHECK_VIEWPORT_COOKIE='name=value; other=value' npm run check:viewport -- http://localhost:3000/trips/<id>
  */
 
 import { spawn } from 'node:child_process'
@@ -99,6 +103,18 @@ socket.addEventListener('message', (event) => {
 
 await send('Page.enable')
 await send('Runtime.enable')
+// Set as cookies rather than sent as a header, so the page's own scripts see the session too.
+if (process.env.CHECK_VIEWPORT_COOKIE) {
+  await send('Network.setCookies', {
+    cookies: process.env.CHECK_VIEWPORT_COOKIE.split(';')
+      .map((pair) => pair.trim())
+      .filter(Boolean)
+      .map((pair) => {
+        const separator = pair.indexOf('=')
+        return { name: pair.slice(0, separator), value: pair.slice(separator + 1), url }
+      }),
+  })
+}
 await send('Emulation.setDeviceMetricsOverride', {
   width: Number(width),
   height: Number(height),
