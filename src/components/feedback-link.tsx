@@ -21,7 +21,7 @@ export function FeedbackLink({ locale }: { locale: Locale }) {
   return (
     <Link
       href={feedbackHref(pathname)}
-      className="flex min-h-touch w-fit items-center rounded-card px-1 text-sm text-ink-soft underline underline-offset-4"
+      className="flex min-h-touch w-fit items-center text-sm text-ink-faint underline decoration-rule underline-offset-4 hover:text-ink-soft hover:decoration-current"
     >
       {t('feedback.link')}
     </Link>

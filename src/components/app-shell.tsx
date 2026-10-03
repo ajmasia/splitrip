@@ -101,7 +101,7 @@ export async function AppShell({
           Inside main, after everything, rather than a footer of its own: main already keeps clear
           of the bar pinned to the bottom of a phone, so this is never hidden under it.
         */}
-        <footer className="mt-10 border-t border-rule pt-2">
+        <footer className="mt-12">
           <FeedbackLink locale={locale} />
         </footer>
       </main>
