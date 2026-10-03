@@ -52,7 +52,7 @@ An unprivileged Debian 13 LXC with `nesting=1`, which systemd inside a recent De
 
 ### PostgreSQL: Debian's own, bootstrapped
 
-Debian 13 ships PostgreSQL 17, the version the local stack uses. `db/bootstrap.sql`, run once as the superuser, creates what Supabase's components and the migrations assume: the roles `supabase_admin`, `authenticator` (with login, granted `anon`, `authenticated` and `service_role`), `supabase_auth_admin` owning the `auth` schema, `supabase_realtime_admin`, and `postgres` as the migrations' owner; the `extensions` schema with `pgcrypto` in it; and the `supabase_realtime` publication. It is written to be safe to run again. The server listens on `127.0.0.1` only.
+Debian 13 ships PostgreSQL 17, the version the local stack uses. `db/bootstrap.sql`, run once as the superuser, creates what Supabase's components and the migrations assume: the roles `supabase_admin`, `authenticator` (with login, granted `anon`, `authenticated` and `service_role`), `supabase_auth_admin` owning the `auth` schema, `supabase_realtime_admin`, and `postgres` as the migrations' owner; the `extensions` schema with `pgcrypto` in it; and the `supabase_realtime` publication. It is written to be safe to run again. The server listens on `127.0.0.1` only. Realtime reads the published changes through a logical replication slot decoded by `wal2json`, which Supabase's image bundles and Debian packages separately as `postgresql-17-wal2json`; without it subscriptions succeed and nothing is ever delivered.
 
 PostgREST exposes `public` alone: `graphql_public` needs `pg_graphql`, which is not packaged for Debian and which the application does not use.
 
