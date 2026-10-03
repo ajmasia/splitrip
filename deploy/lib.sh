@@ -25,6 +25,9 @@ AUTH_PORT=9999
 REST_PORT=3001
 REST_ADMIN_PORT=3011
 REALTIME_PORT=4000
+# Realtime runs as a distributed Erlang node, which otherwise listens on a random port on every
+# interface.
+REALTIME_DIST_PORT=4370
 META_PORT=8080
 STUDIO_INTERNAL_PORT=3002
 PG_PORT=5432
@@ -432,7 +435,7 @@ DNS_NODES="''"
 REALTIME_IP_VERSION=ipv4
 GEN_RPC_SOCKET_IP=127.0.0.1
 ERL_EPMD_ADDRESS=127.0.0.1
-ERL_AFLAGS=-proto_dist inet_tcp
+ERL_AFLAGS=-proto_dist inet_tcp -kernel inet_dist_use_interface {127,0,0,1} -kernel inet_dist_listen_min $REALTIME_DIST_PORT -kernel inet_dist_listen_max $REALTIME_DIST_PORT
 ECTO_IPV6=false
 MIX_ENV=prod
 SLOT_NAME_SUFFIX=

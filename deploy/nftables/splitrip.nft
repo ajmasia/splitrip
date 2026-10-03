@@ -14,6 +14,6 @@ table inet splitrip {
         type filter hook input priority filter; policy accept;
 
         iifname "lo" accept
-        tcp dport { 3001, 3002, 3011, 4000, 4369, 5369, 5432, 8080, 9999 } drop
+        tcp dport { 3001, 3002, 3011, 4000, 4369, 4370, 5369, 5432, 8080, 9999 } drop
     }
 }
