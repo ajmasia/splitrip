@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Brings an installed Splitrip instance up to date. Installed as the `update` command.
 #
-#   update             moves to the latest release
+#   update             moves to the latest release, if one was published since; an instance on a
+#                      release candidate also moves to newer candidates
 #   update <version>   moves to that release, newer or older
 #
 # Everything is prepared while the running release keeps serving: the release is fetched and built,
@@ -87,11 +88,12 @@ flock -n 9 || fail 'Another update is running.'
 
 current=$(state_get APP_VERSION)
 CURRENT_STEP='Finding the release to move to'
-target=${1:-$(latest_release)}
+target=${1:-$(latest_release "$current")}
 [ -n "$target" ] || fail "No release found at $SPLITRIP_REPO."
 
-if [ "$target" = "$current" ]; then
-  say "Splitrip is already at $current. Nothing to update."
+# Asked for nothing in particular, it only ever moves forward, to a release published since.
+if [ "$target" = "$current" ] || { [ -z "${1:-}" ] && release_older "$target" "$current"; }; then
+  say "Splitrip is already at $current, the latest release. Nothing to update."
   exit 0
 fi
 release_exists "$target" || fail "There is no release $target."

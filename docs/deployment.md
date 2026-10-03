@@ -181,8 +181,9 @@ At the machine's console, as root (in a Proxmox container, `pct enter <id>`):
 update
 ```
 
-It moves the instance to the latest release and says which version it moved from and to. When the
-instance is already there, it says so and changes nothing.
+It moves the instance to the latest release published since the one it runs, and says which version
+it moved from and to. When there is none, it says so and changes nothing. An instance on a release
+candidate, such as `0.13.0-rc.6`, also moves to newer candidates; one on a release never does.
 
 To move to a particular release, newer or older:
 

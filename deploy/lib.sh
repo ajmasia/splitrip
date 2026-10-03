@@ -67,13 +67,29 @@ enable_error_trap() {
 
 # Releases -----------------------------------------------------------------------------------------
 
-# Releases are the repository's version tags: plain semver, no leading "v".
-latest_release() {
+# Releases are the repository's version tags: plain semver, no leading "v", and release candidates
+# such as 0.13.0-rc.2 that come before the release of the same number.
+release_tags() {
   git ls-remote --tags --refs "$SPLITRIP_REPO" |
     sed 's#.*refs/tags/##' |
-    grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' |
-    sort -V |
-    tail -n 1
+    grep -E '^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$'
+}
+
+# Oldest first. A candidate sorts before its release: "~" sorts before anything in a version.
+sort_releases() {
+  sed 's/-rc\./~rc./' | sort -V | sed 's/~rc\./-rc./'
+}
+
+# The newest release. Candidates count only for an instance already on one, so an instance on a
+# release never moves to a candidate by itself.
+#   $1 the release installed, if any
+latest_release() {
+  local installed=${1:-}
+  if [[ $installed == *-rc.* ]]; then
+    release_tags
+  else
+    release_tags | grep -v -- '-rc\.'
+  fi | sort_releases | tail -n 1
 }
 
 release_exists() {
@@ -82,7 +98,7 @@ release_exists() {
 
 # True when $1 is an older release than $2.
 release_older() {
-  [ "$1" != "$2" ] && [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | head -n 1)" = "$1" ]
+  [ "$1" != "$2" ] && [ "$(printf '%s\n%s\n' "$1" "$2" | sort_releases | head -n 1)" = "$1" ]
 }
 
 state_get() {
