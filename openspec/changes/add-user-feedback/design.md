@@ -5,7 +5,7 @@ See proposal.md for why; the behaviour is in `specs/user-feedback` and `specs/in
 What the existing code already settles:
 
 - **Allowlists by email.** `trip_creators` is an email-keyed table with RLS enabled and no policies, read only from `security definer` functions that compare it with the email in the caller's JWT and refuse anonymous sessions. Operators follow the same shape.
-- **Writes go through functions.** Every write in the schema is a `security definer` RPC that validates and raises a dedicated `SPnnn` SQLSTATE, which `src/lib/errors.ts` maps to copy. The last code in use is `SP029`.
+- **Writes go through functions.** Every write in the schema is a `security definer` RPC that validates and raises a dedicated `SPnnn` SQLSTATE, which `src/lib/errors.ts` maps to copy. The last code in use is `SP030`.
 - **Identities are minted on intent.** `src/proxy.ts` refreshes sessions and mints none; `src/app/actions/join.ts` calls `signInAnonymously()` only when somebody actually joins. Feedback reuses that rule.
 - **The shared frame is a server component.** `AppShell` renders the header on every screen but is not told which route it is on, and a server component cannot read the current path without help.
 
@@ -38,7 +38,7 @@ What the existing code already settles:
 - RLS enabled. No insert, update or delete policy: the only way in is the function. A select policy `using (public.is_operator())`.
 - An index on `(user_id, created_at)` serves the rate check.
 
-`submit_feedback(p_message, p_kind, p_path, p_trip_id, p_app_version, p_locale)` is `security definer` and, in order: refuses a call without `auth.uid()`; trims and checks the message (`SP030` required, `SP031` too long); counts the caller's rows in the last hour and refuses a sixth (`SP032`); keeps `p_trip_id` only if the caller is a participant of that trip, otherwise stores null without saying so — refusing would let anybody probe which trip identifiers exist; defaults the kind to `other`.
+`submit_feedback(p_message, p_kind, p_path, p_trip_id, p_app_version, p_locale)` is `security definer` and, in order: refuses a call without `auth.uid()`; trims and checks the message (`SP031` required, `SP032` too long); counts the caller's rows in the last hour and refuses a sixth (`SP033`); keeps `p_trip_id` only if the caller is a participant of that trip, otherwise stores null without saying so — refusing would let anybody probe which trip identifiers exist; defaults the kind to `other`.
 
 *Alternative considered:* insert through an RLS `with check` policy. Rejected: the rate limit needs a count of other rows, which a policy can express only awkwardly, and every other write in the schema already goes through a function.
 
