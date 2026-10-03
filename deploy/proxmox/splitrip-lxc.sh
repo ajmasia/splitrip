@@ -5,9 +5,9 @@
 #
 #   bash -c "$(curl -fsSL https://raw.githubusercontent.com/ajmasia/splitrip/main/deploy/proxmox/splitrip-lxc.sh)"
 #
-# It asks only what it cannot decide — the container's identifier, bridge, address and storage —
-# offering a default for each. The rest can be changed ahead in the environment:
-# SPLITRIP_HOSTNAME, SPLITRIP_CORES, SPLITRIP_MEMORY (MB), SPLITRIP_SWAP (MB), SPLITRIP_DISK (GB),
+# It asks for the container's identifier, bridge, address, storage, cores and memory, offering a
+# default for each; SPLITRIP_CORES and SPLITRIP_MEMORY (MB) change the defaults offered. The rest
+# can be changed ahead in the environment: SPLITRIP_HOSTNAME, SPLITRIP_SWAP (MB), SPLITRIP_DISK (GB),
 # SPLITRIP_TEMPLATE_STORAGE and SPLITRIP_VERSION, the release to install (the latest otherwise).
 
 set -Eeuo pipefail
@@ -49,6 +49,10 @@ ask() {
 if ! command -v pveversion >/dev/null || ! command -v pct >/dev/null; then
   fail 'This script must run on a Proxmox VE host.'
 fi
+
+# The installer, and every component it pins, are built for amd64.
+ARCH=$(dpkg --print-architecture)
+[ "$ARCH" = amd64 ] || fail "Splitrip installs on amd64 hosts; this one is $ARCH."
 
 id_in_use() {
   pvesh get /cluster/resources --type vm --output-format json |
@@ -106,11 +110,33 @@ while true; do
   say '  Answer dhcp, or an address with its prefix length.'
 done
 
+# local-lvm on a default install, local-zfs on one over ZFS: whichever this host has.
+DEFAULT_STORAGE=local-lvm
+if ! storage_holds "$DEFAULT_STORAGE" rootdir; then
+  DEFAULT_STORAGE=$(pvesm status --content rootdir | awk 'NR == 2 { print $1 }')
+fi
+
 while true; do
-  STORAGE=$(ask 'Storage for the container' local-lvm)
+  STORAGE=$(ask 'Storage for the container' "$DEFAULT_STORAGE")
   storage_holds "$STORAGE" rootdir && break
   say "  $STORAGE cannot hold containers here. These can: $(pvesm status --content rootdir |
     awk 'NR > 1 { printf "%s ", $1 }')"
+done
+
+HOST_CORES=$(nproc)
+HOST_MEMORY=$(free -m | awk '/^Mem:/ { print $2 }')
+
+while true; do
+  CORES=$(ask "Cores (2 recommended; this host has $HOST_CORES)" "$CORES")
+  [[ $CORES =~ ^[0-9]+$ ]] && [ "$CORES" -ge 1 ] && [ "$CORES" -le "$HOST_CORES" ] && break
+  say "  A number from 1 to $HOST_CORES."
+done
+
+# Building the application is what needs the memory; the running instance uses much less.
+while true; do
+  MEMORY=$(ask "Memory in MB (4096 recommended, 2048 at least; this host has $HOST_MEMORY)" "$MEMORY")
+  [[ $MEMORY =~ ^[0-9]+$ ]] && [ "$MEMORY" -ge 2048 ] && [ "$MEMORY" -le "$HOST_MEMORY" ] && break
+  say "  A number of MB from 2048, which building the application needs, to $HOST_MEMORY."
 done
 
 # The identifier is checked again: another container may have taken it while the questions were
@@ -132,9 +158,10 @@ TEMPLATE=''
 
 fetch_template() {
   pveam update >/dev/null
+  # Templates are listed for several architectures; only this host's can start here.
   TEMPLATE=$(pveam available --section system | awk '{ print $2 }' |
-    grep -E '^debian-13-standard_' | sort -V | tail -n 1)
-  [ -n "$TEMPLATE" ] || fail 'No Debian 13 template is available from Proxmox.'
+    grep -E "^debian-13-standard_.*_${ARCH}\.tar\." | sort -V | tail -n 1)
+  [ -n "$TEMPLATE" ] || fail "No Debian 13 template for $ARCH is available from Proxmox."
   if ! pveam list "$TEMPLATE_STORAGE" | grep -q "$TEMPLATE"; then
     pveam download "$TEMPLATE_STORAGE" "$TEMPLATE" >/dev/null
   fi
@@ -145,6 +172,7 @@ create_container() {
   pct create "$CTID" "$TEMPLATE_STORAGE:vztmpl/$TEMPLATE" \
     --hostname "$HOSTNAME_" \
     --ostype debian \
+    --arch "$ARCH" \
     --unprivileged 1 \
     --features nesting=1 \
     --cores "$CORES" \

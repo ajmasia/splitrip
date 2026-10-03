@@ -34,23 +34,26 @@ On the Proxmox host's shell, as root:
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/ajmasia/splitrip/main/deploy/proxmox/splitrip-lxc.sh)"
 ```
 
-It asks four things, each with a default you can accept with Enter:
+It asks six things, each with a default you can accept with Enter:
 
-| Question                  | Default           |
-| ------------------------- | ----------------- |
-| Container identifier      | the next free one |
-| Network bridge            | `vmbr0`           |
-| Address                   | `dhcp`            |
-| Storage for the container | `local-lvm`       |
+| Question                  | Default                                         |
+| ------------------------- | ----------------------------------------------- |
+| Container identifier      | the next free one                               |
+| Network bridge            | `vmbr0`                                         |
+| Address                   | `dhcp`                                          |
+| Storage for the container | `local-lvm`, or the first that holds containers |
+| Cores                     | `2`                                             |
+| Memory                    | `4096` MB, and no less than `2048`              |
 
 A fixed address is given with its prefix length, `192.168.1.50/24`, and then the gateway is asked
 for. An identifier already used by a container or a virtual machine is refused before anything is
 created.
 
 The script creates an unprivileged Debian 13 container, started on boot, and runs the installer
-inside it, which asks its own questions (below). Resources other than those four can be changed
-ahead in the environment: `SPLITRIP_CORES`, `SPLITRIP_MEMORY` and `SPLITRIP_SWAP` (in MB),
-`SPLITRIP_DISK` (in GB), `SPLITRIP_HOSTNAME` and `SPLITRIP_TEMPLATE_STORAGE`.
+inside it, which asks its own questions (below). Building the application is what needs the
+memory; the running instance uses much less. `SPLITRIP_CORES` and `SPLITRIP_MEMORY` (in MB) change
+the defaults offered, and the rest can be changed ahead in the environment: `SPLITRIP_SWAP` (in
+MB), `SPLITRIP_DISK` (in GB), `SPLITRIP_HOSTNAME` and `SPLITRIP_TEMPLATE_STORAGE`.
 
 Give the container a fixed address, either here or as a reservation in your router: the reverse
 proxy forwards to it.
