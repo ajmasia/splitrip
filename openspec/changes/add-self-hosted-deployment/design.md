@@ -95,6 +95,8 @@ The reverse proxy appends the visitor's address to `X-Forwarded-For`. The server
 
 Through its service environment: the site address is `https://<app domain>`, the only redirect allowed is the application's domain, the external API address is `https://<api domain>`, anonymous sign-ins are enabled, email confirmation is off and no mail server is set. Public email sign-up should be off, since accounts are created by the operator; whether Auth accepts anonymous sign-ins with email sign-up disabled is verified in a task, and if it does not, email sign-up stays on — an account alone still cannot open a trip without being on `trip_creators`.
 
+Settled: email sign-up stays on. Auth has no switch that closes email sign-ups and keeps email sign-ins open, and its global switch closes anonymous sign-ins too, which would take the invitations down with them. The application offers no way to sign up, so the only door is Auth's own endpoint, and what comes through it is an account that can open no trip. Closing that endpoint — refusing a sign-up for any address not on `trip_creators` — is left for later as an improvement, not a requirement of this change.
+
 ### Migrations
 
 The Supabase CLI, pinned and downloaded as a single binary, runs `supabase db push --db-url` against the local database. It records applied migrations in Supabase's own history table, so a second run applies only what is new. `supabase/seed.sql` is never run.
