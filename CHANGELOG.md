@@ -23,17 +23,24 @@ under **Added**, corrections under **Fixed**, and changes to how it is built or 
 - An organiser can delete a trip, open or closed, after typing its name to confirm. It goes for
   every participant with everything in it and cannot be undone; whoever has it open is taken back
   to their list with a notice that it was deleted.
+- Feedback from inside the application: every screen links to a short form where anybody, with an
+  account, a device identity or no session yet, can say what is broken or what they would like. It
+  is sent with the screen, the trip when the sender is on it, the version and the language, and the
+  form says so. A message is at most 2,000 characters and each identity sends at most five an hour.
+- Instance operators, listed by email in `public.instance_operators` like trip creators, read every
+  message on a screen linked from their home screen; nobody else can, the sender included. See
+  [the deployment guide](docs/deployment.md#trip-creators-and-operators) to add one.
 
 ### Changed
 
 - The deployment target is now a self-hosted instance on Proxmox, first in an LXC on the local
   network and then on an external server, instead of Vercel with a managed Supabase project.
-  The in-app feedback is planned, not yet built.
 - The application builds as a standalone server, and the browser and the server share one session
   cookie name, so a server that reaches Supabase at an internal address reads the browser's session.
   Existing sessions on a development machine are signed out once.
 - The limits on anonymous sign-ins count each visitor's address, forwarded by the server, rather
   than the server's own.
+- On a trip, the organiser's buttons to close and to delete it sit side by side.
 
 ### Fixed
 

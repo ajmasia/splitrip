@@ -174,7 +174,8 @@ The address can be added before the account exists.
 
 Operators, the people who read the instance's feedback, are added the same way to
 `public.instance_operators`, once a release that has them is installed. The first account is made
-an operator when the table exists at install time.
+an operator when the table exists at install time; an instance installed before that has no operators
+after updating to it, and needs the first one added by hand, as above.
 
 ## Updating
 
