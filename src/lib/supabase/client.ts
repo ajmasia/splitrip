@@ -1,6 +1,7 @@
 import { createBrowserClient } from '@supabase/ssr'
 
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from './env'
+import { SESSION_COOKIE } from './options'
 
 const LOOPBACK = ['localhost', '127.0.0.1']
 
@@ -29,5 +30,7 @@ function reachableFrom(configured: string): string {
 }
 
 export function createSupabaseBrowserClient() {
-  return createBrowserClient(reachableFrom(SUPABASE_URL), SUPABASE_PUBLISHABLE_KEY)
+  return createBrowserClient(reachableFrom(SUPABASE_URL), SUPABASE_PUBLISHABLE_KEY, {
+    cookieOptions: { name: SESSION_COOKIE },
+  })
 }

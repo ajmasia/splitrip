@@ -36,6 +36,8 @@ function localNetworkOrigins(): string[] {
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // A self-contained server with only the files it needs, which is what a deployed instance runs.
+  output: 'standalone',
   allowedDevOrigins: localNetworkOrigins(),
   env: {
     NEXT_PUBLIC_APP_VERSION: version,

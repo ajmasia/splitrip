@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from '@/lib/supabase/env'
+import { SESSION_COOKIE, forwardedFor, serverSupabaseUrl } from '@/lib/supabase/options'
 
 /**
  * Refreshes whatever session the request already carries, and mints none.
@@ -16,22 +17,28 @@ import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from '@/lib/supabase/env'
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request })
 
-  const supabase = createServerClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll()
-      },
-      setAll(cookiesToSet) {
-        for (const { name, value } of cookiesToSet) {
-          request.cookies.set(name, value)
-        }
-        response = NextResponse.next({ request })
-        for (const { name, value, options } of cookiesToSet) {
-          response.cookies.set(name, value, options)
-        }
+  const supabase = createServerClient(
+    serverSupabaseUrl(SUPABASE_URL, process.env.SUPABASE_INTERNAL_URL),
+    SUPABASE_PUBLISHABLE_KEY,
+    {
+      cookieOptions: { name: SESSION_COOKIE },
+      global: { headers: forwardedFor(request.headers) },
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          for (const { name, value } of cookiesToSet) {
+            request.cookies.set(name, value)
+          }
+          response = NextResponse.next({ request })
+          for (const { name, value, options } of cookiesToSet) {
+            response.cookies.set(name, value, options)
+          }
+        },
       },
     },
-  })
+  )
 
   // getUser, not getSession: it asks the auth server, which both validates the token and refreshes
   // it when it has expired. A session read from the cookie alone would be whatever was written to
