@@ -25,16 +25,17 @@ it that way live elsewhere.
 | What the product must do, requirement by requirement         | [`openspec/changes/add-splitrip-mvp/specs/`](openspec/changes/add-splitrip-mvp/specs/) |
 | Why each technical decision was taken, and what was rejected | [`design.md`](openspec/changes/add-splitrip-mvp/design.md)                             |
 | What is built and what is left                               | [`tasks.md`](openspec/changes/add-splitrip-mvp/tasks.md)                               |
+| How to install and update a production instance              | [`docs/deployment.md`](docs/deployment.md)                                             |
 | Why a particular line of code is the way it is               | the comment next to it                                                                 |
 
 ## Tech stack
 
-| Concern                  | Choice                                                  |
-| ------------------------ | ------------------------------------------------------- |
-| Framework                | Next.js 16 (App Router) with TypeScript in strict mode  |
-| Database, auth, realtime | Supabase (Postgres, anonymous auth, Row Level Security) |
-| Hosting                  | Vercel                                                  |
-| Local development        | Docker                                                  |
+| Concern                  | Choice                                                    |
+| ------------------------ | --------------------------------------------------------- |
+| Framework                | Next.js 16 (App Router) with TypeScript in strict mode    |
+| Database, auth, realtime | Supabase (Postgres, anonymous auth, Row Level Security)   |
+| Hosting                  | Self-hosted on Debian, natively; see the deployment guide |
+| Local development        | Docker                                                    |
 
 ## Requirements
 
@@ -74,12 +75,14 @@ editor.
 
 Copy `.env.example` to `.env.local`. The values it carries are the local stack defaults: the Supabase
 CLI generates the same ones on every machine, so they are committed deliberately and are not secrets.
-Production values are configured in Vercel and never live in the repository.
+Production values are generated on the instance by the installer and never live in the repository;
+see [the deployment guide](docs/deployment.md).
 
-| Variable                               | What it is                                                                                  |
-| -------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`             | Base URL of the Supabase API                                                                |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Publishable key; safe in the browser because every table is protected by Row Level Security |
+| Variable                               | What it is                                                                                                                              |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`             | Base URL of the Supabase API                                                                                                            |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Publishable key; safe in the browser because every table is protected by Row Level Security                                             |
+| `SUPABASE_INTERNAL_URL`                | Optional, server only. Where the server reaches Supabase when that differs from the public URL, as on an instance; unset in development |
 
 ### Resetting the database
 

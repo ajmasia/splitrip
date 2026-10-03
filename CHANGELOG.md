@@ -10,11 +10,27 @@ under **Added**, corrections under **Fixed**, and changes to how it is built or 
 
 ## [Unreleased]
 
+### Added
+
+- A self-hosted installer: one command on a Proxmox host creates a Debian 13 container and installs
+  in it, natively and without Docker, Supabase's services at pinned versions, the migrations, a
+  first account allowed to open trips and the application, all started on boot. It also installs on
+  any Debian 13 machine, and prints what to configure in the reverse proxy. See
+  [the deployment guide](docs/deployment.md).
+- An `update` command on the instance, which moves it to the latest release or to one asked for,
+  preparing everything while the running release keeps serving and keeping every secret and
+  session.
+
 ### Changed
 
 - The deployment target is now a self-hosted instance on Proxmox, first in an LXC on the local
   network and then on an external server, instead of Vercel with a managed Supabase project.
-  The installer and the in-app feedback are planned, not yet built.
+  The in-app feedback is planned, not yet built.
+- The application builds as a standalone server, and the browser and the server share one session
+  cookie name, so a server that reaches Supabase at an internal address reads the browser's session.
+  Existing sessions on a development machine are signed out once.
+- The limits on anonymous sign-ins count each visitor's address, forwarded by the server, rather
+  than the server's own.
 
 ## [0.12.0] - 2026-10-02
 
