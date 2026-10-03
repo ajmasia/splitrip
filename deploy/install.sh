@@ -16,6 +16,11 @@
 
 set -Eeuo pipefail
 
+# Whatever locale the session arrived with may not exist on a fresh host, and every tool would
+# complain about it; this one always does.
+export LANG=C.UTF-8 LC_ALL=C.UTF-8
+unset LANGUAGE
+
 SPLITRIP_ROOT=${SPLITRIP_ROOT:-/opt/splitrip}
 SPLITRIP_REPO=${SPLITRIP_REPO:-https://github.com/ajmasia/splitrip.git}
 

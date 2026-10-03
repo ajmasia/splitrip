@@ -197,7 +197,11 @@ wait_for_network() {
 run_installer() {
   local installer
   installer=$(curl -fsSL "$RAW/$VERSION/deploy/install.sh")
-  pct exec "$CTID" -- env SPLITRIP_VERSION="$VERSION" bash -c "$installer"
+  # A clean environment: the host's own, its locale included, means nothing inside the container.
+  pct exec "$CTID" -- env -i \
+    PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+    HOME=/root TERM="${TERM:-xterm}" LANG=C.UTF-8 \
+    SPLITRIP_VERSION="$VERSION" bash -c "$installer"
 }
 
 step 'Fetching the Debian 13 template' fetch_template
