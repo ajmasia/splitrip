@@ -33,6 +33,7 @@ const COPY_BY_CODE: Record<string, CopyKey> = {
   SP026: 'error.name_unclaimed',
   SP027: 'error.place_taken',
   SP029: 'error.place_taken_by_account',
+  SP030: 'error.trip_name_mismatch',
 }
 
 export function errorCopyKey(code: string | undefined): CopyKey {

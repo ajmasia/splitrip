@@ -7,6 +7,7 @@ import { AppShell } from '@/components/app-shell'
 import { TripRealtime } from '@/components/trip-realtime'
 import { ChangeRoleButton } from '@/components/change-role-button'
 import { CloseTripButton } from '@/components/close-trip-button'
+import { DeleteTripButton } from '@/components/delete-trip-button'
 import { InviteParticipantButton } from '@/components/invite-participant-button'
 import { ExpenseList } from '@/components/expense-list'
 import { Pill } from '@/components/pill'
@@ -219,6 +220,7 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
             ) : (
               <ReopenTripButton tripId={id} locale={locale} />
             )}
+            <DeleteTripButton tripId={id} tripName={trip.name} locale={locale} />
           </section>
         ) : null}
       </div>

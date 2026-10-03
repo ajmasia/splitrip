@@ -47,6 +47,7 @@ export const es = {
     'La cuenta solo hace falta para abrir viajes. Para entrar en uno, te basta la invitación.',
 
   'trips.heading': 'Tus viajes',
+  'trips.deleted': 'El viaje se ha eliminado.',
   'trips.subtitle': 'Los viajes en los que participas.',
   'trips.create': 'Crear un viaje',
   'trips.empty.title': 'Todavía no viajas con nadie',
@@ -201,6 +202,13 @@ export const es = {
   'trip.closing': 'Cerrando…',
   'trip.reopen': 'Reabrir viaje',
   'trip.reopening': 'Reabriendo…',
+  'trip.delete': 'Eliminar viaje',
+  'trip.delete.body':
+    'Al eliminarlo desaparecen el viaje y todo lo que contiene —participantes, gastos, pagos, actividad e invitaciones— para todos sus participantes. No se puede deshacer.',
+  'trip.delete.name': 'Escribe el nombre del viaje, «{name}», para confirmar',
+  'trip.delete.confirm': 'Eliminarlo para siempre',
+  'trip.delete.cancel': 'Cancelar',
+  'trip.deleting': 'Eliminando…',
   'trip.summary': 'Ver el resumen',
   'trip.summary.closed': 'Este viaje está cerrado. Sus cuentas finales están en el resumen.',
 
@@ -378,6 +386,7 @@ export const es = {
   'error.name_required': 'Hace falta un nombre.',
   'error.name_taken': 'Ese nombre ya está cogido en este viaje.',
   'error.name_unclaimed': 'Ese nombre es el de alguien del viaje que todavía no tiene móvil.',
+  'error.trip_name_mismatch': 'Ese no es el nombre del viaje.',
   'error.invitation_invalid':
     'Esa invitación no vale. Pídele al organizador que te pase una nueva.',
   'error.invitation_expired':

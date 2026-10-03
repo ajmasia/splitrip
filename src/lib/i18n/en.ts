@@ -45,6 +45,7 @@ export const en: Catalogue = {
     'An account is only needed to open trips. To come into one, an invitation is enough.',
 
   'trips.heading': 'Your trips',
+  'trips.deleted': 'The trip was deleted.',
   'trips.subtitle': 'The trips you take part in.',
   'trips.create': 'Create a trip',
   'trips.empty.title': 'You are not travelling with anyone yet',
@@ -198,6 +199,13 @@ export const en: Catalogue = {
   'trip.closing': 'Closing…',
   'trip.reopen': 'Reopen the trip',
   'trip.reopening': 'Reopening…',
+  'trip.delete': 'Delete the trip',
+  'trip.delete.body':
+    'Deleting it removes the trip and everything in it — participants, expenses, payments, activity and invitations — for every participant. It cannot be undone.',
+  'trip.delete.name': 'Type the trip’s name, “{name}”, to confirm',
+  'trip.delete.confirm': 'Delete it for good',
+  'trip.delete.cancel': 'Cancel',
+  'trip.deleting': 'Deleting…',
   'trip.summary': 'See the summary',
   'trip.summary.closed': 'This trip is closed. Its final accounts are in the summary.',
 
@@ -375,6 +383,7 @@ export const en: Catalogue = {
   'error.name_required': 'A name is needed.',
   'error.name_taken': 'That name is already taken on this trip.',
   'error.name_unclaimed': 'That name belongs to somebody on the trip with no device yet.',
+  'error.trip_name_mismatch': 'That is not the trip’s name.',
   'error.invitation_invalid': 'That invitation is not valid. Ask the organiser for a new one.',
   'error.invitation_expired': 'That invitation has expired. Ask the organiser for a new one.',
   'error.trip_name_required': 'The trip needs a name.',

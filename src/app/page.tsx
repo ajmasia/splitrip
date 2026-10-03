@@ -6,7 +6,11 @@ import { getViewer } from '@/lib/auth/viewer'
 import { getCopy } from '@/lib/i18n/server'
 import { listTrips } from '@/lib/trips/queries'
 
-export default async function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
   const { locale, t } = await getCopy()
   const viewer = await getViewer()
 
@@ -31,6 +35,10 @@ export default async function HomePage() {
 
   const trips = await listTrips()
 
+  // Set by whoever deleted a trip, and by the trip screens that saw it go. The trip's name is not
+  // repeated: it no longer exists anywhere to be read.
+  const deleted = (await searchParams).deleted !== undefined
+
   const create = viewer.isAnonymous ? undefined : (
     <Link
       href="/trips/new"
@@ -49,6 +57,14 @@ export default async function HomePage() {
           </p>
           <h1 className="text-2xl font-bold">{t('trips.subtitle')}</h1>
         </div>
+        {deleted ? (
+          <p
+            role="status"
+            className="max-w-prose rounded-card border border-rule bg-surface px-4 py-3"
+          >
+            {t('trips.deleted')}
+          </p>
+        ) : null}
 
         {trips.length === 0 ? (
           <div className="flex max-w-prose flex-col gap-2 rounded-card border border-rule bg-surface p-5">
