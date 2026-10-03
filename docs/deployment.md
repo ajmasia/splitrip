@@ -86,8 +86,14 @@ the same command again: it picks up where it stopped, keeps the secrets it alrea
 never installs anything twice. Run on a machine where an instance is already installed, it refuses
 and points to `update`.
 
-If the host script fails while installing, the container already exists: open it with
-`pct enter <id>` and run the installer command above inside it.
+If the host script fails while installing, the container already exists. Finish the install from
+the Proxmox host, which runs the installer inside the container:
+
+```bash
+pct exec <id> -- bash -c "$(curl -fsSL https://raw.githubusercontent.com/ajmasia/splitrip/main/deploy/install.sh)"
+```
+
+The installer refuses to run on the Proxmox host itself.
 
 ## Publishing it through the reverse proxy
 

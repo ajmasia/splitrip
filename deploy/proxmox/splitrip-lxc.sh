@@ -209,8 +209,8 @@ step "Creating container $CTID" create_container
 step 'Waiting for its network' wait_for_network
 CURRENT_STEP="Installing Splitrip $VERSION in container $CTID"
 say "→ $CURRENT_STEP"
-run_installer || fail "The container exists; finish the install inside it. Run pct enter $CTID, then:
-  bash -c \"\$(curl -fsSL $RAW/$VERSION/deploy/install.sh)\""
+run_installer || fail "The container exists; finish the install inside it by running, here on the host:
+  pct exec $CTID -- bash -c \"\$(curl -fsSL $RAW/$VERSION/deploy/install.sh)\""
 
 say ''
 say "Container $CTID is ready. Its console: pct enter $CTID"

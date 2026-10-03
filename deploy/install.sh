@@ -38,6 +38,14 @@ preflight() {
     early_fail "The installer supports Debian 13; this is ${PRETTY_NAME:-an unknown system}."
   [ "$(dpkg --print-architecture)" = amd64 ] ||
     early_fail 'The installer supports amd64 hosts only.'
+  # Proxmox VE is Debian too; the instance belongs in a container on it, never on the host itself.
+  if [ -d /etc/pve ] || command -v pveversion >/dev/null; then
+    # The command in the message is meant literally.
+    # shellcheck disable=SC2016
+    early_fail 'This is a Proxmox VE host. Install Splitrip in a container instead: run
+  deploy/proxmox/splitrip-lxc.sh here, or this installer inside an existing container with
+  pct exec <id> -- bash -c "$(curl -fsSL <this installer'"'"'s address>)"'
+  fi
   if grep -qs '^INSTALLED=yes$' "$SPLITRIP_ROOT/state"; then
     early_fail "Splitrip is already installed here. To bring it up to date, run: update"
   fi
