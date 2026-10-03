@@ -9,5 +9,5 @@
 
 ## 3. On the running instance
 
-- [ ] 3.1 Publish a release candidate with this change and update the Proxmox instance to it; verify that the foot of the screen names that candidate, that feedback sent from it is stored with that version on the operators' screen, and that an installed PWA offers the update and, once applied, keeps a cache named for that candidate and no other
+- [x] 3.1 Publish a release candidate with this change and update the Proxmox instance to it; verify that the foot of the screen names that candidate, that feedback sent from it is stored with that version on the operators' screen, and that an installed PWA offers the update and, once applied, keeps a cache named for that candidate and no other
 - [ ] 3.2 With the next candidate published, update to it and then move back to the previous one with `update <version>`; verify that the foot of the screen names each release in turn
