@@ -24,7 +24,7 @@
 
 ## 4. The Proxmox host script
 
-- [ ] 4.1 Write `deploy/proxmox/splitrip-lxc.sh`: check it runs on a Proxmox host, ask for identifier, bridge, address and storage with their defaults, refuse an identifier already in use, create the unprivileged Debian 13 LXC with nesting, and run the installer inside it; verify on the Proxmox host that a run with every default ends in a working instance, that an identifier in use is refused before anything is created, that running it elsewhere is refused, and that `shellcheck` reports nothing
+- [ ] 4.1 Write `deploy/proxmox/splitrip-lxc.sh`: check it runs on a Proxmox host, ask for identifier, bridge, address, storage, cores and memory with their defaults, refuse an identifier already in use, create the unprivileged Debian 13 LXC with nesting, and run the installer inside it; verify on the Proxmox host that a run with every default ends in a working instance, that an identifier in use is refused before anything is created, that running it elsewhere is refused, and that `shellcheck` reports nothing
 
 ## 5. The `update` command
 

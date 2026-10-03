@@ -44,7 +44,7 @@ As with the Proxmox VE helper scripts, the host script is run straight from the 
 
 ### The container
 
-An unprivileged Debian 13 LXC with `nesting=1`, which systemd inside a recent Debian needs; no `keyctl`, since nothing in it uses kernel keyrings. Defaults of 2 cores, 4 GB of memory, 1 GB of swap and 20 GB of disk, with DHCP on `vmbr0`; the memory is sized mostly for building the application, and a task measures what the running instance actually uses. The script asks for identifier, bridge, address and storage, offering these defaults, and refuses an identifier `pct`/`qm` already know.
+An unprivileged Debian 13 LXC with `nesting=1`, which systemd inside a recent Debian needs; no `keyctl`, since nothing in it uses kernel keyrings. Defaults of 2 cores, 4 GB of memory, 1 GB of swap and 20 GB of disk, with DHCP on `vmbr0`; the memory is sized mostly for building the application, and a task measures what the running instance actually uses. The script asks for identifier, bridge, address, storage, cores and memory, offering these defaults and refusing less than 2 GB of memory, which the build needs; it refuses an identifier `pct`/`qm` already know, and creates the container for the host's own architecture.
 
 ### Pins: one file, versions from one upstream release
 
