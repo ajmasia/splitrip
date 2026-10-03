@@ -168,7 +168,7 @@ ask_questions() {
 install_packages() {
   apt-get install -y -qq \
     xz-utils openssl locales libncurses6 libstdc++6 \
-    postgresql-17 nginx nftables >/dev/null
+    postgresql-17 postgresql-17-wal2json nginx nftables >/dev/null
   # Realtime's runtime expects this locale.
   sed -i '/^# *en_US.UTF-8 UTF-8/s/^# *//' /etc/locale.gen
   locale-gen >/dev/null
