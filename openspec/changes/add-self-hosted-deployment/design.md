@@ -46,6 +46,8 @@ As with the Proxmox VE helper scripts, the host script is run straight from the 
 
 An unprivileged Debian 13 LXC with `nesting=1`, which systemd inside a recent Debian needs; no `keyctl`, since nothing in it uses kernel keyrings. Defaults of 2 cores, 4 GB of memory, 1 GB of swap and 20 GB of disk, with DHCP on `vmbr0`; the memory is sized mostly for building the application, and a task measures what the running instance actually uses. The script asks for identifier, bridge, address, storage, cores and memory, offering these defaults and refusing less than 2 GB of memory, which the build needs; it refuses an identifier `pct`/`qm` already know, and creates the container for the host's own architecture.
 
+Measured on 0.13.0-rc.14, idle with one small trip: the running instance uses about 790 MB of the container's memory — Studio 219 MB, Realtime 209 MB, postgres-meta 112 MB, the application 101 MB, PostgreSQL 80 MB, PostgREST 16 MB, Auth 13 MB and nginx 4 MB. Building the application while it serves is what takes the rest, so the 4 GB default stays, and 2 GB remains the floor.
+
 ### Pins: one file, versions from one upstream release
 
 `deploy/versions.env` names a version for each component: Auth (GoTrue), PostgREST, Realtime, postgres-meta, Studio, Node, the Supabase CLI and `crane`. The Supabase versions are taken together from one release of Supabase's self-hosting stack, so the combination is one upstream has tested; moving to a newer stack means copying its versions into this file. Release binaries are verified against checksums recorded beside their versions, and images are referenced by digest, never by tag.
