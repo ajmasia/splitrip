@@ -11,7 +11,7 @@
 
 ## 3. Sending feedback
 
-- [ ] 3.1 Implement the feedback entry point in the shared frame as a link that carries the current screen and, under a trip, the trip; verify that it appears on the public entry page, on the trip list and on a trip screen with the right `from` and `trip` values, that it is at least 44 pixels tall and that `npm run check:viewport` reports no overflow at 360 pixels on the public entry page
+- [x] 3.1 Implement the feedback entry point in the shared frame as a link that carries the current screen and, under a trip, the trip; verify that it appears on the public entry page, on the trip list and on a trip screen with the right `from` and `trip` values, that it is at least 44 pixels tall and that `npm run check:viewport` reports no overflow at 360 pixels on the public entry page
 - [x] 3.2 Implement the feedback page with the message field, the three kinds, the list of what is sent alongside the message and the confirmation with its way back; verify that opening the page without a session issues no identity, and that the confirmation leads back to the screen it was opened from
 - [x] 3.3 Implement the server action that keeps only an application-relative path, takes the version and language on the server, issues a device identity when there is none and calls `submit_feedback`; verify in the application a message sent from a trip screen with a session, one sent from the public entry page without one, the empty-message and too-long refusals keeping what was typed, and the over-the-limit refusal on a sixth message
 
