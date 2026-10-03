@@ -1,7 +1,7 @@
 ## 1. The version is the release being built
 
 - [x] 1.1 Make `next.config.ts` take the version from `SPLITRIP_VERSION` when it is set and not empty, and from `package.json` otherwise, and bring the comments in `next.config.ts` and `src/lib/version.ts` in line with it; verify that `SPLITRIP_VERSION=0.0.0-test npm run build` serves `/sw.js` with the cache `splitrip-0.0.0-test`, and that a build without it serves `splitrip-` followed by `package.json`'s version
-- [ ] 1.2 Pass `SPLITRIP_VERSION` with the release being built from `build_release` in `deploy/lib.sh`, and say in the update section of `docs/deployment.md` that the foot of every screen names the release running; verify that `shellcheck` reports nothing on `deploy/`
+- [x] 1.2 Pass `SPLITRIP_VERSION` with the release being built from `build_release` in `deploy/lib.sh`, and say in the update section of `docs/deployment.md` that the foot of every screen names the release running; verify that `shellcheck` reports nothing on `deploy/`
 
 ## 2. The version at the foot of every screen
 

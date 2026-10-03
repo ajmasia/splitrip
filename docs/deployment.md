@@ -196,6 +196,10 @@ It moves the instance to the latest release published since the one it runs, and
 it moved from and to. When there is none, it says so and changes nothing. An instance on a release
 candidate, such as `0.13.0-rc.6`, also moves to newer candidates; one on a release never does.
 
+The release an instance runs is also named at the foot of every screen of the application, so it
+can be checked from a phone after updating. Releases installed before `0.13.0-rc.16` show `0.12.0`
+there, the version they were built as.
+
 To move to a particular release, newer or older:
 
 ```bash

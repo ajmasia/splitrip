@@ -724,6 +724,7 @@ build_release() {
     HOME=/var/lib/splitrip-app \
     PATH="$node:/usr/bin:/bin" \
     NEXT_TELEMETRY_DISABLED=1 \
+    SPLITRIP_VERSION="$(basename "$release")" \
     NEXT_PUBLIC_SUPABASE_URL="https://$API_DOMAIN" \
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="$ANON_KEY" \
     bash -c "cd '$release' && npm ci --ignore-scripts --no-audit --no-fund && npm run build"
