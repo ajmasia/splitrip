@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from '@/lib/supabase/env'
 import { SESSION_COOKIE, forwardedFor, serverSupabaseUrl } from '@/lib/supabase/options'
+import { sessionRefused } from '@/lib/supabase/session'
 
 /**
  * Refreshes whatever session the request already carries, and mints none.
@@ -43,7 +44,12 @@ export async function proxy(request: NextRequest) {
   // getUser, not getSession: it asks the auth server, which both validates the token and refreshes
   // it when it has expired. A session read from the cookie alone would be whatever was written to
   // it last.
-  await supabase.auth.getUser()
+  const { error } = await supabase.auth.getUser()
+
+  // A session Auth refuses is dropped here, before the page asks anything with it: every query it
+  // went into would be refused too. Signing out locally clears its cookies through setAll above,
+  // on this request and on the browser.
+  if (sessionRefused(error)) await supabase.auth.signOut({ scope: 'local' })
 
   return response
 }

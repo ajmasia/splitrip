@@ -32,6 +32,12 @@ under **Added**, corrections under **Fixed**, and changes to how it is built or 
 - The limits on anonymous sign-ins count each visitor's address, forwarded by the server, rather
   than the server's own.
 
+### Fixed
+
+- A browser holding a session the instance no longer accepts, after a reinstall for instance, is
+  signed out on its next visit instead of having every request refused, which made a good
+  invitation read as one that no longer works.
+
 ## [0.12.0] - 2026-10-02
 
 The organiser's dashboard, and closing a trip. The organiser gets a dashboard of the trip, what it
