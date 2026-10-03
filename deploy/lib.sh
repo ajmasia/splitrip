@@ -511,6 +511,8 @@ render_gateway() {
     >/etc/nginx/splitrip-studio.htpasswd
   chown root:www-data /etc/nginx/splitrip-studio.htpasswd
   chmod 640 /etc/nginx/splitrip-studio.htpasswd
+  # Debian's welcome page, on port 80 for anybody on the network; nothing of ours is served there.
+  rm -f /etc/nginx/sites-enabled/default
   nginx -t -q
 }
 
