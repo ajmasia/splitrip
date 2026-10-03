@@ -5,12 +5,18 @@ import { fileURLToPath } from 'node:url'
 import type { NextConfig } from 'next'
 
 /**
- * package.json is the single source of the application version. Reading it here
- * exposes it to the bundle, so the PWA and the manifest can never drift from
- * the version that was actually released.
+ * The application version, fixed here for the whole bundle so the PWA and the feedback can never
+ * drift from what is running.
+ *
+ * A deployed instance is the release it was built from: the installer and `update` say which one in
+ * SPLITRIP_VERSION, release candidates included, which package.json does not name. Any other build
+ * takes package.json's version.
  */
 const packageJsonPath = fileURLToPath(new URL('./package.json', import.meta.url))
-const { version } = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as { version: string }
+const { version: packageVersion } = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as {
+  version: string
+}
+const version = process.env.SPLITRIP_VERSION || packageVersion
 
 /**
  * The addresses this machine answers to on the local network.
