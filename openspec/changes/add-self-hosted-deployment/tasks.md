@@ -29,7 +29,7 @@
 ## 5. The `update` command
 
 - [x] 5.1 Write `deploy/update.sh`, installed as `update`, that resolves the target release, exits early when already there, builds the new release while the current one serves, applies new migrations, switches and restarts, reporting both versions; verify by installing an older release with data and sessions, running `update`, and checking that the latest release runs, every trip and account is intact, an existing session is still valid and the configuration file is unchanged; and that a second run says it is up to date
-- [ ] 5.2 Make `update <version>` move to a given release and leave the previous release's checkout and build in place; verify moving forward to a named release and back to the previous one
+- [x] 5.2 Make `update <version>` move to a given release and leave the previous release's checkout and build in place; verify moving forward to a named release and back to the previous one
 - [ ] 5.3 Make `update` install beside the current one every component whose pin the target release changes, keeping the configuration file, and switch to it with the rest; verify with a release whose pins differ that the moved components run their new versions, every service is healthy, the data is intact, and going back to the previous release restores the previous versions
 - [ ] 5.4 Stop `update` before the switch when any earlier step fails; verify with a release whose build is made to fail, and with one whose component fetch is made to fail, that the previous release keeps serving and the failed step is named
 - [ ] 5.5 Document `update` in the deployment guide; verify by updating an instance following only the guide
