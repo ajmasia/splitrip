@@ -18,6 +18,10 @@
 insert into public.trip_creators (email, note) values
     ('tyrion@splitrip.test', 'The organiser of the sample trip');
 
+-- And he runs the instance, so the feedback screen can be tried locally too.
+insert into public.instance_operators (email, note) values
+    ('tyrion@splitrip.test', 'The organiser of the sample trip');
+
 -- The empty token columns are not decoration: the auth server reads them into strings that cannot
 -- be null, and a NULL there fails every sign-in with an error about querying the schema.
 insert into auth.users (

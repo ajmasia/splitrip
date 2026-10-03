@@ -98,7 +98,22 @@ the account that organises it:
 
 **tyrion@splitrip.test / unViajeAPoniente**
 
-That is also the only account allowed to open new trips locally. The other four travellers have just
+That is also the only account allowed to open new trips locally, and the only operator — the people
+who read the feedback the application's users send, from a link on the home screen. Both are lists of
+addresses in the database, edited by whoever runs the instance; to let somebody else in, in Studio's
+SQL editor (`http://127.0.0.1:54323` locally):
+
+```sql
+-- to open trips
+insert into public.trip_creators (email, note) values ('somebody@example.com', 'Why');
+-- to read feedback
+insert into public.instance_operators (email, note) values ('somebody@example.com', 'Why');
+```
+
+The address can be listed before its account exists. On a production instance the steps are the same;
+see [the deployment guide](docs/deployment.md#trip-creators-and-operators).
+
+The other four travellers have just
 the identity their phone was given. The trip carries the awkward cases on purpose: a house one of
 them paid for alone and asked nobody to share, expenses split among only some of the group, amounts
 that leave cents over, and settlement payments already made. Its balances sum to exactly zero, so it
