@@ -1,7 +1,7 @@
 ## 1. Operators
 
 - [x] 1.1 Create the migration with the `instance_operators` table, its lowercase check and RLS enabled with no policies, and the `is_operator()` function; verify with pgTAP that a signed-in listed address is an operator, that an address listed before its account exists is recognised once it signs in, that a device identity and an unlisted account are not, and that no session can read or write the table
-- [ ] 1.2 Add the sample organiser's address to the operators list in the local seed and document in the README how an operator is added, next to trip creators; verify that after `npm run db:reset` the sample organiser is an operator and that the README steps work as written
+- [x] 1.2 Add the sample organiser's address to the operators list in the local seed and document in the README how an operator is added, next to trip creators; verify that after `npm run db:reset` the sample organiser is an operator and that the README steps work as written
 
 ## 2. Storing feedback
 
