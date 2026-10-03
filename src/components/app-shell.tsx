@@ -2,6 +2,7 @@ import Link from 'next/link'
 import type { ReactNode } from 'react'
 
 import { signOut } from '@/app/actions/auth'
+import { FeedbackLink } from '@/components/feedback-link'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import { ThemeSwitcher } from '@/components/theme-switcher'
 import type { Viewer } from '@/lib/auth/viewer'
@@ -95,6 +96,14 @@ export async function AppShell({
         className={`mx-auto w-full max-w-3xl flex-1 px-4 py-6 ${bottom ? 'pb-28 wide:flex-none wide:pb-6' : ''}`}
       >
         {children}
+
+        {/*
+          Inside main, after everything, rather than a footer of its own: main already keeps clear
+          of the bar pinned to the bottom of a phone, so this is never hidden under it.
+        */}
+        <footer className="mt-10 border-t border-rule pt-2">
+          <FeedbackLink locale={locale} />
+        </footer>
       </main>
 
       {bottom ? (

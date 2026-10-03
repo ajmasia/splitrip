@@ -34,6 +34,9 @@ const COPY_BY_CODE: Record<string, CopyKey> = {
   SP027: 'error.place_taken',
   SP029: 'error.place_taken_by_account',
   SP030: 'error.trip_name_mismatch',
+  SP031: 'error.feedback_required',
+  SP032: 'error.feedback_too_long',
+  SP033: 'error.feedback_too_many',
 }
 
 export function errorCopyKey(code: string | undefined): CopyKey {

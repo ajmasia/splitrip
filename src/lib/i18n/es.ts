@@ -31,6 +31,38 @@ export const es = {
   'notFound.heading': 'Aquí no hay nada',
   'notFound.body': 'El enlace no lleva a ningún sitio, o lleva a un viaje del que no formas parte.',
 
+  'feedback.link': 'Cuéntanos qué te parece',
+  'feedback.heading': 'Cuéntanos',
+  'feedback.intro':
+    'Algo que falla, algo que echas de menos o cualquier otra cosa: lo leen quienes mantienen Splitrip.',
+  'feedback.message.label': 'Tu mensaje',
+  'feedback.message.placeholder': 'Qué ha pasado, o qué te gustaría',
+  'feedback.message.hint': 'Hasta {max} caracteres.',
+  'feedback.kind.legend': 'Es sobre… (si quieres decirlo)',
+  'feedback.kind.bug': 'Algo no funciona',
+  'feedback.kind.idea': 'Una idea',
+  'feedback.kind.other': 'Otra cosa',
+  'feedback.sentWith.heading': 'Junto con tu mensaje se envía:',
+  'feedback.sentWith.screen': 'La pantalla desde la que escribes: {path}',
+  'feedback.sentWith.trip': 'El viaje en el que estás, si formas parte de él',
+  'feedback.sentWith.version': 'La versión de la aplicación: {version}',
+  'feedback.sentWith.language': 'El idioma en que la usas: {language}',
+  'feedback.sentWith.readers': 'Solo lo leen quienes mantienen esta instancia de Splitrip.',
+  'feedback.submit': 'Enviar',
+  'feedback.pending': 'Enviando…',
+  'feedback.cancel': 'Volver sin enviar',
+  'feedback.sent.heading': 'Gracias, lo hemos recibido',
+  'feedback.sent.body': 'Tu mensaje ya está en manos de quienes mantienen Splitrip.',
+  'feedback.back': 'Volver a donde estabas',
+
+  'operator.feedback.link': 'Opiniones recibidas',
+  'operator.feedback.heading': 'Lo que nos cuentan',
+  'operator.feedback.empty': 'Todavía no ha llegado ninguna opinión.',
+  'operator.feedback.screen': 'Pantalla',
+  'operator.feedback.version': 'Versión',
+  'operator.feedback.language': 'Idioma',
+  'operator.feedback.trip': 'Viaje',
+
   'landing.heading': 'Cuadrad las cuentas del viaje sobre la marcha.',
   'landing.body':
     'Abre un viaje con tu cuenta, o entra en uno con la invitación que te hayan pasado.',
@@ -387,6 +419,10 @@ export const es = {
   'error.name_taken': 'Ese nombre ya está cogido en este viaje.',
   'error.name_unclaimed': 'Ese nombre es el de alguien del viaje que todavía no tiene móvil.',
   'error.trip_name_mismatch': 'Ese no es el nombre del viaje.',
+  'error.feedback_required': 'Escribe algo antes de enviarlo.',
+  'error.feedback_too_long': 'Un mensaje tiene como mucho 2000 caracteres.',
+  'error.feedback_too_many':
+    'Has enviado varios mensajes en la última hora. Prueba otra vez más tarde.',
   'error.invitation_invalid':
     'Esa invitación no vale. Pídele al organizador que te pase una nueva.',
   'error.invitation_expired':
