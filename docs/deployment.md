@@ -175,10 +175,17 @@ an operator when the table exists at install time.
 
 ## Updating
 
-At the machine's console, as root (in a Proxmox container, `pct enter <id>`):
+At the machine's console, as root:
 
 ```bash
 update
+```
+
+In a Proxmox container, run it from the host. `pct exec` runs commands with a short `PATH` that
+leaves out `/usr/local/bin`, so give the full path:
+
+```bash
+pct exec <id> -- /usr/local/bin/update
 ```
 
 It moves the instance to the latest release published since the one it runs, and says which version
